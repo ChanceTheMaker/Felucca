@@ -30,7 +30,7 @@ const proto = html.slice(html.indexOf("/*PROTO-BEGIN*/"), html.indexOf("/*PROTO-
 const E = vm.runInNewContext(proto + `
 ;({ frame, unframe, parse, req, Link, parseWav, resample, normalize, rootFromName, buildSlot, makeMockDevice, CMD, SMP,
    UP, bank, capturePatch, auditionPatch, startWatch, libraryFile, readLibraryFile, paramKeys, patternFromSteps, stepsFromPattern, upName,
-   mixer, GM_DRUM, drumName, parseNotes })`,
+   mixer, GM_DRUM, drumName, parseNotes, readDevicePreferences, devicePresetRows })`,
 { setTimeout, clearTimeout, setInterval, clearInterval, console });
 
 async function editorMock() {
@@ -64,6 +64,36 @@ async function editorMock() {
     const off = E.parse[E.CMD.DUMP](await rq(E.req.dump()), info);
     ok(on.p[45] === 2 && on.p[46] === 7 && off.p[45] === 0 && off.p[46] === 1, "editor: a factory preset turns the SLICER off");
   }
+  const names = [];
+  for (let e = 0; e < info.nengines; e++) names.push(E.parse[E.CMD.NAMES](await rq(E.req.names(e))).names);
+  let prefs = await E.readDevicePreferences(rq, info, names);
+  ok(info.uiCaps === 15 && prefs.palettes.includes("L-HICON"), "editor: preference capabilities and palette names");
+  for (const [id, value] of [[0, 2], [1, 1], [2, 2]]) {
+    const r = E.parse[E.CMD.UI_SET](await rq(E.req.uiSet(id, value)));
+    ok(r.rc === 0 && [r.palette, r.font, r.monitor][id] === value, `editor: display preference ${id} round trip`);
+  }
+  ok(E.parse[E.CMD.UI_SET](await rq(E.req.uiSet(1, 5))).rc === 1, "editor: invalid font value refused");
+  ok(E.parse[E.CMD.FAV_SET](await rq(E.req.favSet(info.nengines, 31, true))).rc === 1, "editor: empty user slot cannot be favorited");
+  await rq(E.req.favSet(0, 0, true));
+  await rq(E.req.uiSet(3, 1));
+  prefs = await E.readDevicePreferences(rq, info, names, prefs);
+  ok(E.devicePresetRows(info, names, prefs).length === 1 && prefs.favorites[0][0], "editor: favorites filter follows device state");
+  m.state.favorites[0][0] = false; m.state.favorites[1][0] = true;
+  prefs = await E.readDevicePreferences(rq, info, names, prefs);
+  ok(!prefs.favorites[0][0] && prefs.favorites[1][0], "editor: panel-side favorite changes refresh");
+  await rq(E.req.upStore(31, "FAVORITE"));
+  await rq(E.req.favSet(info.nengines, 31, true));
+  prefs = await E.readDevicePreferences(rq, info, names, prefs);
+  ok(E.devicePresetRows(info, names, prefs).some((r) => r.user && r.preset === 31), "editor: saved user slot appears as favorite");
+  await rq(E.req.upStore(31, "RENAMED"));
+  prefs = await E.readDevicePreferences(rq, info, names, prefs);
+  ok(prefs.favorites[info.nengines][31] && prefs.slots.slots[31].name === "RENAMED", "editor: overwrite retains star and refreshes name");
+  await rq(E.req.upErase(31));
+  prefs = await E.readDevicePreferences(rq, info, names, prefs);
+  ok(!prefs.favorites[info.nengines][31] && !E.devicePresetRows(info, names, prefs).some((r) => r.user), "editor: erased slot disappears and loses star");
+  const none = await E.readDevicePreferences(() => { throw new Error("unexpected request"); }, { uiCaps: 0 }, []);
+  ok(none === null, "editor: old firmware receives no unsupported preference requests");
+  await rq(E.req.uiSet(3, 0));
   const scale = E.parse[E.CMD.DESC](await rq(E.req.desc(0, 26)));
   const scaleNames = ["CHR", "MAJ", "MIN", "DOR", "MIX", "PEN", "MPEN", "HARM", "PHRY", "LYD", "LOC", "MEL", "BLUES", "WHOLE", "DIMHW", "DIMWH"];
   ok(scale.label === "SCL" && scale.max === 15 && eq(scale.names, scaleNames), "editor: all 16 scale names exposed");

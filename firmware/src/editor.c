@@ -16,7 +16,8 @@ enum { ED_INFO = 1, ED_GET, ED_SET, ED_DUMP, ED_DESC, ED_STEP_GET, ED_STEP_SET, 
        ED_UP_LIST, ED_UP_GET, ED_UP_PUT, ED_UP_STORE, ED_UP_LOAD, ED_UP_ERASE,   /* v2: user presets */
        ED_WATCH, ED_CHANGED, ED_RELOAD, ED_PING, ED_STEP_CHANGED,              /* v2: live sync */
        ED_TRACK, ED_TRACK_MIX, ED_TRACK_DUMP, ED_TRACK_STEP,                    /* v3: tracks */
-       ED_TRACK_PARAM, ED_TRACK_CHANGED };                                      /* v4: any track's parameters */
+       ED_TRACK_PARAM, ED_TRACK_CHANGED,
+       ED_UI_STATE, ED_UI_SET, ED_UI_PALETTES, ED_FAV_GET, ED_FAV_SET };                                      /* v4: any track's parameters */
 
 static uint8_t ed_out[600];
 static uint32_t ed_n;
@@ -263,6 +264,8 @@ static const param_desc_t *ed_desc(uint32_t scope, uint32_t id, int16_t **vp)
     return 0;
 }
 
+#include "editor_preferences.c"
+
 static void ed_handle(const uint8_t *f, uint32_t n)   /* f: the bytes between F0 and F7 */
 {
     uint32_t cmd = f[3], i;
@@ -271,6 +274,7 @@ static void ed_handle(const uint8_t *f, uint32_t n)   /* f: the bytes between F0
     int16_t *vp;
     const param_desc_t *d;
     ed_begin(cmd);
+    if (ed_ui_handle(cmd, a, na)) { ed_send(); return; }
     switch (cmd) {
     case ED_INFO:
         ed_str("FELUCCA " FELUCCA_VERSION, 24);
@@ -282,6 +286,7 @@ static void ed_handle(const uint8_t *f, uint32_t n)   /* f: the bytes between F0
         for (i = 0; i < NENGINES; i++)
             ed_str(ENGINES[i]->name, 8);
         ed_b(NTRK);                                       /* v3 */
+        ed_b(ed_ui_caps());                               /* optional device preferences */
         break;
     case ED_GET:
     case ED_SET:

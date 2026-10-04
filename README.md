@@ -95,3 +95,16 @@ Code: [GPL-3.0-only](LICENSE). Third-party material: [LICENSING.md](LICENSING.md
 M-VAVE and FM-1 are trademarks of their respective owners. Felucca is not affiliated with or endorsed by them.
 
 Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments
+
+
+## Web editor device preferences
+
+With compatible firmware, Settings > Device display selects the FM-1 screen
+palette, font weight, and MIDI monitor mode. Only supported controls appear.
+Changes apply immediately and save on the device.
+
+Library > Device presets provides favorite stars and an All/Favorites filter
+shared with the FM-1. Factory sounds and used user slots can be bookmarked;
+computer-library patches must first be saved to a device user slot. Panel-side
+changes and slot replacements/deletions update while this view is open. Older
+firmware keeps the existing editor without unsupported controls.

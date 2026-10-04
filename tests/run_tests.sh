@@ -62,6 +62,11 @@ run "regression: golden renders, health, voices, CPU budget" "$OUT/regress" test
 run "regression: target cost of the render loops" python3 tests/target_budget.py \
     build/felucca.dis tests/target_budget.txt
 
+for features in 1 3 9 15; do
+    $CC -DFEATURES=$features -o "$OUT/editor_preferences_test" tests/editor_preferences_test.c
+    run "editor preferences: capability set $features" "$OUT/editor_preferences_test"
+done
+
 run "installer CLI (fm1_install.py) against a simulated FM-1" python3 tests/install_test.py
 
 if command -v node >/dev/null 2>&1; then

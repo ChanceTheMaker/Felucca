@@ -97,6 +97,10 @@ try {
   await preference('Sound controls', 'knobs');
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 950 });
+    await page.waitForFunction(w => {
+      const n = document.querySelectorAll('#play-keys .extended').length;
+      return w === 390 ? n === 0 : n > 0;
+    }, width);
     await page.evaluate(() => window.scrollTo(0, 0));
     const keysFit = await page.locator('#play-keys').evaluate(e => {
       const r=e.getBoundingClientRect(); return e.querySelectorAll('[data-hardware=true]').length === 27 && [...e.children].every(k => { const b=k.getBoundingClientRect(); return b.left >= r.left-1 && b.right <= r.right+1; });

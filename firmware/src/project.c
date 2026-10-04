@@ -235,7 +235,11 @@ static void project_load(uint32_t slot)
 
 /* settings + learned panel table: one flash object. The flash copy wins at
  * boot (the .noinit copies are garbage after a power-off). */
-#include "settings_persist.c"
+typedef struct {
+    uint32_t magic, palette, lowcut, zoom;
+    panel_t panel;
+} persist_t;
+#define PERSIST_MAGIC 0x50455232u                  /* "PER2" */
 #if FELUCCA_FLASH
 static persist_t persist_saved;
 #endif
@@ -258,7 +262,25 @@ static void persist_boot(void)                    /* before settings_init / pane
     }
     {
         int n = st_load(OBJ_SETTINGS, &p, sizeof p);
-        if (settings_import(&p, n) == 1) persist_saved = p;
+        if (n == (int)sizeof p && p.magic == PERSIST_MAGIC) {
+            settings.magic = SETTINGS_MAGIC;
+            settings.palette = p.palette;
+            settings.lowcut = p.lowcut;
+            settings.zoom = p.zoom;
+            if (p.panel.magic == PANEL_MAGIC)
+                panel = p.panel;
+            persist_saved = p;
+        } else if (n == (int)(8u + sizeof(panel_t)) && p.magic == 0x50455231u) {   /* "PER1": palette, panel */
+            const uint32_t *w = (const uint32_t *)&p;
+            panel_t old;
+            memcpy(&old, w + 2, sizeof old);
+            settings.magic = SETTINGS_MAGIC;
+            settings.palette = w[1];
+            settings.lowcut = 0;
+            settings.zoom = 0;
+            if (old.magic == PANEL_MAGIC)
+                panel = old;
+        }
     }
     {   /* projects: fill empty RAM slots from flash, so the slot list is right after power-on */
         uint32_t i;
@@ -267,9 +289,6 @@ static void persist_boot(void)                    /* before settings_init / pane
                 proj_fetch(i);
     }
     up_boot();                                     /* user presets */
-    /* Prune deleted slots even if power failed between bank and settings writes. */
-    for (uint32_t k = 0; k < UP_SLOTS; k++)
-        if (!up_used(k)) favorite_set(NENGINES, k, 0);
 #endif
 }
 
@@ -286,8 +305,6 @@ static void settings_save(void)
     p.palette = settings.palette;
     p.lowcut = settings.lowcut;
     p.zoom = settings.zoom;
-    p.bold = settings.bold;
-    p.favorites = favorites;
     p.panel = panel;
     if (!memcmp(&p, &persist_saved, sizeof p))
         return;                                    /* unchanged: no erase cycle */

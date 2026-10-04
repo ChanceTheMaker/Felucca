@@ -27,17 +27,6 @@ run() { echo "== $1"; shift; "$@" || fail=1; }
 
 [ -f build/felucca.fwsc ] || { echo "run ./build.sh first"; exit 1; }
 
-$CC -o "$OUT/favorites_test" tests/favorites_test.c
-run "favorites: factory/user browsing and lifecycle" "$OUT/favorites_test"
-$CC -o "$OUT/settings_test" tests/settings_test.c
-run "settings: favorites persistence and older-format migration" "$OUT/settings_test"
-
-$CC -Wno-missing-field-initializers -Ibuild/gen -o "$OUT/theme_test" tests/theme_test.c -lm
-run "themes: text blending and menu fit" "$OUT/theme_test" "$OUT/themes.ppm"
-run "themes: bold font metrics and contrast" "$OUT/theme_test" "$OUT/themes-bold.ppm" bold
-$CC -Wno-missing-field-initializers -Ibuild/gen -o "$OUT/menu_test" tests/menu_test.c
-run "menu: font switching and save-on-exit" "$OUT/menu_test" "$OUT/fonts.ppm"
-
 $CC -o "$OUT/storage_test" tests/storage_test.c
 run "flash storage (A/B, torn writes)" "$OUT/storage_test"
 

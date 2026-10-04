@@ -1,14 +1,14 @@
 /* SPDX-License-Identifier: GPL-3.0-only
  * Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments */
-/* Felucca menu (HOME held): COLOR, FONT, LOWCUT, ZOOM, HARDWARE CALIBRATION, ABOUT. */
+/* Felucca menu (HOME held): COLOR, LOWCUT, ZOOM, HARDWARE CALIBRATION, ABOUT. */
 /* ------------------------------------------------------------ menu --- */
-enum { MI_COLOR, MI_FONT, MI_LOWCUT, MI_ZOOM, MI_PANEL, MI_ABOUT, MI_BACK, MI_COUNT };
-static const char *const MI_NAME[MI_COUNT] = {"COLOR", "FONT", "LOWCUT", "ZOOM", "HARDWARE CALIBRATION", "ABOUT", "BACK"};
+enum { MI_COLOR, MI_LOWCUT, MI_ZOOM, MI_PANEL, MI_ABOUT, MI_BACK, MI_COUNT };
+static const char *const MI_NAME[MI_COUNT] = {"COLOR", "LOWCUT", "ZOOM", "HARDWARE CALIBRATION", "ABOUT", "BACK"};
 
 static void draw_menu(void)
 {
     uint32_t i, pass, sig = ui.menu * 7u + ui.menu_sel * 131u + settings.palette * 1009u + settings.lowcut * 7919u +
-                            settings.zoom * 104729u + settings.bold * 524287u;
+                            settings.zoom * 104729u;
     if (!ui.force && sig == ui.menu_sig)
         return;
     ui.menu_sig = sig;
@@ -43,8 +43,6 @@ static void draw_menu(void)
                 if (sel)
                     cv_rect(4, y + 6, 3, 3, C_WHITE);
                 cv_text(14, y, &FONT_S, MI_NAME[i], sel ? C_WHITE : C_GRAY);
-                if (i == MI_FONT)
-                    cv_text(90, y, &FONT_S, settings.bold ? "BOLD" : "REGULAR", C_HI);
                 if (i == MI_LOWCUT || i == MI_ZOOM)
                     cv_text(90, y, &FONT_S, (i == MI_LOWCUT ? settings.lowcut : settings.zoom) ? "ON" : "OFF", C_HI);
                 if (i == MI_COLOR) {
@@ -92,16 +90,9 @@ static void menu_input(uint32_t pressed)
     if ((s = panel_enc(EN_PRESET)) != 0 && ui.menu == 1)
         ui.menu_sel = (uint8_t)((ui.menu_sel + (s > 0 ? 1u : MI_COUNT - 1u)) % MI_COUNT);
     s = panel_enc(EN_K1);
-    if ((s != 0 || ok) && ui.menu == 1 && ui.menu_sel == MI_FONT) {
-        settings.bold = s > 0 ? 1u : s < 0 ? 0u : !settings.bold;
-        font_bold = (uint8_t)settings.bold;
-        ui.force = 1;
-        ok = 0;
-    }
     if (s != 0 && ui.menu == 1 && ui.menu_sel == MI_COLOR) {
         settings.palette = (settings.palette + (s > 0 ? 1u : NPALETTES - 1u)) % NPALETTES;
         palette_set(settings.palette);              /* (the menu signature redraws) */
-        ui.force = 1;
     }
     if ((s != 0 || ok) && ui.menu == 1 && (ui.menu_sel == MI_LOWCUT || ui.menu_sel == MI_ZOOM)) {
         /* KNOB 1: right = ON, left = OFF; OCT+ toggles */
@@ -115,7 +106,6 @@ static void menu_input(uint32_t pressed)
         case MI_COLOR:                                 /* OCT+ steps through the palettes too */
             settings.palette = (settings.palette + 1u) % NPALETTES;
             palette_set(settings.palette);
-            ui.force = 1;
             break;
         case MI_PANEL:
             panel_setup();

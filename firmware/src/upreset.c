@@ -188,13 +188,9 @@ static int up_put(uint32_t k, const up_rec_t *r)
     }
     up_gen++;
 #if FELUCCA_FLASH
-    if (flash_ok) {
-        if (st_save(OBJ_UPRESET0 + k / UP_PER_BANK, bk, sizeof *bk)) return 2;
-        if (!r && favorite_set(NENGINES, k, 0)) settings_save();
-        return 0;
-    }
+    if (flash_ok)
+        return st_save(OBJ_UPRESET0 + k / UP_PER_BANK, bk, sizeof *bk) ? 2 : 0;
 #endif
-    if (!r) favorite_set(NENGINES, k, 0);
     return 3;
 }
 

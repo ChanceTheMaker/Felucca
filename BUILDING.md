@@ -53,6 +53,13 @@ Build options (environment, `0` or `1`; defaults in `firmware/src/felucca.c`):
 | `FELUCCA_CDC` | 1 | USB serial console |
 | `FELUCCA_UART` | 1 | TRS MIDI IN (set to 0 to omit the UART input) |
 
+TRS MIDI IN accepts channel messages, running status, MIDI Clock, Start, Stop,
+and Continue. On **GLO > GLOBAL > CLK**, choose **USB** or **TRS** as the clock
+source; **INT** uses the panel BPM. The unselected input still plays notes and
+expressive controls. System common, SysEx, and other realtime messages are
+ignored on TRS. The USB serial console's `status` command reports `trs_midi`
+(enabled), `trs_rx_bytes`, `trs_rx_msgs`, and `trs_rx_drops` for hardware testing.
+
 ## Samples
 
 The CC0 instrument samples that the SAMPLE engine uses are in `assets/samples-cc0/`

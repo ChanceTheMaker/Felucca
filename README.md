@@ -62,6 +62,16 @@ whole-half diminished (DIMWH). Scales with other than seven notes continue acros
 the white keys without repeating notes; their roots need not fall on every C key.
 The drum track, GM sample kit and incoming MIDI retain their existing note mapping.
 
+## MIDI clock and transport
+
+In **GLO > GLOBAL > CLK**, select **INT**, **USB**, or **TRS**. USB and TRS follow
+MIDI Clock (24 pulses per quarter note) and Start, Stop, and Continue from the
+selected input; the other input can still play notes and expressive controls.
+Start resets the patterns to step 1, while Continue resumes their current steps.
+The sequencer stops and releases its notes if clock disappears for 500 ms. The
+displayed BPM, arpeggiator, delay, and SLICER follow the measured tempo. TRS MIDI
+IN is enabled by default (`FELUCCA_UART=1`).
+
 ## Layout
 
 | Path | What |

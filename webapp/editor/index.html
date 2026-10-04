@@ -7,7 +7,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Felucca Salt Editor</title>
+<title>Felucca (Salt) Editor</title>
 <style>
   /* Fukiai: Hügelton Instruments' icon font (MIT, FUKIAI-LICENSE.txt). Icons are text in .ic spans;
      they stay hidden until the face has loaded (html.fk), so a missing font never shows boxes. */
@@ -150,7 +150,7 @@
 <body>
 <main>
   <button class="lang" id="lang"></button>
-  <h1>Felucca Salt Editor</h1>
+  <h1>Felucca (Salt) Editor</h1>
   <p class="dim"><a href="../installer/" style="color:inherit" data-t="installer"></a></p>
   <!-- always visible: connection, version, sync mode, the tabs and (Sound / Sequencer / Tracks) the track selector -->
   <header class="top">
@@ -211,6 +211,12 @@
 
   <!-- works without a device too (the device bank shows while connected) -->
   <section class="panel" id="p-library" data-tab="library" hidden>
+    <div class="group" id="device-presets" hidden>
+      <h2 data-t="devicePresets"></h2>
+      <p class="dim" data-t="deviceFavHelp"></p>
+      <label><span data-t="deviceList"></span> <select id="device-filter"></select></label>
+      <div class="list" id="device-preset-list" style="margin-top:8px"></div>
+    </div>
     <div class="libcols" id="libsec">
       <div id="libpane">
         <h2 data-t="library" data-ic="symbol_books"></h2>
@@ -274,13 +280,18 @@
 
   <section class="panel" id="p-settings" data-tab="settings" data-dev hidden>
     <div class="groups" id="setgroups"></div>
+    <div class="group" id="device-display" hidden style="margin-top:12px">
+      <h2 data-t="deviceDisplay"></h2>
+      <p class="dim" data-t="deviceDisplayHelp"></p>
+      <div id="device-display-controls"></div>
+    </div>
     <div class="group" style="margin-top:12px">
       <h2 data-t="system" data-ic="symbol_cog"></h2>
       <table id="sysinfo"></table>
     </div>
   </section>
 
-  <footer>Felucca Salt by Chance Roth (<a href="https://github.com/ChanceTheMaker" target="_blank" rel="noopener" style="color:inherit">@ChanceTheMaker</a>).<br>
+  <footer>Felucca (Salt) by Chance Roth (<a href="https://github.com/ChanceTheMaker" target="_blank" rel="noopener">@ChanceTheMaker</a>).<br>
     Based on Felucca by Leo Kuroshita (@kurogedelic), <a href="https://hugelton.com" target="_blank" rel="noopener">Hügelton Instruments</a>. GPL-3.0.<br>
     <span data-t="foot"></span> M-VAVE and FM-1 are trademarks of their respective owners.<br>
     <a href="FUKIAI-LICENSE.txt" data-t="iconsCredit"></a></footer>
@@ -295,7 +306,8 @@ const CMD = { INFO: 1, GET: 2, SET: 3, DUMP: 4, DESC: 5, STEP_GET: 6, STEP_SET: 
   UP_LIST: 16, UP_GET: 17, UP_PUT: 18, UP_STORE: 19, UP_LOAD: 20, UP_ERASE: 21,
   WATCH: 22, CHANGED: 23, RELOAD: 24, PING: 25, STEP_CHANGED: 26,
   TRACK: 27, TRACK_MIX: 28, TRACK_DUMP: 29, TRACK_STEP: 30,
-  TRACK_PARAM: 31, TRACK_CHANGED: 32 };
+  TRACK_PARAM: 31, TRACK_CHANGED: 32,
+  UI_STATE: 33, UI_SET: 34, UI_PALETTES: 35, FAV_GET: 36, FAV_SET: 37 };
 /* frames the device sends on its own (while WATCH is on); never replies */
 const PUSH = new Set([CMD.CHANGED, CMD.RELOAD, CMD.STEP_CHANGED, CMD.TRACK_CHANGED]);
 /* user preset bank: name 1..12 printable ASCII, a 16-step pattern of (note, flags 1 acc 2 slide 4 tie) */
@@ -331,7 +343,24 @@ const parse = {
     const o = { version: r.s(), nengines: r.b(), pcount: r.b(), gcount: r.b(), nstep: r.b(), pe0: r.b(), engines: [] };
     for (let i = 0; i < o.nengines; i++) o.engines.push(r.s());
     o.ntrk = r.i < a.length ? r.b() : 0;             /* v3: tracks (0 = older firmware, one instrument) */
+    o.uiCaps = r.i < a.length ? r.b() : 0;
     return o;
+  },
+  [CMD.UI_STATE](a) {
+    const r = new Reader(a), o = { caps: r.b(), palette: r.b(), font: r.b(), monitor: r.b(), filter: r.b() };
+    const u28 = () => r.b() | r.b() << 7 | r.b() << 14 | r.b() << 21;
+    o.favoriteSig = u28(); o.bankSig = u28(); return o;
+  },
+  [CMD.UI_SET](a) { return { rc: new Reader(a).b(), ...parse[CMD.UI_STATE](a.slice(1)) }; },
+  [CMD.UI_PALETTES](a) { const r = new Reader(a), n = r.b(); return Array.from({ length: n }, () => r.s()); },
+  [CMD.FAV_GET](a) {
+    const r = new Reader(a), rc = r.b(); if (rc) return { rc };
+    const o = { rc, engine: r.b(), start: r.v(), count: r.b() };
+    o.values = Array.from({ length: o.count }, () => !!r.b()); return o;
+  },
+  [CMD.FAV_SET](a) {
+    const r = new Reader(a), rc = r.b();
+    return rc === 0 || rc === 3 ? { rc, engine: r.b(), preset: r.v(), on: !!r.b() } : { rc };
   },
   [CMD.GET](a) { const r = new Reader(a); return { scope: r.b(), id: r.b(), value: r.v() }; },
   [CMD.SET](a) { return parse[CMD.GET](a); },
@@ -426,6 +455,11 @@ const parse = {
 function upName(s) { return String(s ?? "").replace(/[^\x20-\x7E]/g, "").trim().slice(0, UP.NAME_MAX) || "PATCH"; }
 
 const req = {
+  uiState: () => [CMD.UI_STATE, []],
+  uiSet: (id, value) => [CMD.UI_SET, [id, value]],
+  uiPalettes: () => [CMD.UI_PALETTES, []],
+  favGet: (engine, start, count) => [CMD.FAV_GET, [engine, ...v14enc(start), count]],
+  favSet: (engine, preset, on) => [CMD.FAV_SET, [engine, ...v14enc(preset), on ? 1 : 0]],
   info: () => [CMD.INFO, []],
   get: (scope, id) => [CMD.GET, [scope, id]],
   set: (scope, id, v) => [CMD.SET, [scope, id, ...v14enc(v)]],
@@ -1039,7 +1073,7 @@ function makeMockDevice(opt = {}) {
     E("SLCR", ["OFF", "GATE", "STUT"], 0), D("PAT", F.INT, 1, 16, 1), E("RATE", ["1/8", "1/16", "1/32", "8T", "16T", "32T"], 1), D("DEPTH", F.PCT, 0, 127, 127),
   ];
   const GP = [
-    D("BPM", F.BPM, 40, 240, 120), D("SWG", F.PCT, 0, 100, 0), E("CLK", ["INT"], 0), D("TUNE", F.INT, -50, 50, 0),
+    D("BPM", F.BPM, 40, 240, 120), D("SWG", F.PCT, 0, 100, 0), E("CLK", ["INT", "USB", "TRS"], 0), D("TUNE", F.INT, -50, 50, 0),
     E("TIME", NDIV, 1), D("FDBK", F.PCT, 0, 120, 60), D("COLR", F.PCT, 0, 127, 70), D("MIX", F.PCT, 0, 127, 90),
     D("SIZE", F.PCT, 0, 127, 90), D("DAMP", F.PCT, 0, 127, 60), D("CRT", F.LFOHZ, 0, 127, 40), D("CDP", F.PCT, 0, 127, 60),
     E("MIDI", NDASH, 0), E("SYNC", NDASH, 0), E("ROUT", NDASH, 0), D("CPU", F.INT, 0, 0, 0),
@@ -1132,6 +1166,9 @@ function makeMockDevice(opt = {}) {
     slots: [null, null, null, null],
     smp: [0, 1, 2].map(() => ({ flash: new Uint8Array(SMP.SLOT_SIZE).fill(0xFF), zones: 0, name: "", len: 0, next: SMP.DATA_OFF })),
     bank: new Array(opt.slots || 32).fill(null),     /* user presets: {engine, name, p, pattern} */
+    uiCaps: opt.legacy || opt.v3 ? 0 : opt.uiCaps ?? 15,
+    palette: 0, font: 0, monitor: 0, filter: 0, bankSig: 0,
+    palettes: ["MONO", "LIGHT", "L-HICON"], favorites: Array.from({ length: ENG.length + 1 }, () => []),
     watch: false, v4: false, lastReq: 0,
   };
   for (const k of ["engine", "preset", "p", "step"]) {
@@ -1195,6 +1232,12 @@ function makeMockDevice(opt = {}) {
     const b = (x) => out.push(x & 0x7F), v = (x) => out.push(...v14enc(x)), s = (x) => out.push(...strEnc(x));
     if (opt.legacy && cmd >= CMD.UP_LIST) return null;
     if (opt.v3 && cmd >= CMD.TRACK_PARAM) return null;
+    if (!st.uiCaps && cmd >= CMD.UI_STATE) return null;
+    const uiState = () => {
+      const sig = JSON.stringify(st.favorites).split("").reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0, st.filter);
+      [st.uiCaps, st.palette, st.uiCaps & 2 ? st.font : 127, st.uiCaps & 4 ? st.monitor : 127, st.uiCaps & 8 ? st.filter : 127].forEach(b);
+      for (const n of [sig, st.bankSig]) for (let i = 0; i < 4; i++) b(n >>> (i * 7));
+    };
     const NB = st.bank.length;
     switch (cmd) {
       case CMD.UP_LIST: {
@@ -1253,7 +1296,7 @@ function makeMockDevice(opt = {}) {
       }
       case CMD.UP_ERASE:
         if (a.length < 1) return null;
-        if (a[0] < NB) st.bank[a[0]] = null;
+        if (a[0] < NB) { st.bank[a[0]] = null; st.favorites[ENG.length][a[0]] = false; }
         b(a[0]); b(a[0] < NB ? 0 : 1);
         break;
       case CMD.WATCH:
@@ -1265,10 +1308,29 @@ function makeMockDevice(opt = {}) {
       case CMD.PING:
         b(0);
         break;
+      case CMD.UI_STATE: uiState(); break;
+      case CMD.UI_PALETTES: b(st.palettes.length); st.palettes.forEach(s); break;
+      case CMD.UI_SET: {
+        const id = a[0], val = a[1], key = ["palette", "font", "monitor", "filter"][id];
+        const rc = a.length !== 2 || !key ? 1 : !(st.uiCaps & 1 << id) ? 2 : val >= (id === 0 ? st.palettes.length : id === 2 ? 3 : 2) ? 1 : 0;
+        if (!rc) st[key] = val;
+        b(rc || (opt.noFlash ? 3 : 0)); uiState(); break;
+      }
+      case CMD.FAV_GET: case CMD.FAV_SET: {
+        if (!(st.uiCaps & 8)) { b(2); break; }
+        const engine = a[0], preset = v14dec(a[1], a[2]), count = a[3];
+        const limit = engine === ENG.length ? st.bank.length : engine < ENG.length ? ENG[engine].presets.length : 0;
+        if (a.length !== 4 || preset < 0 || preset >= limit ||
+            (cmd === CMD.FAV_GET ? !count || count > 32 || preset + count > limit : count > 1 || engine === ENG.length && count && !st.bank[preset])) { b(1); break; }
+        if (cmd === CMD.FAV_SET) st.favorites[engine][preset] = !!count;
+        b(cmd === CMD.FAV_SET && opt.noFlash ? 3 : 0); b(engine); v(preset); b(count);
+        if (cmd === CMD.FAV_GET) for (let i = 0; i < count; i++) b(!!st.favorites[engine][preset + i]);
+        break;
+      }
       case CMD.INFO:
         s(opt.legacy ? "FELUCCA 0.4 BETA (MOCK)" : "FELUCCA 0.5 BETA (MOCK)"); b(ENG.length); b(P_COUNT); b(G_COUNT); b(NSTEP); b(P_E0);
         ENG.forEach((e) => s(e.name));
-        if (!opt.legacy) b(NTRK);
+        if (!opt.legacy) { b(NTRK); if (st.uiCaps) b(st.uiCaps); }
         break;
       case CMD.GET: case CMD.SET: {
         if (a.length < 2) return null;
@@ -1408,6 +1470,7 @@ function makeMockDevice(opt = {}) {
       default:
         return null;
     }
+    if ([CMD.UP_PUT, CMD.UP_STORE, CMD.UP_ERASE].includes(cmd) && out[1] === 0) st.bankSig++;
     return frame(cmd, out);
   }
 
@@ -1504,6 +1567,39 @@ function makeMockDevice(opt = {}) {
     access: { sysexEnabled: true, inputs: new Map([[input.id, input]]), outputs: new Map([[output.id, output]]), onstatechange: null },
   };
 }
+/* Optional preferences: old firmware is never probed with unknown commands. */
+async function readDevicePreferences(rq, info, names, previous = null) {
+  if (!info.uiCaps) return null;
+  const state = parse[CMD.UI_STATE](await rq(req.uiState()));
+  const palettes = previous ? previous.palettes : parse[CMD.UI_PALETTES](await rq(req.uiPalettes()));
+  let favorites = previous ? previous.favorites : [], slots = previous ? previous.slots : null;
+  if (state.caps & 8) {
+    if (!previous || state.bankSig !== previous.state.bankSig) slots = await bank.list(rq);
+    if (!previous || state.favoriteSig !== previous.state.favoriteSig || state.bankSig !== previous.state.bankSig) {
+      favorites = [];
+      for (let engine = 0; engine <= info.nengines; engine++) {
+        const total = engine === info.nengines ? slots.total : (names[engine] || []).length;
+        const flags = favorites[engine] = [];
+        for (let start = 0; start < total; start += 32) {
+          const count = Math.min(32, total - start);
+          const r = parse[CMD.FAV_GET](await rq(req.favGet(engine, start, count)));
+          if (r.rc || r.engine !== engine || r.start !== start || r.count !== count) throw new Error("Invalid favorites reply");
+          flags.push(...r.values);
+        }
+      }
+    }
+  }
+  return { state, palettes, favorites, slots };
+}
+function devicePresetRows(info, names, preferences) {
+  if (!preferences || !(preferences.state.caps & 8)) return [];
+  const rows = names.flatMap((ps, engine) => ps.map((name, preset) => ({ engine, preset, name, user: false })));
+  for (const slot of preferences.slots.slots) if (slot.used)
+    rows.push({ engine: info.nengines, preset: slot.slot, name: slot.name, user: true });
+  return rows.map((row) => ({ ...row, favorite: !!(preferences.favorites[row.engine] || [])[row.preset] }))
+    .filter((row) => !preferences.state.filter || row.favorite);
+}
+
 /*PROTO-END*/
 
 /* ===================================================================== UI === */
@@ -1561,6 +1657,27 @@ function setLabel(e, txt) { e.replaceChildren(...(e.dataset.ic ? [icon(e.dataset
 
 const TEXT = {
   ja: {
+    deviceDisplay: "本体の画面",
+    deviceDisplayHelp: "FM-1 の画面に反映され、自動保存されます。",
+    devicePresets: "本体のプリセット",
+    deviceFavHelp: "お気に入りと表示フィルターは FM-1 と同期します。パソコンのライブラリの音色は、本体のユーザースロットに保存してから登録してください。",
+    deviceList: "表示",
+    deviceAll: "すべてのプリセット",
+    deviceFavorites: "お気に入りのみ",
+    deviceEmpty: "お気に入りはまだありません。「すべてのプリセット」から追加してください。",
+    deviceTheme: "テーマ",
+    deviceFont: "フォント",
+    deviceMonitor: "MIDI モニター",
+    deviceRegular: "標準",
+    deviceBold: "太字",
+    deviceOff: "オフ",
+    deviceEvents: "イベント",
+    deviceNotes: "保持中の音・和音",
+    deviceStar: "お気に入りに追加",
+    deviceUnstar: "お気に入りから削除",
+    deviceUnsaved: "反映されましたが、本体に保存できませんでした。もう一度お試しください。",
+    deviceRejected: "本体がこの設定を受け付けませんでした。",
+
     other: "English", connect: "接続", disconnect: "切断", mock: "モック（実機なし）",
     sound: "音色", engine: "エンジン", presets: "プリセット", initSound: "音色を初期化",
     track: "トラック", drum: "ドラム",
@@ -1621,6 +1738,27 @@ const TEXT = {
     smpSlots: "サンプルスロット", userBank: "ユーザープリセット", none: "なし",
   },
   en: {
+    deviceDisplay: "Device display",
+    deviceDisplayHelp: "Changes apply to the FM-1 screen and save automatically.",
+    devicePresets: "Device presets",
+    deviceFavHelp: "Stars and the favorites filter sync with the FM-1. Save computer-library sounds to a device user slot before starring them.",
+    deviceList: "Show",
+    deviceAll: "All presets",
+    deviceFavorites: "Favorites only",
+    deviceEmpty: "No favorites yet. Choose All presets to add some.",
+    deviceTheme: "Theme",
+    deviceFont: "Font",
+    deviceMonitor: "MIDI monitor",
+    deviceRegular: "Regular",
+    deviceBold: "Bold",
+    deviceOff: "Off",
+    deviceEvents: "Events",
+    deviceNotes: "Held notes / chords",
+    deviceStar: "Add favorite",
+    deviceUnstar: "Remove favorite",
+    deviceUnsaved: "Applied, but could not save on the device. Try again.",
+    deviceRejected: "The device rejected that setting.",
+
     other: "日本語", connect: "Connect", disconnect: "Disconnect", mock: "Mock device (no hardware)",
     sound: "Sound", engine: "Engine", presets: "Presets", initSound: "Init sound",
     track: "Track", drum: "Drums",
@@ -1695,6 +1833,7 @@ function applyLang() {
   renderLive();
   renderLib();
   renderBank();
+  renderPreferences(true);
   renderPanels();
   if (dev) { renderSlots(); renderStepHead(); renderSamples(); renderTrackbar(); renderMixer(); renderSysinfo(); }
 }
@@ -1800,7 +1939,7 @@ const LAYOUT = (pe0) => [
   { t: "DRUMS", tab: "setgroups", pages: [["DRUMS", 1, [24, 25, 26]]] },
 ];
 /* globals that are actions or placeholders on the device: buttons instead, or hidden */
-const G_SKIP = new Set(["SLOT", "NAME", "LOAD", "SAVE", "ENG", "SET", "CLRSQ", "INIT", "MIDI", "SYNC", "ROUT", "CPU", "CLK"]);
+const G_SKIP = new Set(["SLOT", "NAME", "LOAD", "SAVE", "ENG", "SET", "CLRSQ", "INIT", "MIDI", "SYNC", "ROUT", "CPU"]);
 const key = (s, id) => s + ":" + id;
 const gEng = () => { const i = dev.gdesc.findIndex((d) => d && d.label === "ENG"); return i >= 0 ? i : 20; };
 const pSlen = () => { const i = dev.pdesc.findIndex((d) => d && d.fmt === F.STEPS); return i >= 0 ? i : P.SLEN; };
@@ -1868,6 +2007,7 @@ function disconnect(reasonKey = "disconnected") {
   renderLive();
   renderLib();
   renderBank();
+  renderPreferences(true);
   $("version").textContent = "";
   setLabel($("connect"), t("connect"));
   sayK(reasonKey);
@@ -1928,6 +2068,7 @@ async function load(d) {
       try { d.bank = await bank.list((r, o) => d.link.request(r, { ...o, quiet: true })); }
       catch (e) { if (e.message === "closed") throw e; d.bank = null; }
     }
+    await syncPreferences(d);
     renderLive();
     renderLib();
     renderBank();
@@ -2824,6 +2965,88 @@ setInterval(async () => {
     }
   } catch (err) { report(err); } finally { busy--; }
 }, 400);
+
+/* ------------------------------------------------ device preferences --- */
+async function syncPreferences(d) {
+  if (!d || !d.info || !d.info.uiCaps) { renderPreferences(); return; }
+  const preferences = await readDevicePreferences((r, o) => d.link.request(r, o), d.info, d.names, d.preferences);
+  if (dev !== d) return;
+  d.preferences = preferences;
+  if (preferences.slots) { d.bank = preferences.slots; renderBank(); }
+  renderPreferences();
+}
+function preferenceResult(rc) {
+  if (rc === 3) sayK("deviceUnsaved");
+  else if (rc) throw new Error(t("deviceRejected"));
+}
+async function changePreference(id, value) {
+  const d = dev;
+  if (!d) return;
+  while (busy && d === dev) await sleep(20);
+  if (d !== dev) return;
+  await op(async () => {
+    const result = parse[CMD.UI_SET](await d.link.request(req.uiSet(id, value), FLASH_OPT));
+    if (d !== dev) return;
+    await syncPreferences(d); preferenceResult(result.rc);
+  });
+}
+async function changeFavorite(row) {
+  const d = dev;
+  if (!d) return;
+  while (busy && d === dev) await sleep(20);
+  if (d !== dev) return;
+  await op(async () => {
+    const result = parse[CMD.FAV_SET](await d.link.request(req.favSet(row.engine, row.preset, !row.favorite), FLASH_OPT));
+    if (d !== dev) return;
+    await syncPreferences(d); preferenceResult(result.rc);
+  });
+}
+function renderPreferences(force = false) {
+  const d = dev, p = d && d.preferences;
+  $("device-display").hidden = !p || !(p.state.caps & 7);
+  $("device-presets").hidden = !p || !(p.state.caps & 8);
+  if (!p) { renderPreferences.sig = null; return; }
+  const sig = JSON.stringify([p.state, p.palettes, lang, d.dump && d.dump.engine]);
+  if (!force && sig === renderPreferences.sig) return;
+  renderPreferences.sig = sig;
+  const defs = [
+    [0, "deviceTheme", p.palettes, p.state.palette],
+    [1, "deviceFont", [t("deviceRegular"), t("deviceBold")], p.state.font],
+    [2, "deviceMonitor", [t("deviceOff"), t("deviceEvents"), t("deviceNotes")], p.state.monitor],
+  ];
+  const controls = [];
+  for (const [id, key, options, value] of defs) {
+    if (!(p.state.caps & (1 << id))) continue;
+    const select = el("select", { "aria-label": t(key) });
+    select.replaceChildren(...options.map((text, i) => el("option", { value: i, text })));
+    select.value = value;
+    select.addEventListener("change", () => changePreference(id, +select.value));
+    controls.push(el("label", { class: "bar" }, el("span", { text: t(key) }), select));
+  }
+  $("device-display-controls").replaceChildren(...controls);
+  if (!(p.state.caps & 8)) return;
+  const filter = $("device-filter");
+  filter.setAttribute("aria-label", t("deviceList"));
+  filter.replaceChildren(el("option", { value: 0, text: t("deviceAll") }), el("option", { value: 1, text: t("deviceFavorites") }));
+  filter.value = p.state.filter;
+  const rows = devicePresetRows(d.info, d.names, p);
+  const table = el("table");
+  for (const row of rows) {
+    const name = row.user ? slotName(row.preset) + " " + row.name : row.name;
+    const star = el("button", { text: row.favorite ? "\u2605" : "\u2606", "aria-label": t(row.favorite ? "deviceUnstar" : "deviceStar") + ": " + name, "aria-pressed": String(row.favorite) });
+    star.addEventListener("click", () => changeFavorite(row));
+    const load = el("button", { text: name, disabled: isDrum() });
+    load.addEventListener("click", () => { if (!dev || busy) return; row.user ? bankLoad(row.preset) : choosePreset(row.engine, row.preset); });
+    table.append(el("tr", {}, el("td", {}, star), el("td", {}, load), el("td", { text: row.user ? t("bank") : d.info.engines[row.engine] })));
+  }
+  $("device-preset-list").replaceChildren(rows.length ? table : el("p", { class: "dim", text: t("deviceEmpty") }));
+}
+$("device-filter").addEventListener("change", () => changePreference(3, +$("device-filter").value));
+setInterval(() => {
+  if (!dev || !dev.preferences || busy || document.hidden || !["settings", "library"].includes(tab)) return;
+  const d = dev;
+  op(() => syncPreferences(d));
+}, 1000);
 
 /* ------------------------------------------------------------ files --- */
 $("savefile").addEventListener("click", () => {

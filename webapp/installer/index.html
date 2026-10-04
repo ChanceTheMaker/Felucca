@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Felucca Salt Installer</title>
+<title>Felucca (Salt) Installer</title>
 <style>
   :root { --bg: #fff; --fg: #000; --dim: #777; }
   @media (prefers-color-scheme: dark) {
@@ -29,7 +29,7 @@
 <body>
 <main>
   <button class="lang" id="lang"></button>
-  <h1>Felucca Salt</h1>
+  <h1>Felucca (Salt)</h1>
   <p class="small" id="release"></p>
   <p data-t="intro"></p>
   <p data-t="warn"></p>
@@ -44,7 +44,7 @@
   <p id="status"></p>
   <pre id="log"></pre>
   <p><a href="../editor/" style="color:inherit" data-t="editor"></a></p>
-  <p class="small">Felucca Salt by Chance Roth (<a href="https://github.com/ChanceTheMaker" target="_blank" rel="noopener" style="color:inherit">@ChanceTheMaker</a>).<br>
+  <p class="small">Felucca (Salt) by Chance Roth (<a href="https://github.com/ChanceTheMaker" target="_blank" rel="noopener" style="color:inherit">@ChanceTheMaker</a>).<br>
     Based on Felucca by Leo Kuroshita (@kurogedelic), <a href="https://hugelton.com" target="_blank" rel="noopener" style="color:inherit">Hügelton Instruments</a>.<br>
     Font: Terminus (Dimitar Toshkov Zhekov, SIL OFL 1.1). Samples: Versilian Studios VSCO-2 Community Edition and VCSL (CC0 1.0), and the Hügelton Sample Pack (© Hügelton Instruments, not CC0).<br>
     Test build. M-VAVE and FM-1 are trademarks of their respective owners.<br>
@@ -362,7 +362,7 @@ const sayK = (k, arg = "") => { lastKey = k; lastArg = arg; $("status").textCont
 const say = (txt) => { lastKey = null; $("status").textContent = txt; };
 const log = (t) => { $("log").textContent += t + "\n"; };
 let image = null;
-const meta = {"version": "0.9-salt12", "product": "FM-1_909", "pkg": "../../firmware/felucca-0.9-salt12.fwsc"};
+const meta = {"version": "0.9-salt13", "product": "FM-1_909", "pkg": "../../firmware/felucca-0.9-salt13.fwsc"};
 $("release").textContent = `Version ${meta.version} - FM-1`;
 
 let writing = false;
@@ -376,7 +376,7 @@ window.addEventListener("beforeunload", (e) => { if (writing) { e.preventDefault
     const pkg = new Uint8Array(await r.arrayBuffer());
     if (productOf(pkg) !== meta.product) { sayK("badpkg"); return; }
     image = logicalImage(pkg);
-    say(`Felucca Salt ${meta.version}`);
+    say(`Felucca (Salt) ${meta.version}`);
     $("go").disabled = false;
   } catch (e) { sayK("loadfail", e.message); }
 })();

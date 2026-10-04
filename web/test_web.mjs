@@ -64,6 +64,15 @@ async function editorMock() {
     const off = E.parse[E.CMD.DUMP](await rq(E.req.dump()), info);
     ok(on.p[45] === 2 && on.p[46] === 7 && off.p[45] === 0 && off.p[46] === 1, "editor: a factory preset turns the SLICER off");
   }
+  const clock = E.parse[E.CMD.DESC](await rq(E.req.desc(1, 2)));
+  ok(clock.names.join() === "INT,USB,TRS", "editor: clock source names");
+  const skip = vm.runInNewContext(html.match(/const G_SKIP = (new Set\([^;]+\));/)[1]);
+  ok(!skip.has(clock.label), "editor: clock source control is visible");
+  for (const value of [1, 2, 0]) {
+    const result = E.parse[E.CMD.SET](await rq(E.req.set(1, 2, value)));
+    const state = E.parse[E.CMD.DUMP](await rq(E.req.dump()), info);
+    ok(result.value === value && state.g[2] === value, `editor: clock source ${clock.names[value]} round trip`);
+  }
   const scale = E.parse[E.CMD.DESC](await rq(E.req.desc(0, 26)));
   const scaleNames = ["CHR", "MAJ", "MIN", "DOR", "MIX", "PEN", "MPEN", "HARM", "PHRY", "LYD", "LOC", "MEL", "BLUES", "WHOLE", "DIMHW", "DIMWH"];
   ok(scale.label === "SCL" && scale.max === 15 && eq(scale.names, scaleNames), "editor: all 16 scale names exposed");

@@ -64,7 +64,7 @@ The drum track, GM sample kit and incoming MIDI retain their existing note mappi
 
 ## MIDI clock and transport
 
-In **GLO > GLOBAL > CLK**, select **INT**, **USB**, or **TRS**. USB and TRS follow
+In **GLO > GLOBAL > CLK**, or the web editor's **Settings > GLOBAL > CLK**, select **INT**, **USB**, or **TRS**. USB and TRS follow
 MIDI Clock (24 pulses per quarter note) and Start, Stop, and Continue from the
 selected input; the other input can still play notes and expressive controls.
 Start resets the patterns to step 1, while Continue resumes their current steps.

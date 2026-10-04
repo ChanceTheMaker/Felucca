@@ -31,6 +31,8 @@ $CC -o "$OUT/favorites_test" tests/favorites_test.c
 run "favorites: factory/user browsing and lifecycle" "$OUT/favorites_test"
 $CC -o "$OUT/settings_test" tests/settings_test.c
 run "settings: favorites persistence and older-format migration" "$OUT/settings_test"
+$CC -Wno-missing-field-initializers -Ibuild/gen -o "$OUT/monitor_test" tests/monitor_test.c
+run "MIDI monitor: latest triggers and events" "$OUT/monitor_test" "$OUT/monitor.ppm"
 
 $CC -Wno-missing-field-initializers -Ibuild/gen -o "$OUT/theme_test" tests/theme_test.c -lm
 run "themes: text blending and menu fit" "$OUT/theme_test" "$OUT/themes.ppm"
@@ -76,6 +78,11 @@ run "regression: golden renders, health, voices, CPU budget" "$OUT/regress" test
 
 run "regression: target cost of the render loops" python3 tests/target_budget.py \
     build/felucca.dis tests/target_budget.txt
+
+for features in 1 3 9 15; do
+    $CC -DFEATURES=$features -o "$OUT/editor_preferences_test" tests/editor_preferences_test.c
+    run "editor preferences: capability set $features" "$OUT/editor_preferences_test"
+done
 
 run "installer CLI (fm1_install.py) against a simulated FM-1" python3 tests/install_test.py
 

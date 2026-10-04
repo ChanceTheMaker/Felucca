@@ -258,7 +258,7 @@ static void persist_boot(void)                    /* before settings_init / pane
     }
     {
         int n = st_load(OBJ_SETTINGS, &p, sizeof p);
-        if (settings_import(&p, n) == 1) persist_saved = p;
+        if (settings_import(&p, n)) persist_saved = p;
     }
     {   /* projects: fill empty RAM slots from flash, so the slot list is right after power-on */
         uint32_t i;
@@ -281,14 +281,8 @@ static void settings_save(void)
     persist_t p;
     if (!flash_ok)
         return;
-    memset(&p, 0, sizeof p);
-    p.magic = PERSIST_MAGIC;
-    p.palette = settings.palette;
-    p.lowcut = settings.lowcut;
-    p.zoom = settings.zoom;
-    p.bold = settings.bold;
-    p.favorites = favorites;
-    p.panel = panel;
+    p = persist_saved;
+    settings_export(&p);
     if (!memcmp(&p, &persist_saved, sizeof p))
         return;                                    /* unchanged: no erase cycle */
     if (st_save(OBJ_SETTINGS, &p, sizeof p) == 0)

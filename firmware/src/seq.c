@@ -637,6 +637,7 @@ static void events_block(uint32_t n)
         uint32_t pkt = midi_in_q[mi_r % MQ], st = (pkt >> 8) & 0xF0u, ch = (pkt >> 8) & 0x0Fu;
         uint32_t d1 = (pkt >> 16) & 0x7Fu, d2 = (pkt >> 24) & 0x7Fu;
         uint32_t status = (pkt >> 8) & 0xFFu, src = midi_in_src[mi_r % MQ], ms = midi_in_ms[mi_r % MQ];
+        monitor_receive(pkt, src, ms);
         mi_r++;
         if (status >= 0xF8u) {
             if (src == (uint32_t)song.g[G_CLOCK]) {

@@ -1,10 +1,14 @@
-# Felucca
+# Felucca Salt
+
+Felucca Salt by Chance Roth (@ChanceTheMaker), based on Felucca by Leo Kuroshita
+and Hügelton Instruments. Current Salt release: **0.9-salt13**.
+
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
 [![Sponsor](https://img.shields.io/badge/Sponsor-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/hugelton)
 
 **TL;DR:** connect your FM-1 to a computer by USB, open the
-[web installer](https://hugelton.github.io/Felucca/) in Chrome or Edge, and press Install.
+[web installer](https://chancethemaker.github.io/Felucca/) in Chrome or Edge, and press Install.
 No extra hardware is needed. Beta: use at your own risk; M-VAVE's own updater takes you back
 to the official firmware.
 
@@ -42,8 +46,8 @@ Multi-engine synthesizer firmware for the M-VAVE FM-1.
 
 **SLICER** (FX page, every track including drums): a tempo-synced 16-step gate or stutter, with 16 patterns.
 
-- Install: [web installer](https://hugelton.github.io/Felucca/) (Chrome or Edge, USB), or `tools/fm1_install.py` from a terminal
-- Editor: [web editor](https://hugelton.github.io/Felucca/webapp/editor/)
+- Install: [web installer](https://chancethemaker.github.io/Felucca/) (Chrome or Edge, USB), or `tools/fm1_install.py` from a terminal
+- Editor: [web editor](https://chancethemaker.github.io/Felucca/webapp/editor/)
 - Build: [BUILDING.md](BUILDING.md)
 
 ## Screen colors
@@ -63,6 +67,15 @@ settings migrate with REGULAR selected and retain panel calibration.
 LOWCUT reduces deep bass in the final stereo output (two high-pass stages,
 approximately 110 Hz each, 12 dB/octave combined roll-off), intended for the
 small built-in speaker. Leave it OFF to retain full bass in the output.
+
+MIDI MON below FONT selects OFF, EVENTS, or NOTES. A single line appears at
+the lower-right inside the HOME waveform area. EVENTS shows incoming USB/TRS
+messages; clock is summarized without hiding each note/controller immediately.
+NOTES shows the selected track's held or pedal-sustained notes, including
+onboard keys, MIDI, sequencer, and arp playback. Up to four pitches are shown,
+with +N for additional pitches. Notes stay visible until released; MIDI sustain
+keeps released keys visible until pedal-up. The mode defaults to OFF and saves
+when leaving the menu.
 
 Track numbers and the selected track's footer use blue, orange, violet, and
 green for tracks 1 through 4. Play and TRS receive activity are green;
@@ -145,3 +158,15 @@ Code: [GPL-3.0-only](LICENSE). Third-party material: [LICENSING.md](LICENSING.md
 M-VAVE and FM-1 are trademarks of their respective owners. Felucca is not affiliated with or endorsed by them.
 
 Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments
+
+## Web editor device preferences
+
+With compatible firmware, Settings > Device display selects the FM-1 screen
+palette, font weight, and MIDI monitor mode. Only supported controls appear.
+Changes apply immediately and save on the device.
+
+Library > Device presets provides favorite stars and an All/Favorites filter
+shared with the FM-1. Factory sounds and used user slots can be bookmarked;
+computer-library patches must first be saved to a device user slot. Panel-side
+changes and slot replacements/deletions update while this view is open. Older
+firmware keeps the existing editor without unsupported controls.

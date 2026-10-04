@@ -300,11 +300,14 @@ static void mono_remove(track_t *t, uint32_t note)
     t->nmono = (uint8_t)k;
 }
 
+#include "monitor.c"
+
 static void trk_note_on(track_t *t, uint32_t note, uint32_t vel)
 {
     uint32_t any = 0, i, mode = (uint32_t)t->p[P_VOICE];
     if (t->p[P_MUTE])
         return;
+    monitor_trigger((uint32_t)(t - trk), note, vel);
     if (is_drum(t)) {                                   /* the drum track: GM drums (drums.c) */
         drum_on(note, vel);
         return;
@@ -352,6 +355,7 @@ static void trk_note_on(track_t *t, uint32_t note, uint32_t vel)
 static void trk_note_off(track_t *t, uint32_t note)
 {
     uint32_t i, k = 0, mode = (uint32_t)t->p[P_VOICE];
+    monitor_release((uint32_t)(t - trk), note);
     if (is_drum(t))
         return;                                         /* one-shots */
     for (i = 0; i < t->xp_n; i++)                       /* not sounding yet (engine switch): forget it */
@@ -387,6 +391,7 @@ static void trk_note_off(track_t *t, uint32_t note)
 static void trk_all_off(track_t *t)
 {
     uint32_t i;
+    monitor_clear((uint32_t)(t - trk));
     for (i = 0; i < NVOICE; i++) {
         t->v[i].gate = 0;
         t->v[i].stage = t->v[i].active ? 3 : 0;

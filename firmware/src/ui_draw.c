@@ -658,6 +658,8 @@ static void graph_scope(uint16_t c)
     }
 }
 
+#include "monitor_draw.c"
+
 static void draw_graph(void)
 {
     const page_t *pg = cur_page();
@@ -722,6 +724,7 @@ static void draw_graph(void)
     }
     top = !ui.home && !drum_note && (pg->graph == GR_BROWSE || pg->graph == GR_SLOTS || pg->graph == GR_USER);   /* these draw from the top */
     cv_oy = 0;
+    if (ui.home) draw_monitor();
     if (ui.hot_t && settings.zoom) {                 /* focus (menu ZOOM): the touched value, large and white */
         int32_t x;
         top = 1;

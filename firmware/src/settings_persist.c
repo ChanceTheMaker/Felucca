@@ -1,45 +1,65 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
-/* Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hugelton Instruments */
+/* Shared PER5 layout: each feature updates only its own fields, preserving
+ * the other feature's saved preferences when either is built independently.
+ * PER1/PER2 are upstream; PER3 added bold; PER4 added favorites; PER5 added the monitor. */
 typedef struct {
     uint32_t magic, palette, lowcut, zoom;
     panel_t panel;
-    uint32_t bold;                                /* appended: PER2 prefix stays intact */
-    favorites_t favorites;
+    uint32_t bold;
+    struct { uint8_t factory[16][32]; uint32_t user, filter; } favorites;
+    uint32_t monitor;
 } persist_t;
-#define PERSIST_MAGIC 0x50455234u                  /* "PER4" */
+#define PERSIST_MAGIC 0x50455235u
 
-/* Returns 1 for current format, 2 for migration, 0 for invalid data. */
-static int settings_import(const persist_t *p, int n)
+/* Normalize in place; 1 = current, 2 = migrated, 0 = invalid. */
+static int settings_import(persist_t *p, int n)
 {
-    int old3 = n == (int)(sizeof *p - sizeof p->favorites) && p->magic == 0x50455233u;
-    int legacy = n == (int)(sizeof *p - sizeof p->favorites - sizeof p->bold) && p->magic == 0x50455232u;
-    if ((n == (int)sizeof *p && p->magic == PERSIST_MAGIC) || legacy || old3) {
-        settings.magic = SETTINGS_MAGIC;
-        settings.palette = p->palette;
-        settings.lowcut = p->lowcut;
-        settings.zoom = p->zoom;
-        settings.bold = legacy ? 0u : p->bold == 1u;
-        memset(&favorites, 0, sizeof favorites);
-        if (!legacy && !old3) {
-            favorites = p->favorites;
-            favorites.filter = favorites.filter == 1u;
-        }
-        if (p->panel.magic == PANEL_MAGIC)
-            panel = p->panel;
-        return !legacy && !old3 ? 1 : 2;
-    } else if (n == (int)(8u + sizeof(panel_t)) && p->magic == 0x50455231u) {   /* "PER1": palette, panel */
-        const uint32_t *w = (const uint32_t *)p;
+    int current = n == (int)sizeof *p && p->magic == PERSIST_MAGIC;
+    int old4 = n == (int)(sizeof *p - sizeof p->monitor) && p->magic == 0x50455234u;
+    int old3 = n == (int)(sizeof *p - sizeof p->monitor - sizeof p->favorites) && p->magic == 0x50455233u;
+    int old2 = n == (int)(sizeof *p - sizeof p->monitor - sizeof p->favorites - sizeof p->bold) && p->magic == 0x50455232u;
+    int old1 = n == (int)(8u + sizeof(panel_t)) && p->magic == 0x50455231u;
+    if (!(current || old4 || old3 || old2 || old1)) return 0;
+    if (old1) {
         panel_t old;
-        memcpy(&old, w + 2, sizeof old);
-        settings.magic = SETTINGS_MAGIC;
-        settings.palette = w[1];
-        settings.lowcut = 0;
-        settings.zoom = 0;
-        settings.bold = 0;
-        if (old.magic == PANEL_MAGIC)
-            panel = old;
-        memset(&favorites, 0, sizeof favorites);
-        return 2;
+        memcpy(&old, (uint8_t *)p + 8, sizeof old);
+        p->panel = old;
+        p->lowcut = p->zoom = 0;
     }
-    return 0;
+    if (old1 || old2) p->bold = 0;
+    if (!current && !old4) memset(&p->favorites, 0, sizeof p->favorites);
+    if (!current) p->monitor = 0;
+    p->magic = PERSIST_MAGIC;
+    settings.monitor = p->monitor <= 2u ? p->monitor : 0;
+    settings.magic = SETTINGS_MAGIC;
+    settings.palette = p->palette;
+    settings.lowcut = p->lowcut;
+    settings.zoom = p->zoom;
+#ifdef FELUCCA_FONT_PREF
+    settings.bold = p->bold == 1u;
+#endif
+#ifdef FELUCCA_FAVORITES
+    memcpy(&favorites, &p->favorites, sizeof favorites);
+    favorites.filter = favorites.filter == 1u;
+#endif
+    if (p->panel.magic == PANEL_MAGIC) panel = p->panel;
+    return current ? 1 : 2;
+}
+
+/* Start with the last imported/saved object, including fields owned by a
+ * feature absent from this build. No save-on-boot or extra flash writes. */
+static void settings_export(persist_t *p)
+{
+    p->magic = PERSIST_MAGIC;
+    p->palette = settings.palette;
+    p->lowcut = settings.lowcut;
+    p->zoom = settings.zoom;
+    p->monitor = settings.monitor;
+    p->panel = panel;
+#ifdef FELUCCA_FONT_PREF
+    p->bold = settings.bold;
+#endif
+#ifdef FELUCCA_FAVORITES
+    memcpy(&p->favorites, &favorites, sizeof favorites);
+#endif
 }

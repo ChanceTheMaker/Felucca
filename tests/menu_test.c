@@ -27,7 +27,11 @@ static void lcd_fill(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint16_t c)
 #define FELUCCA_VERSION "FONT TEST"
 enum { B_OCTUP, B_OCTDN, EN_PRESET = 0, EN_K1 = 1, NE = 2 };
 static struct { uint32_t menu, menu_sel, menu_sig, force; } ui;
-static struct { uint32_t palette, lowcut, zoom, bold; } settings;
+static struct { uint32_t palette, lowcut, zoom, bold, monitor; } settings;
+#define NTRK 4u
+static void fm1_irq_off(void) {}
+static void fm1_irq_on(void) {}
+#include "../firmware/src/monitor.c"
 static struct { uint8_t btn[2]; } panel = {{0, 1}};
 static uint8_t fx_lowcut;
 static unsigned saves;

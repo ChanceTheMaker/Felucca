@@ -195,5 +195,57 @@ editor takes both from `INFO`; records stored with 53 load with the SLICER off.
 - **Port.** The device's MIDI port is named "Felucca" (USB 1209:0001). Updates use the same
   port with other SysEx (the `F0 22 24 35 …` keys, `00 59 …` frames); never send those
   from the editor.
-- **Safety.** Only `PROJECT` save, the sample-slot commands and `UP_PUT` / `UP_STORE` / `UP_ERASE` write flash, and only in
+- **Safety.** `PROJECT` save, the sample-slot commands, `UP_PUT` / `UP_STORE` / `UP_ERASE`, and the optional
+  `UI_SET` / `FAV_SET` commands write flash, and only in
   Felucca's own storage; never the app or the update area.
+
+
+## Optional device display settings and favorites (commands 33-37)
+
+INFO may append a capabilities byte after NTRK. Absence means zero: do not send
+these commands to older firmware. Bits are 1 palette, 2 font, 4 MIDI monitor,
+and 8 favorites. Builds advertise only implemented features. The existing
+INFO prefix and commands remain unchanged.
+
+| Command | Request arguments | Reply arguments |
+| --- | --- | --- |
+| UI_STATE (33) | none | caps, palette, font, monitor, filter, favoriteSig u28, bankSig u28 |
+| UI_SET (34) | id, value | rc, then the complete UI_STATE reply |
+| UI_PALETTES (35) | none | count, count zero-terminated palette names |
+| FAV_GET (36) | engine, start v14, count | rc; on success: engine, start v14, count, count 0/1 flags |
+| FAV_SET (37) | engine, preset v14, on | rc; when applied: engine, preset v14, on |
+
+All scalar bytes are MIDI-safe. u28 is four least-significant-first 7-bit bytes;
+v14 uses the existing signed value encoding. Signatures are cache-invalidation
+hints, not persistent identifiers. The favorite signature is a 28-bit hash of
+the current bookmark/filter state; bankSig changes with user-bank edits.
+
+UI_SET ids: 0 palette (index into UI_PALETTES), 1 font (0 regular, 1 bold),
+2 monitor (0 off, 1 events, 2 notes), 3 browser filter (0 all, 1 favorites).
+Unsupported state fields are 127. Invalid ids/values are rejected, not clamped.
+Themes affect the device screen, not the webpage theme.
+
+For favorites, engines 0..NENGINES-1 identify factory presets; NENGINES means
+user slots. Reads contain 1..32 entries and must fit the requested bank.
+Writes must reference an existing factory preset or a used user slot. Clearing
+an unused user slot is allowed. Bookmark references survive slot replacement;
+erasing a slot clears its bookmark through the existing user-bank lifecycle.
+Computer-library patches have no device reference until saved to a user slot.
+
+rc: 0 saved/success, 1 invalid request, 2 unsupported feature, 3 applied in RAM
+but not saved (flash unavailable or write failed). Error replies for FAV_GET
+contain only rc. FAV_SET includes reference/value only for rc 0 or 3. UI_SET
+always includes the current state, including after rejection. Successful writes
+use the same settings save path as panel controls; unchanged data causes no
+flash erase. These commands never change synth parameters or preset formats.
+
+The editor reads UI_STATE once per second while Settings or Library is visible
+and idle. It fetches favorites/bank metadata only when their signatures change.
+No automatic write occurs on connection or polling. Unsupported controls are
+hidden, and disconnected replies cannot update a newly connected device's UI.
+
+Integration flags: FELUCCA_FONT_PREF and FELUCCA_FAVORITES are defined by their
+respective feature modules. A build with the monitor defines FELUCCA_MONITOR
+alongside its monitor implementation; it must expose settings.monitor,
+monitor_mode, monitor_event and the persisted monitor field. Base firmware
+advertises only its existing palettes.

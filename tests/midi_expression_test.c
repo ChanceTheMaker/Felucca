@@ -256,11 +256,41 @@ static void ownership_test(void)
     puts("expression: local/MIDI overlap, route cleanup, repeated pedal retriggers, 128-note stress ok");
 }
 
+static int displayed(uint32_t note)
+{
+    return !!(monitor_notes[0].notes[note / 32u] & (1u << (note % 32u)));
+}
+static void monitor_sustain_test(void)
+{
+    reset_test();
+    monitor_clear(0);
+    monitor_mode = MON_NOTES;
+    send_midi(0x90, 60, 100);
+    send_midi(0xB0, 64, 127);
+    send_midi(0x80, 60, 0);
+    fm1_ms += 5000; events_block(CTL);
+    assert(displayed(60) && gated(0, 60));
+    send_midi(0x90, 64, 100);
+    send_midi(0xB0, 64, 0);
+    assert(!displayed(60) && displayed(64)); /* pedal up leaves physically held key */
+    send_midi(0x90, 64, 0);
+    assert(!displayed(64));
+    send_midi(0x90, 67, 100);
+    send_midi(0xB0, 64, 127);
+    send_midi(0x80, 67, 0);
+    send_midi(0xB0, 120, 0);
+    assert(!displayed(67));
+    send_midi(0x90, 72, 100);
+    panic_req = 1; events_block(CTL);
+    assert(!displayed(72));
+    puts("monitor: held keys, pedal sustain, pedal-up, velocity-zero release and panic ok");
+}
+
 int main(void)
 {
     for (via_trs = 0; via_trs < 2; via_trs++) {
         printf("== %s\n", via_trs ? "TRS parser" : "USB-format input queue");
-        pitch_test(); wheel_test(); panic_test(); sustain_test(); ownership_test();
+        monitor_sustain_test(); pitch_test(); wheel_test(); panic_test(); sustain_test(); ownership_test();
     }
     puts("MIDI EXPRESSION TESTS PASSED");
     return 0;

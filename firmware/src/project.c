@@ -235,11 +235,7 @@ static void project_load(uint32_t slot)
 
 /* settings + learned panel table: one flash object. The flash copy wins at
  * boot (the .noinit copies are garbage after a power-off). */
-typedef struct {
-    uint32_t magic, palette, lowcut, zoom;
-    panel_t panel;
-} persist_t;
-#define PERSIST_MAGIC 0x50455232u                  /* "PER2" */
+#include "settings_persist.c"
 #if FELUCCA_FLASH
 static persist_t persist_saved;
 #endif
@@ -262,25 +258,7 @@ static void persist_boot(void)                    /* before settings_init / pane
     }
     {
         int n = st_load(OBJ_SETTINGS, &p, sizeof p);
-        if (n == (int)sizeof p && p.magic == PERSIST_MAGIC) {
-            settings.magic = SETTINGS_MAGIC;
-            settings.palette = p.palette;
-            settings.lowcut = p.lowcut;
-            settings.zoom = p.zoom;
-            if (p.panel.magic == PANEL_MAGIC)
-                panel = p.panel;
-            persist_saved = p;
-        } else if (n == (int)(8u + sizeof(panel_t)) && p.magic == 0x50455231u) {   /* "PER1": palette, panel */
-            const uint32_t *w = (const uint32_t *)&p;
-            panel_t old;
-            memcpy(&old, w + 2, sizeof old);
-            settings.magic = SETTINGS_MAGIC;
-            settings.palette = w[1];
-            settings.lowcut = 0;
-            settings.zoom = 0;
-            if (old.magic == PANEL_MAGIC)
-                panel = old;
-        }
+        if (settings_import(&p, n)) persist_saved = p;
     }
     {   /* projects: fill empty RAM slots from flash, so the slot list is right after power-on */
         uint32_t i;
@@ -300,12 +278,8 @@ static void settings_save(void)
     persist_t p;
     if (!flash_ok)
         return;
-    memset(&p, 0, sizeof p);
-    p.magic = PERSIST_MAGIC;
-    p.palette = settings.palette;
-    p.lowcut = settings.lowcut;
-    p.zoom = settings.zoom;
-    p.panel = panel;
+    p = persist_saved;
+    settings_export(&p);
     if (!memcmp(&p, &persist_saved, sizeof p))
         return;                                    /* unchanged: no erase cycle */
     if (st_save(OBJ_SETTINGS, &p, sizeof p) == 0)

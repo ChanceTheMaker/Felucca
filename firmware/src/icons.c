@@ -130,16 +130,19 @@ static uint32_t engine_icon(const char *name)
     return ICON_GENERIC;
 }
 
-/* 2-bit icon, ink levels 1..3 = a third .. all of colour c (blended onto black, like cv_text) */
+/* 2-bit icon blended onto the canvas background, like cv_text. */
 static void cv_icon(int32_t x, int32_t y, uint32_t id, uint16_t c)
 {
     uint16_t ramp[4];
     uint32_t r = c >> 11, g = (c >> 5) & 63u, b = c & 31u, a, i, j;
+    uint32_t br = cv_bg >> 11, bg = (cv_bg >> 5) & 63u, bb = cv_bg & 31u;
     const uint8_t *p;
     if (id >= FELUCCA_ICONS_N)
         return;
     for (a = 0; a < 4u; a++)
-        ramp[a] = (uint16_t)(((r * a / 3u) << 11) | ((g * a / 3u) << 5) | (b * a / 3u));
+        ramp[a] = (uint16_t)((((r * a + br * (3u - a)) / 3u) << 11) |
+                            (((g * a + bg * (3u - a)) / 3u) << 5) |
+                            ((b * a + bb * (3u - a)) / 3u));
     p = ICON_DATA[id];
     for (j = 0; j < ICON_CELL; j++)
         for (i = 0; i < ICON_CELL; i++) {

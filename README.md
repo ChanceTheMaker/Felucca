@@ -44,6 +44,30 @@ Multi-engine synthesizer firmware for the M-VAVE FM-1.
 - Editor: [web editor](https://hugelton.github.io/Felucca/webapp/editor/)
 - Build: [BUILDING.md](BUILDING.md)
 
+## Screen colors
+
+Hold HOME and choose COLOR. Turn knob 1 or press OCT+ to preview a theme;
+leave the menu to save it. The original five palettes are joined by VIOLET,
+PINK, ICE, WARM, two-color OCEAN (cyan/amber) and DUSK (violet/gold), HI-CON,
+and light-background LIGHT, PAPER, SKY, MINT, LILAC, ROSE, and SAND themes.
+L-HICON adds a white background with black values, dark labels and inactive
+controls, and stronger separators for high contrast in light mode.
+
+The FONT row directly below COLOR selects REGULAR or BOLD Terminus. Turn
+knob 1 left/right or press OCT+ to switch, with an immediate preview; exit
+the menu to save. Both weights use the same character spacing. Existing
+settings migrate with REGULAR selected and retain panel calibration.
+
+LOWCUT reduces deep bass in the final stereo output (two high-pass stages,
+approximately 110 Hz each, 12 dB/octave combined roll-off), intended for the
+small built-in speaker. Leave it OFF to retain full bass in the output.
+
+Track numbers and the selected track's footer use blue, orange, violet, and
+green for tracks 1 through 4. Play activity is green;
+recording is red, armed tracks and low battery are amber, and USB connection
+is blue. Labels, shapes, and the selected-track underline remain available
+alongside color. Light themes use darker accents for readability.
+
 ## Scale keyboard
 
 On the **SCL** page, set **QNT** to WHITE to play the selected scale using only the

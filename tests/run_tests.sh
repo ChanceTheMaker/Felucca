@@ -27,6 +27,9 @@ run() { echo "== $1"; shift; "$@" || fail=1; }
 
 [ -f build/felucca.fwsc ] || { echo "run ./build.sh first"; exit 1; }
 
+$CC -o "$OUT/settings_test" tests/settings_test.c
+run "settings: migration and independent feature preservation" "$OUT/settings_test"
+
 $CC -o "$OUT/storage_test" tests/storage_test.c
 run "flash storage (A/B, torn writes)" "$OUT/storage_test"
 
@@ -63,6 +66,12 @@ run "regression: target cost of the render loops" python3 tests/target_budget.py
     build/felucca.dis tests/target_budget.txt
 
 run "installer CLI (fm1_install.py) against a simulated FM-1" python3 tests/install_test.py
+
+$CC -Wno-missing-field-initializers -Ibuild/gen -o "$OUT/theme_test" tests/theme_test.c -lm
+run "themes: text blending and menu fit" "$OUT/theme_test" "$OUT/themes.ppm"
+run "themes: bold font metrics and contrast" "$OUT/theme_test" "$OUT/themes-bold.ppm" bold
+$CC -Wno-missing-field-initializers -Ibuild/gen -o "$OUT/menu_test" tests/menu_test.c
+run "menu: font switching and save-on-exit" "$OUT/menu_test" "$OUT/fonts.ppm"
 
 if command -v node >/dev/null 2>&1; then
     run "web pages: editor protocol, samples, packages, update protocol" node web/test_web.mjs

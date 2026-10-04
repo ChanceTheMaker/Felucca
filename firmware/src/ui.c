@@ -24,7 +24,7 @@ static uint32_t user_of(const track_t *t)    /* user preset slot its sound came 
 static uint32_t up_gen;                      /* bumped on every user bank change (redraws) */
 static uint8_t sync_reload;                  /* engine / preset / project / user preset loaded: editor RELOAD push */
 
-#define ACC C_HI                   /* amber everywhere; white is the only accent */
+#define ACC C_HI                   /* current theme's value/graph color */
 #define VAL(c) ((c) == ui.hot_col && ui.hot_t ? C_WHITE : C_HI)
 #define RATIO(d, v) ((d)->max > (d)->min ? ((int32_t)(v) - (d)->min) * 1000 / ((d)->max - (d)->min) : -1)
 /* layout: four 60 px columns, 4 px inset */

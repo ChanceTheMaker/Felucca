@@ -51,7 +51,7 @@ Build options (environment, `0` or `1`; defaults in `firmware/src/felucca.c`):
 | `FELUCCA_FLASH` | 1 | settings, presets and projects in flash |
 | `FELUCCA_OTA` | 1 | update entry (needs `FELUCCA_FLASH`) |
 | `FELUCCA_CDC` | 1 | USB serial console |
-| `FELUCCA_UART` | 0 | TRS MIDI IN (not tested on hardware) |
+| `FELUCCA_UART` | 1 | TRS MIDI IN (set to 0 to omit the UART input) |
 
 ## Samples
 

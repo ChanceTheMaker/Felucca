@@ -303,19 +303,23 @@ static void rec_release(track_t *t, uint32_t note)
         t->step[t->rh_last] = t->rh_bak;            /* released early in it: not held into this step */
 }
 
+static int midi_note_held(const track_t *t, uint32_t note);
 static void input_on(track_t *t, uint32_t note, uint32_t vel)
 {
     last_note = (uint8_t)note;
     if (((song.rec >> trk_index(t)) & 1u) && song.playing)
         rec_note(t, note, vel);
-    if (t->p[P_AMODE] && !is_drum(t))
-        arp_add(t, note);
-    else
+    if (t->p[P_AMODE] && !is_drum(t)) {
+        if (!midi_note_held(t, note))             /* a local key can share a held MIDI note */
+            arp_add(t, note);
+    } else
         trk_note_on(t, note, vel);
 }
 
 static void input_off(track_t *t, uint32_t note)
 {
+    if (midi_note_held(t, note))
+        return;
     rec_release(t, note);
     arp_remove(t, note);                            /* both: the note may have started in the */
     trk_note_off(t, note);                          /* other mode (ARP switched while held) */
@@ -478,22 +482,7 @@ static track_t *midi_track(uint32_t ch)
     return ch < NPART ? &trk[ch] : TSEL;
 }
 
-/* a channel that plays the selected track: its note-off goes to the track its note-on went to,
- * even when another track was selected in between (else that note would hang) */
-static uint8_t midi_sel_on[16][128];                  /* per channel and note: track + 1, 0 = none */
-static track_t *midi_route(uint32_t ch, uint32_t note, int on)
-{
-    track_t *t = midi_track(ch);
-    if (ch < NPART || (song.g[G_DRCH] && ch + 1u == (uint32_t)song.g[G_DRCH]))
-        return t;                                     /* a part's own channel, or the drum channel */
-    if (on)
-        midi_sel_on[ch & 15u][note & 127u] = (uint8_t)(song.sel + 1u);
-    else if (midi_sel_on[ch & 15u][note & 127u]) {
-        t = &trk[(midi_sel_on[ch & 15u][note & 127u] - 1u) % NTRK];
-        midi_sel_on[ch & 15u][note & 127u] = 0;
-    }
-    return t;
-}
+#include "midi_control.c"
 
 /* everything that happens between two rendered blocks */
 static void events_block(uint32_t n)
@@ -511,7 +500,9 @@ static void events_block(uint32_t n)
     for (i = 0; i < NTRK; i++) {
         track_t *t = &trk[i];
         if ((pr >> i) & 1u) {
+            midi_forget_track(i);
             trk_all_off(t);
+            t->bend_target = t->bend_q8 = t->wheel_target = t->wheel_q8 = 0;
             t->nheld = 0;
             t->arp_phys = 0;
             t->arp_note = 0;
@@ -536,10 +527,7 @@ static void events_block(uint32_t n)
         uint32_t pkt = midi_in_q[mi_r % MQ], st = (pkt >> 8) & 0xF0u, ch = (pkt >> 8) & 0x0Fu;
         uint32_t d1 = (pkt >> 16) & 0x7Fu, d2 = (pkt >> 24) & 0x7Fu;
         mi_r++;
-        if (st == 0x90u && d2)
-            input_on(midi_route(ch, d1, 1), d1, d2);
-        else if (st == 0x80u || st == 0x90u)
-            input_off(midi_route(ch, d1, 0), d1);
+        midi_event(st, ch, d1, d2);
     }
     for (i = 0; i < NTRK; i++)
         seq_tick(&trk[i], n);

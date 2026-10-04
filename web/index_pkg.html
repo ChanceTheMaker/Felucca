@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Felucca (Salt) Installer</title>
+<title>Felucca [Salt] Installer</title>
 <style>
   :root { --bg: #fff; --fg: #000; --dim: #777; }
   @media (prefers-color-scheme: dark) {
@@ -29,11 +29,18 @@
   .features ul { padding-left: 22px; margin: 0; }
   .features li { margin-bottom: 12px; }
 </style>
+<link rel="stylesheet" href="skin.css">
+<script src="skin.js"></script>
 </head>
-<body>
+<body class="installer-page">
 <main>
-  <button class="lang" id="lang"></button>
-  <h1>Felucca (Salt)</h1>
+  <div class="masthead"><div class="brand-row">
+    <div><div class="eyebrow">FM-1 / Custom firmware</div><h1>Felucca <em>[Salt]</em></h1><p class="tagline">SMALL INSTRUMENT. BIG POSSIBILITIES.</p></div>
+    <div class="brand-links"><a href="../editor/">Open editor ↗</a><button class="lang" id="lang"></button></div>
+  </div>
+  <div class="appearance" data-appearance aria-label="Website appearance"></div>
+  </div>
+  <div class="install-console">
   <p class="small" id="release"></p>
   <p data-t="intro"></p>
   <p data-t="warn"></p>
@@ -49,7 +56,7 @@
   <pre id="log"></pre>
   <p><a href="../editor/" style="color:inherit" data-t="editor"></a></p>
   <section class="features" aria-labelledby="features-title" lang="en">
-    <h2 id="features-title">Added in Felucca (Salt)</h2>
+    <h2 id="features-title">Added in Felucca [Salt]</h2>
     <p>Included in 0.9-salt13, building on the original Felucca firmware:</p>
     <ul>
       <li><strong>3.5 mm TRS MIDI input.</strong> Play through USB or TRS, with TRS enabled by default.</li>
@@ -63,12 +70,13 @@
     </ul>
     <p>Install Salt13 and reconnect the editor to use the new web controls. Favorites bookmark sounds; save edited sounds to a user slot to keep your changes.</p>
   </section>
-  <p class="small">Felucca (Salt) by Chance Roth (<a href="https://github.com/ChanceTheMaker" target="_blank" rel="noopener" style="color:inherit">@ChanceTheMaker</a>).<br>
+  <p class="small">Felucca [Salt] by Chance Roth (<a href="https://github.com/ChanceTheMaker" target="_blank" rel="noopener" style="color:inherit">@ChanceTheMaker</a>).<br>
     Based on Felucca by Leo Kuroshita (@kurogedelic), <a href="https://hugelton.com" target="_blank" rel="noopener" style="color:inherit">Hügelton Instruments</a>.<br>
     Font: Terminus (Dimitar Toshkov Zhekov, SIL OFL 1.1). Samples: Versilian Studios VSCO-2 Community Edition and VCSL (CC0 1.0), and the Hügelton Sample Pack (© Hügelton Instruments, not CC0).<br>
     Test build. M-VAVE and FM-1 are trademarks of their respective owners.<br>
     <a href="../../source/Felucca-Salt-source.zip" style="color:inherit">Download this release's source code</a><br>
     <span data-t="license"></span> <a href="https://github.com/hugelton/Felucca" target="_blank" rel="noopener" style="color:inherit">github.com/hugelton/Felucca</a></p>
+  </div>
 </main>
 <script type="module">
 /*LIB*/
@@ -152,7 +160,7 @@ window.addEventListener("beforeunload", (e) => { if (writing) { e.preventDefault
     const pkg = new Uint8Array(await r.arrayBuffer());
     if (productOf(pkg) !== meta.product) { sayK("badpkg"); return; }
     image = logicalImage(pkg);
-    say(`Felucca (Salt) ${meta.version}`);
+    say(`Felucca [Salt] ${meta.version}`);
     $("go").disabled = false;
   } catch (e) { sayK("loadfail", e.message); }
 })();

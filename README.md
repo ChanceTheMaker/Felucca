@@ -159,7 +159,24 @@ M-VAVE and FM-1 are trademarks of their respective owners. Felucca is not affili
 
 Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments
 
-## Web editor device preferences
+## Web editor
+
+### Browser keyboard
+
+The keyboard at the bottom of every editor tab plays the connected FM-1 through
+Web MIDI. Click or touch keys (including chords), or enable **Computer keys** and
+use `A W S E D F T G Y H U J K O L P ;`. It has octave, MIDI channel and velocity
+controls, a sustain toggle and **Stop all notes**. Channels 1–3 play parts 1–3;
+drums normally use channel 10. Sound comes from the FM-1 audio output, not the
+browser. Mock mode previews the controls without sound. No firmware update is
+needed for the keyboard.
+
+Notes are released on key/pointer release, pointer cancellation, focus loss,
+page hiding, channel/octave changes and disconnect. Typing in text fields does
+not play notes. MIDI cleanup is best effort if the device is physically unplugged.
+Run `node web/test_keyboard.mjs` for the keyboard's MIDI behavior checks.
+
+### Device preferences
 
 With compatible firmware, Settings > Device display selects the FM-1 screen
 palette, font weight, and MIDI monitor mode. Only supported controls appear.

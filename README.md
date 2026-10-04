@@ -60,6 +60,20 @@ whole-half diminished (DIMWH). Scales with other than seven notes continue acros
 the white keys without repeating notes; their roots need not fall on every C key.
 The drum track, GM sample kit and incoming MIDI retain their existing note mapping.
 
+## Favorite presets
+
+On SAVE > PRESETS, knob 3 (FAV) marks the current sound: clockwise ON,
+counterclockwise OFF. Stars identify favorites in the browser. Knob 4 (LIST)
+selects ALL to the left or FAV to the right. PRESETS and knob 1 browse that
+list; the PRESETS knob also follows the filter on HOME and TRACKS.
+
+Favorites and the filter are saved automatically. They refer to factory
+engine/preset pairs or user slots, without copying sounds. Overwriting or
+renaming a user slot keeps its star; erasing it removes the star. Favorites
+do not save sound edits: use SAVE > USER to store an edited sound first.
+With an empty favorites list, the current sound stays loaded; select LIST
+ALL to find sounds to add. The single drum kit is not part of this browser.
+
 ## Layout
 
 | Path | What |

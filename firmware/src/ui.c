@@ -17,6 +17,8 @@ static uint32_t up_rank(uint32_t slot);
 static void up_name(uint32_t k, char *b);
 static void up_slot_label(char *b, uint32_t k);
 static void up_ui(uint32_t op, uint32_t k);
+static void settings_save(void);
+#include "favorites.c"
 static uint32_t user_of(const track_t *t)    /* user preset slot its sound came from, UP_SLOTS = none */
 {
     return t->user && up_used(t->user - 1u) ? t->user - 1u : UP_SLOTS;
@@ -323,45 +325,7 @@ static void select_engine(uint32_t e)
     ui.force = 1;
 }
 
-/* the presets of every engine, then the used user presets, as one list (the PRESETS knob and the PRESETS page browse it) */
-static uint32_t preset_pos(uint32_t *total)          /* list index of the selected track's preset */
-{
-    uint32_t n = 0, cur = 0, e;
-    for (e = 0; e < NENGINES; e++) {
-        if (e == TSEL->eng_req)
-            cur = n + TSEL->preset % (ENGINES[e]->npresets ? ENGINES[e]->npresets : 1u);
-        n += ENGINES[e]->npresets;
-    }
-    if (user_of(TSEL) < UP_SLOTS)
-        cur = n + up_rank(user_of(TSEL));
-    *total = n + up_count();
-    return cur;
-}
-
-/* list index n (< total) -> engine, *k its preset; NENGINES = user preset, *k its slot */
-static uint32_t preset_at(uint32_t n, uint32_t *k)
-{
-    uint32_t e;
-    for (e = 0; e < NENGINES && n >= ENGINES[e]->npresets; e++)
-        n -= ENGINES[e]->npresets;
-    *k = e < NENGINES ? n : up_nth(n);
-    return e;
-}
-
-static void preset_go(uint32_t n)                    /* load list index n into the selected track */
-{
-    uint32_t k, e = preset_at(n, &k);
-    if (is_drum(TSEL))
-        return;                                      /* one GM kit: nothing to browse */
-    if (e == NENGINES) {
-        up_load(k);
-        return;
-    }
-    if (e != TSEL->eng_req)
-        select_engine(e);
-    apply_preset(k);
-    ui.force = 1;
-}
+#include "preset_browser.c"
 
 /* HOME: what KNOB k edits: the engine's four main parameters; on the drum track
  * LEVEL and REV (GLO > DRUMS), PAN and LEN */

@@ -25,7 +25,13 @@ CC="${CC:-cc} -O1 -Wall -Wno-unused-function"
 fail=0
 run() { echo "== $1"; shift; "$@" || fail=1; }
 
+$CC -o "$OUT/favorites_test" tests/favorites_test.c
+run "favorites: browsing and lifecycle" "$OUT/favorites_test"
+
 [ -f build/felucca.fwsc ] || { echo "run ./build.sh first"; exit 1; }
+
+$CC -o "$OUT/settings_test" tests/settings_test.c
+run "settings: migration and independent feature preservation" "$OUT/settings_test"
 
 $CC -o "$OUT/storage_test" tests/storage_test.c
 run "flash storage (A/B, torn writes)" "$OUT/storage_test"

@@ -380,13 +380,18 @@ static void graph_browse(void)
 {
     uint32_t total, cur = preset_pos(&total), e, k;
     int32_t row;
-    if (!total)
+    if (!total) {
+        cv_text(40, 42, &FONT_S, "NO FAVORITES", C_HI);
+        cv_text(16, 64, &FONT_S, "LIST ALL TO ADD", C_GRAY);
         return;
-    for (row = -3; row <= 3; row++) {
-        int32_t y = 4 + (row + 3) * 17;
+    }
+    for (row = 0; row < 7; row++) {
+        uint32_t index = preset_visible(cur, total, (uint32_t)row);
+        int32_t y = 4 + row * 17;
         char tag[4], nm[13];
-        int sel = row == 0;
-        e = preset_at((cur + total * 4u + (uint32_t)row) % total, &k);
+        int sel = index == cur && cur < total;
+        if (index >= total) continue;
+        e = preset_at(index, &k);
         if (e == NENGINES) {                             /* user preset: "U07" and its name */
             up_slot_label(tag, k);
             up_name(k, nm);
@@ -398,6 +403,7 @@ static void graph_browse(void)
             cv_rect(4, y + 6, 3, 3, C_WHITE);
         cv_text(14, y, &FONT_S, tag, sel ? C_GRAY : C_DIM);
         cv_text(54, y, &FONT_S, nm, sel ? C_WHITE : C_GRAY);
+        if (favorite_has(e, k)) cv_text(220, y, &FONT_S, "*", C_HI);
     }
 }
 
@@ -828,13 +834,14 @@ static void draw_columns(void)
     if (cur_page()->graph == GR_BROWSE) {
         uint32_t total, cur = preset_pos(&total);
         char u[8];
-        fmt_int(val, (int32_t)cur + 1);
+        if (cur < total) fmt_int(val, (int32_t)cur + 1);
+        else str_cpy(val, "--", 8);
         str_cpy(u, "/", 8);
         fmt_int(u + 1, (int32_t)total);
         draw_column(0, "No.", val, u, VAL(0u), -1, ICON_NONE);
         draw_column(1, "ENG", ENGINES[TSEL->eng_req]->name, "", VAL(1u), -1, engine_icon(ENGINES[TSEL->eng_req]->name));
-        draw_column(2, "", "", "", C_HI, -1, ICON_AUTO);
-        draw_column(3, "", "", "", C_HI, -1, ICON_AUTO);
+        draw_column(2, "FAV", is_drum(TSEL) ? "--" : preset_favorite() ? "ON" : "OFF", "", VAL(2u), -1, ICON_NONE);
+        draw_column(3, "LIST", favorites.filter ? "FAV" : "ALL", "", VAL(3u), -1, ICON_NONE);
         return;
     }
     if (cur_page()->graph == GR_USER) {                  /* SLOT, then three GO buttons */

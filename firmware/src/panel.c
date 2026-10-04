@@ -58,19 +58,26 @@ static int32_t panel_enc(uint32_t role)
 }
 
 /* user settings that survive a reset */
-#define SETTINGS_MAGIC 0x53455433u              /* "SET3" */
-struct { uint32_t magic, palette, lowcut, zoom; } settings __attribute__((section(".noinit")));
+#define SETTINGS_MAGIC 0x53455434u              /* "SET4" */
+struct { uint32_t magic, palette, lowcut, zoom, bold; } settings __attribute__((section(".noinit")));
 
 static void settings_save(void);              /* project.c: flash copy (FELUCCA_FLASH) */
 
 static void settings_init(void)
 {
+    if (settings.magic == 0x53455433u) {
+        settings.magic = SETTINGS_MAGIC;
+        settings.bold = 0;
+    }
     if (settings.magic != SETTINGS_MAGIC || settings.palette >= NPALETTES) {
         settings.magic = SETTINGS_MAGIC;
         settings.palette = 4;                  /* MONO (default) */
         settings.lowcut = 0;
         settings.zoom = 0;                     /* large readout of the touched value: off */
+        settings.bold = 0;
     }
     palette_set(settings.palette);
+    settings.bold = settings.bold == 1u;
+    font_bold = (uint8_t)settings.bold;
     fx_lowcut = (uint8_t)(settings.lowcut != 0);
 }

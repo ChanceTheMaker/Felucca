@@ -159,11 +159,15 @@ static void edit_param(uint32_t slot, int32_t steps)
     }
     if (pg->graph == GR_BROWSE) {                         /* KNOB 1: one preset, KNOB 2: the next / previous engine */
         if (slot == 0u && !is_drum(TSEL)) {
-            uint32_t total, cur = preset_pos(&total);
-            if (total)
-                preset_go((cur + (steps > 0 ? 1u : total - 1u)) % total);
+            preset_step(steps);
         } else if (slot == 1u && !is_drum(TSEL)) {
             select_engine((TSEL->eng_req + (steps > 0 ? 1u : NENGINES - 1u)) % NENGINES);
+        } else if (slot == 2u) {
+            preset_mark(steps > 0);
+        } else if (slot == 3u && favorites.filter != (uint32_t)(steps > 0)) {
+            favorites.filter = steps > 0;
+            ui.force = 1;
+            settings_save();
         }
         return;
     }
@@ -384,9 +388,7 @@ static void ui_input(void)
         /* PRESETS browses the selected part's presets (all engines, then user presets) on HOME, the PRESETS
          * page and TRACKS only (the drum track: nothing):
          * elsewhere a stray turn would throw away the sound being edited */
-        uint32_t total, cur = preset_pos(&total);
-        if (total)
-            preset_go((cur + (s > 0 ? 1u : total - 1u)) % total);   /* past the factory ones: user presets */
+        if (!is_drum(TSEL)) preset_step(s);
     }
     if ((s = panel_enc(EN_ALGO)) != 0)             /* ALGORITHM: the selected track, on every page */
         track_select((uint32_t)clamp((int32_t)song.sel + (s > 0 ? 1 : -1), 0, NTRK - 1));

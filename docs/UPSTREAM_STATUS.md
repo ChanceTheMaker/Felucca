@@ -9,7 +9,9 @@ substantial groovebox changes, overlapping autosave/FM6 storage and conflicting
 command 33 meanings. `docs/sloop-review` documents options and queues a staged
 installer/backup approach; no Sloop code is imported, built, flashed or published.
 Hardware round trips and Sloop backup support remain unresolved. No upstream
-contribution is submitted or authorized.
+contribution is submitted or authorized. Fork
+[draft PR #45](https://github.com/ChanceTheMaker/Felucca/pull/45) keeps this
+documentation independent of the SMK preparation stack.
 
 Installer follow-up on `feat/rc1-installer-retry`: failed discovery, denied MIDI
 permission, interrupted updates and stopped resumes show Try Again below the

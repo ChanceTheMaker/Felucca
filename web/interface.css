@@ -1,5 +1,15 @@
 /* SPDX-License-Identifier: GPL-3.0-only
    Interface finish: layout and typography, independent of the skin palette. */
+/* Molded red keybed shell; the separate wood border and screw details remain. */
+:root[data-skin=stage] .editor-page .play-keyboard:not(.collapsed) {
+  background:linear-gradient(180deg,#ff7c7955 0,#ffbbb733 2px,transparent 5px,transparent 65%,#65000e77 100%) padding-box,
+    linear-gradient(115deg,#de3442 0%,#be182c 42%,#d72638 72%,#a80f23 100%) padding-box,
+    var(--wood-grain) border-box;
+  box-shadow:inset 0 2px 1px #ffb4a9aa,inset 0 -4px 7px #65000d88,0 -8px 28px #0005;
+  color:#fff4eb;
+}
+:root[data-skin=stage] .editor-page .play-keyboard:not(.collapsed) :is(.play-controls,.play-controls label,.play-controls output,.keyboard-tray),
+:root[data-skin=stage] .editor-page .play-keyboard:not(.collapsed)>p { color:#fff4eb; text-shadow:0 1px 1px #670715; }
 :root { --ui-font:'Segoe UI Variable', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; }
 body { font-family:var(--ui-font); font-size:14px; line-height:1.55; background:radial-gradient(ellipse at 20% 0,color-mix(in srgb,var(--chassis) 20%,var(--desk)),var(--desk) 65%); }
 main { max-width:1560px; margin:24px auto; padding:28px; border:1px solid color-mix(in srgb,var(--line) 55%,transparent); border-radius:20px; background:linear-gradient(155deg,color-mix(in srgb,var(--chassis) 24%,var(--bg)),var(--bg) 28%); box-shadow:0 24px 80px #0005,inset 0 1px #ffffff0a; }

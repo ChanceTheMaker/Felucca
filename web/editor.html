@@ -7,12 +7,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Felucca (Salt) Editor</title>
+<title>Felucca [Salt] Editor</title>
 <style>
   /* Fukiai: Hügelton Instruments' icon font (MIT, FUKIAI-LICENSE.txt). Icons are text in .ic spans;
      they stay hidden until the face has loaded (html.fk), so a missing font never shows boxes. */
   @font-face { font-family: "Fukiai"; src: url("fukiai.ttf") format("truetype"); font-display: block; unicode-range: U+EA00-EB09; }
-  :root { --bg: #fff; --fg: #000; --dim: #777; --line: #ccc; }
+  :root { --bg: #fff; --fg: #000; --dim: #777; --line: #ccc;
+    --piano-white: #fff; --piano-black: #000; --piano-active: #555; }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) { --bg: #000; --fg: #fff; --dim: #888; --line: #444; }
   }
@@ -72,6 +73,20 @@
   .smp input.root { width: 48px; }
   .smp .bad { text-decoration: underline wavy; }
   footer { margin-top: 24px; font-size: 11px; color: var(--dim); }
+  .play-keyboard { margin-top: 24px; border-top: 1px solid var(--fg); padding-top: 12px; }
+  .play-controls { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin: 8px 0; }
+  .play-controls label { display: inline-flex; align-items: center; gap: 6px; }
+  .play-controls input[type="range"] { width: 90px; }
+  .piano-scroll { overflow-x: auto; padding: 4px 0; }
+  .piano { position: relative; height: 132px; min-width: 720px; touch-action: none; user-select: none; }
+  .piano button { position: absolute; top: 0; height: 128px; width: calc(100% / 16); padding: 0 0 9px;
+    display: flex; flex-direction: column; justify-content: end; align-items: center; gap: 3px;
+    border: 1px solid var(--piano-black); border-radius: 0 0 4px 4px; background: var(--piano-white); color: var(--piano-black); touch-action: none; }
+  .piano button.black { z-index: 1; width: calc(60% / 16); height: 82px; background: var(--piano-black); color: var(--piano-white); }
+  .piano button[aria-pressed="true"] { background: var(--piano-active); color: var(--piano-white); box-shadow: inset 0 -5px var(--piano-black); }
+  .piano button:focus-visible { outline: 3px dashed var(--piano-active); outline-offset: 2px; }
+  .piano button:disabled { opacity: .55; cursor: default; }
+  .piano small { font-size: 10px; }
   .row.pushed .v { font-weight: 600; }
   /* librarian: local library and the device's user bank side by side, stacked on a phone */
   .libcols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 8px 24px; margin-top: 6px; }
@@ -146,12 +161,19 @@
   #sysinfo th { padding-right: 16px; }
   [hidden] { display: none !important; }
 </style>
+<link rel="stylesheet" href="skin.css">
+<link rel="stylesheet" href="interface.css">
+<link rel="stylesheet" href="fonts.css">
+<script src="skin.js"></script>
 </head>
-<body>
+<body class="editor-page">
 <main>
-  <button class="lang" id="lang"></button>
-  <h1>Felucca (Salt) Editor</h1>
-  <p class="dim"><a href="../installer/" style="color:inherit" data-t="installer"></a></p>
+  <div class="masthead"><div class="brand-row">
+    <div><div class="eyebrow">FM-1 / Sound laboratory</div><h1>Felucca <em>[Salt]</em></h1><p class="tagline">SYNTHESIZER • SEQUENCER • PERFORMANCE EDITOR</p></div>
+    <div class="brand-links"><a href="../installer/" data-t="installer"></a><button class="lang" id="lang"></button></div>
+  </div>
+  <div class="appearance" data-appearance aria-label="Website appearance"></div>
+  </div>
   <!-- always visible: connection, version, sync mode, the tabs and (Sound / Sequencer / Tracks) the track selector -->
   <header class="top">
     <div class="bar">
@@ -177,7 +199,7 @@
   <section class="panel" id="p-sound" data-tab="sound" data-dev hidden>
     <div class="browser" id="browser">
       <label><span data-t="engine"></span><br><select id="engine"></select></label>
-      <label><span data-t="presets"></span><br><select id="preset" size="8"></select></label>
+      <label><span data-t="presets"></span><br><select id="preset"></select></label>
       <div>
         <p class="bar"><button id="init" data-t="initSound"></button>
           <button id="factlib" data-t="factoryToLib" data-ic="symbol_folder"></button></p>
@@ -291,10 +313,28 @@
     </div>
   </section>
 
-  <footer>Felucca (Salt) by Chance Roth (<a href="https://github.com/ChanceTheMaker" target="_blank" rel="noopener">@ChanceTheMaker</a>).<br>
+  <section class="play-keyboard" aria-labelledby="play-title">
+    <span id="play-title" class="sr-only" data-t="playKeyboard"></span>
+    <div class="play-controls">
+      <div class="octave-controls">
+        <button id="play-oct-down" type="button" aria-label="Octave down">Oct−</button>
+        <button id="play-oct-up" type="button" aria-label="Octave up">Oct+</button>
+        <label><span data-t="playOctave"></span><select id="play-octave"></select></label>
+      </div>
+      <label><span data-t="playChannel"></span><select id="play-channel"></select></label>
+      <label><span data-t="vel"></span><input id="play-velocity" type="range" min="1" max="127" value="100"><output id="play-velocity-value">100</output></label>
+      <label><input id="play-typing" type="checkbox" checked><span data-t="playTyping"></span></label>
+      <button id="play-sustain" class="tog" aria-pressed="false" data-t="playSustain" disabled></button>
+      <button id="play-stop" data-t="playStop" disabled></button>
+    </div>
+    <div class="piano-scroll"><div class="piano" id="play-keys" role="group" aria-labelledby="play-title"></div></div>
+    <p id="play-help"></p>
+  </section>
+  <footer>Felucca [Salt] by Chance Roth (<a href="https://github.com/ChanceTheMaker" target="_blank" rel="noopener">@ChanceTheMaker</a>).<br>
     Based on Felucca by Leo Kuroshita (@kurogedelic), <a href="https://hugelton.com" target="_blank" rel="noopener">Hügelton Instruments</a>. GPL-3.0.<br>
     <span data-t="foot"></span> M-VAVE and FM-1 are trademarks of their respective owners.<br>
     <a href="FUKIAI-LICENSE.txt" data-t="iconsCredit"></a></footer>
+  <div class="cabinet-grille" aria-hidden="true"></div>
 </main>
 <script>
 "use strict";
@@ -1480,6 +1520,9 @@ function makeMockDevice(opt = {}) {
   const output = {
     id: "mock-out", name: "Felucca", type: "output", state: "connected",
     send(data) {
+      if (data.length === 3 && [0x80, 0x90, 0xB0].includes(data[0] & 0xF0)) {
+        st.lastMidi = Array.from(data); return; // keyboard preview, no simulated audio
+      }
       const f = unframe(data);
       if (!f) { console.error("mock: refused a frame that is not F0 7D 46 4C ... F7", data); return; }
       if (busy) { console.warn("mock: frame dropped (device holds only one frame)", data); return; }
@@ -1600,6 +1643,46 @@ function devicePresetRows(info, names, preferences) {
     .filter((row) => !preferences.state.filter || row.favorite);
 }
 
+/* Browser keyboard: each pointer/key owns its note. Shared pitches send one
+ * Note On and only release after their final owner lets go. */
+class BrowserKeyboard {
+  constructor(onChange = () => {}) {
+    this.output = null; this.channel = 0; this.held = new Map(); this.sustain = false; this.onChange = onChange;
+  }
+  send(bytes) {
+    if (!this.output || this.output.state === "disconnected") return false;
+    try { this.output.send(bytes); return true; } catch (_) { return false; }
+  }
+  connect(output) { if (output !== this.output) { this.releaseAll(); this.output = output; this.onChange(); } }
+  setChannel(channel) {
+    if (!Number.isInteger(channel) || channel < 0 || channel > 15) return;
+    if (channel !== this.channel) { this.releaseAll(); this.channel = channel; }
+  }
+  press(source, note, velocity) {
+    if (!Number.isInteger(note) || note < 0 || note > 127 || !Number.isInteger(velocity) || velocity < 1 || velocity > 127) return false;
+    if (this.held.get(source) === note) return true;
+    this.release(source);
+    if (![...this.held.values()].includes(note) && !this.send([0x90 | this.channel, note, velocity])) return false;
+    this.held.set(source, note); this.onChange(); return true;
+  }
+  release(source) {
+    if (!this.held.has(source)) return;
+    const note = this.held.get(source); this.held.delete(source);
+    if (![...this.held.values()].includes(note)) this.send([0x80 | this.channel, note, 0]);
+    this.onChange();
+  }
+  setSustain(on) {
+    on = !!on;
+    if (on === this.sustain) return;
+    if (this.send([0xB0 | this.channel, 64, on ? 127 : 0]) || !on) this.sustain = on;
+    this.onChange();
+  }
+  releaseAll() {
+    for (const note of new Set(this.held.values())) this.send([0x80 | this.channel, note, 0]);
+    this.held.clear(); this.setSustain(false); this.onChange();
+  }
+  panic() { this.releaseAll(); this.send([0xB0 | this.channel, 120, 0]); this.send([0xB0 | this.channel, 123, 0]); }
+}
 /*PROTO-END*/
 
 /* ===================================================================== UI === */
@@ -1657,6 +1740,10 @@ function setLabel(e, txt) { e.replaceChildren(...(e.dataset.ic ? [icon(e.dataset
 
 const TEXT = {
   ja: {
+    playKeyboard: "キーボード", playOctave: "開始オクターブ", playChannel: "MIDIチャンネル", playTyping: "PCキー",
+    playSustain: "サステイン", playStop: "全ノート停止", playConnect: "FM-1を接続して演奏します。音はFM-1のオーディオ出力から出ます。",
+    playHelp: "クリック・タッチ、または A W S E D F T G Y H U J K O L P ; で演奏。チャンネル1〜3はパート1〜3、ドラムは通常10です。",
+    playMock: "プレビューのみ：モック機器から音は出ません。",
     deviceDisplay: "本体の画面",
     deviceDisplayHelp: "FM-1 の画面に反映され、自動保存されます。",
     devicePresets: "本体のプリセット",
@@ -1738,6 +1825,10 @@ const TEXT = {
     smpSlots: "サンプルスロット", userBank: "ユーザープリセット", none: "なし",
   },
   en: {
+    playKeyboard: "Keyboard", playOctave: "Starting octave", playChannel: "MIDI channel", playTyping: "Computer keys",
+    playSustain: "Sustain", playStop: "Stop all notes", playConnect: "Connect your FM-1 to play. Sound comes from the FM-1 audio output.",
+    playHelp: "Click or touch the keys, or play A W S E D F T G Y H U J K O L P ;. Channels 1–3 play parts 1–3; drums normally use channel 10.",
+    playMock: "Preview only: the mock device makes no sound.",
     deviceDisplay: "Device display",
     deviceDisplayHelp: "Changes apply to the FM-1 screen and save automatically.",
     devicePresets: "Device presets",
@@ -1785,7 +1876,7 @@ const TEXT = {
     smpFail: "Sample upload failed: ", smpErased: "Erased USR",
     confirmErase: "Erase USR{n}?", confirmUpload: "Write to USR{n}? Its current contents will be replaced.",
     layout: "(The firmware has a different parameter count; showing a plain list.)",
-    ctlHelp: "Sliders: click, then fine-tune with the wheel or arrow keys (Shift: steps of 10); double-click resets.",
+    ctlHelp: "Knobs: drag up/down (Shift: fine). Controls: focus, then use the wheel or arrow keys (Shift: steps of 10); double-click resets. Choose knobs or sliders above.",
     live: "● Live", polling: "○ Polling (older firmware)",
     library: "Library", libSearch: "Search name or tag", allEngines: "All engines", allTags: "All tags",
     sortModified: "Recently changed", sortCreated: "Recently added", sortName: "Name", sortEngine: "Engine",
@@ -1835,6 +1926,7 @@ function applyLang() {
   renderBank();
   renderPreferences(true);
   renderPanels();
+  renderPlayState();
   if (dev) { renderSlots(); renderStepHead(); renderSamples(); renderTrackbar(); renderMixer(); renderSysinfo(); }
 }
 $("lang").addEventListener("click", () => { lang = lang === "ja" ? "en" : "ja"; applyLang(); });
@@ -1981,6 +2073,7 @@ async function connect() {
       keys: null, watch: false, bank: null };
     setLabel($("connect"), t("disconnect"));
     await load(dev);
+    playKeyboard.connect(dev ? dev.output : null);
   } catch (e) {
     console.error(e);
     if (dev) {                                       /* not unplugged meanwhile (that says "lost") */
@@ -1994,6 +2087,7 @@ async function connect() {
 }
 
 function disconnect(reasonKey = "disconnected") {
+  playKeyboard.connect(null);
   if (dev) {
     dev.link.close();
     dev.input.onmidimessage = null;
@@ -2173,15 +2267,17 @@ function buildGroups() {
   const { info } = dev;
   if (info.pcount === EXPECT.pcount && info.gcount === EXPECT.gcount && info.pe0 === EXPECT.pe0) {
     for (const g of LAYOUT(info.pe0)) {
-      const div = el("div", { class: "group" }, el("h2", { ic: HEAD_IC[g.t], text: g.engine ? `EDIT ${info.engines[dev.dump.engine] || ""}` : g.t }));
       for (const [title, s, ids] of g.pages) {
         const rows = ids.map((id) => paramRow(s, id)).filter(Boolean);
         if (!rows.length) continue;
         const tt = g.engine && (dev.titles[dev.dump.engine] || [])[g.pages.findIndex((x) => x[0] === title)];
-        if (g.pages.length > 1) div.append(el("h3", { ic: PAGE_IC[tt || title], text: tt || title }));
+        const category = g.engine ? info.engines[dev.dump.engine] || "EDIT" : g.t;
+        const pageTitle = tt || title;
+        const div = el("div", { class: "group control-bank", "data-section": g.t, "data-card-key": `${g.tab || "groups"}:${g.t}:${title}` },
+          el("h2", { ic: PAGE_IC[pageTitle] || HEAD_IC[g.t], text: pageTitle === category ? category : `${category} / ${pageTitle}` }));
         div.append(...rows);
+        groups[g.tab || "groups"].push(div);
       }
-      groups[g.tab || "groups"].push(div);
     }
   } else {
     /* unknown firmware layout: everything in id order */
@@ -2193,7 +2289,10 @@ function buildGroups() {
     groups.groups.push(a, b);
     groups.setgroups.push(c);
   }
-  for (const [id, divs] of Object.entries(groups)) $(id).replaceChildren(...divs);
+  for (const [id, divs] of Object.entries(groups)) {
+    $(id).replaceChildren(...divs);
+    window.FeluccaSkin?.decorate($(id), `${id}:${dev.dump.engine}`);
+  }
 }
 
 function paramRow(s, id) {
@@ -2239,8 +2338,9 @@ function paramRow(s, id) {
     });
   }
   input.title = d.label;
+  input.setAttribute("aria-label", d.label);
   const out = el("span", { class: "v" });
-  const row = el("div", { class: "row" }, el("span", { text: d.label }), input, out);
+  const row = el("div", { class: "row" }, el("span", { text: d.label }), window.FeluccaSkin?.enhance(input) || input, out);
   ctl.set(k, { input, out, desc: d, scope: s, id, row });
   showValue(k, s ? dev.dump.g[id] : dev.dump.p[id], true);
   return row;
@@ -2251,7 +2351,9 @@ function showValue(k, v, force) {
   if (!c || v == null) return;
   const [txt, unit] = fmtValue(c.desc, v);
   c.out.textContent = unit ? `${txt} ${unit}` : txt;
+  if (c.input.type === "range") c.input.setAttribute("aria-valuetext", c.out.textContent);
   if (force || !touched(k)) c.input.value = String(v);
+  window.FeluccaSkin?.sync(c.input);
 }
 /* the user is working on this control: polling and pushes must not move it */
 function touched(k) {
@@ -3502,6 +3604,115 @@ $("bkexport").addEventListener("click", () => libOp(async () => {
   download(`felucca-bank-${today()}.json`, libraryFile("bank", out, libCtx()));
   sayK("ready");
 }));
+
+/* Bottom keyboard stays available on every editor tab. */
+const playKeyboard = new BrowserKeyboard(renderPlayState);
+const playCodes = ["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyF", "KeyT", "KeyG", "KeyY", "KeyH", "KeyU", "KeyJ", "KeyK", "KeyO", "KeyL", "KeyP", "Semicolon"];
+const playPointers = new Set();
+let playResizePending = false, playLayout = "";
+for (let octave = -1; octave <= 7; octave++) $("play-octave").append(el("option", { value: octave, text: `F${octave}` }));
+$("play-octave").value = "3";
+for (let channel = 1; channel <= 16; channel++) $("play-channel").append(el("option", { value: channel - 1, text: channel }));
+function renderPlayState() {
+  const connected = !!playKeyboard.output && playKeyboard.output.state !== "disconnected";
+  const notes = new Set(playKeyboard.held.values());
+  $("play-keys").querySelectorAll("button").forEach((button) => {
+    button.disabled = !connected;
+    button.setAttribute("aria-pressed", String(notes.has(Number(button.dataset.note))));
+  });
+  $("play-sustain").disabled = $("play-stop").disabled = !connected;
+  $("play-sustain").setAttribute("aria-pressed", String(playKeyboard.sustain));
+  $("play-help").textContent = t(connected ? (MOCK ? "playMock" : "playHelp") : "playConnect");
+  if (playResizePending && !playKeyboard.held.size && !playPointers.size) {
+    playResizePending = false; requestAnimationFrame(() => renderPlayKeys(true));
+  }
+}
+function renderPlayKeys(resizing = false) {
+  if (resizing && (playKeyboard.held.size || playPointers.size)) { playResizePending = true; return; }
+  if (!resizing) { playKeyboard.releaseAll(); playPointers.clear(); }
+  $("play-oct-down").disabled = Number($("play-octave").value) <= -1;
+  $("play-oct-up").disabled = Number($("play-octave").value) >= 7;
+  const base = (Number($("play-octave").value) + 1) * 12 + 5;
+  const blackNote = note => [1, 3, 6, 8, 10].includes(note % 12);
+  const width = $("play-keys").getBoundingClientRect().width;
+  // Keep all 27 hardware keys; add balanced white-key steps when each can stay ~40px wide.
+  const extra = Math.max(0, Math.min(59, Math.floor(width / 40) - 16));
+  let first = base, last = base + 26, whiteCount = 16;
+  for (let i = 0; i < extra; i++) {
+    const left = (i % 2 === 0 && first > 0) || last >= 127;
+    if (left && first > 0) { do { first--; } while (first > 0 && blackNote(first)); }
+    else if (last < 127) { do { last++; } while (last < 127 && blackNote(last)); }
+    else break;
+    whiteCount++;
+  }
+  const layout = `${first}:${last}:${base}`;
+  if (resizing && playLayout === layout) return;
+  playLayout = layout;
+  $("play-keys").replaceChildren();
+  $("play-keys").style.setProperty('--white-keys', whiteCount);
+  let whites = 0;
+  for (let note = first; note <= last; note++) {
+    const offset = note - base, black = blackNote(note), extended = offset < 0 || offset >= 27;
+    const button = el("button", { type: "button", class: [black ? "black" : "", extended ? "extended" : ""].filter(Boolean).join(" "), "aria-label": noteName(note), "aria-pressed": "false" });
+    button.dataset.note = note;
+    button.dataset.hardware = String(!extended);
+    if (note === base || note === base + 26) button.dataset.edge = note === base ? 'start' : 'end';
+    if (extended) button.title = `${noteName(note)} — beyond the FM-1's 27 keys`;
+    button.style.left = `${black ? whites * 100 / whiteCount - 30 / whiteCount : whites++ * 100 / whiteCount}%`;
+    button.append(el("span", { text: noteName(note) }), el("small", { text: playCodes[offset]?.replace("Key", "").replace("Semicolon", ";") || "\u00a0" }));
+    $("play-keys").append(button);
+  }
+  renderPlayState();
+}
+function playDown(source, note) { return playKeyboard.press(source, Number(note), Number($("play-velocity").value)); }
+function releasePlayKeys() { playKeyboard.releaseAll(); playPointers.clear(); }
+$("play-octave").addEventListener("change", () => renderPlayKeys());
+for (const [id, delta] of [["play-oct-down", -1], ["play-oct-up", 1]]) {
+  $(id).addEventListener("click", () => {
+    $("play-octave").value = String(Math.max(-1, Math.min(7, Number($("play-octave").value) + delta)));
+    renderPlayKeys();
+  });
+}
+$("play-channel").addEventListener("change", () => { releasePlayKeys(); playKeyboard.setChannel(Number($("play-channel").value)); });
+$("play-velocity").addEventListener("input", () => { $("play-velocity-value").value = $("play-velocity").value; });
+$("play-typing").addEventListener("change", releasePlayKeys);
+$("play-sustain").addEventListener("click", () => playKeyboard.setSustain(!playKeyboard.sustain));
+$("play-stop").addEventListener("click", () => { playKeyboard.panic(); playPointers.clear(); });
+$("play-keys").addEventListener("pointerdown", (e) => {
+  const button = e.target.closest("button[data-note]");
+  if (!button || button.disabled || (e.pointerType === "mouse" && e.button !== 0)) return;
+  e.preventDefault(); button.focus({ preventScroll: true });
+  button.setPointerCapture(e.pointerId); playPointers.add(e.pointerId);
+  playDown(`pointer:${e.pointerId}`, button.dataset.note);
+});
+$("play-keys").addEventListener("pointermove", (e) => {
+  if (!playPointers.has(e.pointerId)) return;
+  const button = document.elementFromPoint(e.clientX, e.clientY)?.closest("#play-keys button[data-note]");
+  if (button) playDown(`pointer:${e.pointerId}`, button.dataset.note);
+  else playKeyboard.release(`pointer:${e.pointerId}`);
+});
+for (const event of ["pointerup", "pointercancel", "lostpointercapture"]) window.addEventListener(event, (e) => {
+  playPointers.delete(e.pointerId); playKeyboard.release(`pointer:${e.pointerId}`);
+});
+window.addEventListener("keydown", (e) => {
+  if (e.repeat || e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return;
+  const button = e.target.closest?.("#play-keys button[data-note]");
+  if (button && ["Space", "Enter"].includes(e.code)) {
+    e.preventDefault(); playDown(`button:${e.code}`, button.dataset.note); return;
+  }
+  if (!$("play-typing").checked || e.target.closest?.("input, select, textarea, [contenteditable]:not([contenteditable='false']), [role='textbox'], [role='dialog']")) return;
+  const offset = playCodes.indexOf(e.code);
+  if (offset < 0 || !playKeyboard.output) return;
+  e.preventDefault(); playDown(`key:${e.code}`, (Number($("play-octave").value) + 1) * 12 + 5 + offset);
+});
+window.addEventListener("keyup", (e) => {
+  playKeyboard.release(`key:${e.code}`); playKeyboard.release(`button:${e.code}`);
+});
+window.addEventListener("blur", releasePlayKeys);
+window.addEventListener("pagehide", releasePlayKeys);
+document.addEventListener("visibilitychange", () => { if (document.hidden) releasePlayKeys(); });
+renderPlayKeys();
+new ResizeObserver(() => renderPlayKeys(true)).observe($("play-keys"));
 
 $("connect").addEventListener("click", () => {
   if (dev) { wantConnected = false; disconnect(); } else connect();

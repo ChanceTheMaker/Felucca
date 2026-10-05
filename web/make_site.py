@@ -59,13 +59,17 @@ def main(pkg, version, out):
     (inst / "index.html").write_text(html, encoding="utf-8")
     shutil.copy(pkg, fw / name)
     shutil.copy(HERE / "editor.html", ed / "index.html")
+    for target in (inst, ed):
+        for asset in ("skin.css", "interface.css", "skin.js", "fonts.css"):
+            shutil.copy(HERE / asset, target / asset)
+        shutil.copytree(HERE / "fonts", target / "fonts", dirs_exist_ok=True)
     for f in ("fukiai.ttf", "FUKIAI-LICENSE.txt"):
         if (HERE / f).exists():
             shutil.copy(HERE / f, ed / f)
     (out / "index.html").write_text(
-        '<!doctype html><meta charset="utf-8"><title>Felucca (Salt)</title>'
+        '<!doctype html><meta charset="utf-8"><title>Felucca [Salt]</title>'
         '<meta http-equiv="refresh" content="0; url=webapp/installer/">'
-        '<a href="webapp/installer/">Felucca (Salt) installer</a>\n', encoding="utf-8")
+        '<a href="webapp/installer/">Felucca [Salt] installer</a>\n', encoding="utf-8")
     print(f"site: {out}: webapp/installer ({len(html)} B), webapp/editor, firmware/{name} ({len(raw)} B, {product})")
 
 

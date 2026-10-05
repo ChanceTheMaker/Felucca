@@ -395,5 +395,7 @@
   "nav.studio": "Studio",
   "nav.themes": "Designs",
   "nav.features": "Funktionen",
-  "nav.backToTop": "Nach oben"
+  "nav.backToTop": "Nach oben",
+  "installer.progress": "Installationsfortschritt",
+  "installer.editStudio": "In Studio bearbeiten"
 }

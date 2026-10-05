@@ -395,5 +395,7 @@
   "nav.studio": "Studio",
   "nav.themes": "テーマ",
   "nav.features": "機能",
-  "nav.backToTop": "ページの先頭へ"
+  "nav.backToTop": "ページの先頭へ",
+  "installer.progress": "インストールの進行状況",
+  "installer.editStudio": "Studio で編集"
 }

@@ -3,6 +3,16 @@
 Last reviewed: **2026-10-05**. Update this record when importing or offering a
 feature; follow [UPSTREAM_WORKFLOW.md](UPSTREAM_WORKFLOW.md).
 
+## Website follow-up
+
+The owner authorized merging the completed UI round into the fork's main on
+2026-10-05. Install opens a collapsed Install Progress accordion, scrolls to its
+output, and shows Edit in Studio only after confirmed success. The UI is ported
+independently from the RC1 branch; main retains the Salt14 installer protocol.
+Simulated-updater checks cover desktop/mobile, resume, failure, retry and all
+eight languages. No physical device is accessed by those checks.
+Website deployment and the draft RC1 firmware remain unchanged in this round.
+
 ## Baseline and release state
 
 - Upstream: [hugelton/Felucca v1.0](https://github.com/hugelton/Felucca/tree/v1.0),

@@ -246,7 +246,7 @@ firmware keeps the existing editor without unsupported controls.
 ### Optional analytics
 
 The published Salt installer and Studio send cookieless Google Analytics
-measurements by default. **Analytics preferences** at the bottom of the page
+measurements by default. **Analytics preferences** in the hamburger menu opens a modal that
 offers **Without cookies**, **Allow analytics cookies**, and **Turn analytics off**.
 Previous declines remain full opt-outs. Every choice leaves all features available;
 localhost and other forks are excluded. Cookieless pings support aggregate

@@ -6,19 +6,19 @@ const source = readFileSync(new URL('./analytics.js', import.meta.url), 'utf8');
 function setup(host = 'chancethemaker.github.io', saved = null, blocked = false) {
   const scripts = [], handlers = {}, listeners = {}, storage = new Map();
   if (saved) storage.set('felucca.web.analyticsConsent', saved);
-  const panel = {querySelectorAll: () => [], addEventListener: (k, fn) => {handlers[k] = fn;}};
+  const panel = {setAttribute() {}, close() {}, querySelectorAll: () => [], addEventListener: (k, fn) => {handlers[k] = fn;}};
   const context = {
     navigator: {language: 'en'},
     location: {hostname: host, pathname: '/Felucca/webapp/installer/', origin: 'https://' + host, href: 'https://' + host + '/Felucca/webapp/installer/?secret=private'},
     localStorage: {getItem: k => {if (blocked) throw Error('blocked'); return storage.get(k);}, setItem: (k, v) => {if (blocked) throw Error('blocked'); storage.set(k, v);}},
-    document: {referrer: 'https://example.org/private?q=secret', documentElement: {lang: 'en'},
-      createElement: name => name === 'details' ? panel : {}, head: {append: s => scripts.push(s)},
+    document: {readyState:'loading', referrer: 'https://example.org/private?q=secret', documentElement: {lang: 'en'},
+      createElement: name => name === 'dialog' ? panel : {}, head: {append: s => scripts.push(s)},
       querySelector: () => ({append() {}}), addEventListener: (k, fn) => {listeners[k] = fn;}},
     URL, Date, Set, addEventListener() {}
   };
   context.window = context;
   vm.runInNewContext(source, context);
-  return {context, scripts, listeners, choose: choice => handlers.click({target: {closest: () => ({dataset: {choice}})}})};
+  return {context, scripts, listeners, choose: choice => handlers.click({target: {closest: selector => selector === '[data-choice]' ? {dataset: {choice}} : null}})};
 }
 const fresh = setup();
 assert.equal(fresh.scripts.length, 1, 'Cookieless measurement starts automatically');

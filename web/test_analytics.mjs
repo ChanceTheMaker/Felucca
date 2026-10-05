@@ -8,6 +8,7 @@ function setup(host = 'chancethemaker.github.io', saved = null, blocked = false)
   if (saved) storage.set('felucca.web.analyticsConsent', saved);
   const panel = {querySelectorAll: () => [], addEventListener: (k, fn) => {handlers[k] = fn;}};
   const context = {
+    navigator: {language: 'en'},
     location: {hostname: host, pathname: '/Felucca/webapp/installer/', origin: 'https://' + host, href: 'https://' + host + '/Felucca/webapp/installer/?secret=private'},
     localStorage: {getItem: k => {if (blocked) throw Error('blocked'); return storage.get(k);}, setItem: (k, v) => {if (blocked) throw Error('blocked'); storage.set(k, v);}},
     document: {referrer: 'https://example.org/private?q=secret', documentElement: {lang: 'en'},

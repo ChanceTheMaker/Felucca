@@ -64,12 +64,16 @@ try {
    assert.equal(await page.locator('#bar').isVisible(),false,'Accordion can be collapsed');
   }
   await page.setViewportSize({width,height:844});
-  await page.evaluate(s=>{window.scenario=s;window.finishInstall=null;scrollTo(0,0);},scenario);
+  await page.evaluate(s=>{window.scenario=s;window.finishInstall=null;scrollTo({top:0,behavior:'instant'});},scenario);
   await go.click();
   await page.waitForFunction(()=>!!window.finishInstall);
   assert.equal(await page.locator('#install-progress').evaluate(e=>e.open),true,'Install opens progress');
   assert.equal(await handoff.isVisible(),false,'No Studio button during a write');
   assert(await go.isDisabled(),'Install locks during the write');
+  await page.waitForFunction(()=>{
+   const y=document.querySelector('#install-progress').getBoundingClientRect().top;
+   return y>=0 && y<=25;
+  });
   const progress=await page.locator('#install-progress').boundingBox();
   assert(progress.y>=0 && progress.y<=25,`Install scrolls to progress at ${width}px: ${progress.y}`);
   assert.equal(await page.evaluate(()=>document.activeElement.id),'install-progress');
@@ -92,7 +96,7 @@ try {
    await mkdir('build/screenshots',{recursive:true});
    await page.screenshot({path:`build/screenshots/install-success-${width}.png`});
    // A new attempt must immediately remove the previous success action, even if permission fails.
-   await page.evaluate(()=>{window.scenario='denied';scrollTo(0,0);});
+   await page.evaluate(()=>{window.scenario='denied';scrollTo({top:0,behavior:'instant'});});
    await go.click();
    await page.waitForFunction(()=>!document.querySelector('#go').disabled);
    assert.equal(await handoff.isVisible(),false);

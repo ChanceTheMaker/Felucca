@@ -126,7 +126,7 @@ select, input[type=text], input[type=number], input[type=search] { border-radius
 .mode-tip-copy > span { display:block; }
 .mode-tip-copy > .mode-tip-connect { display:flex; align-items:center; justify-content:center; gap:7px; }
 .usb-symbol { width:18px; height:23px; flex-shrink:0; color:var(--accent); }
-.mode-tip-or { display:flex!important; align-items:center; gap:10px; margin:5px 0; color:var(--fg); font-size:13px; font-weight:500; }
+.mode-tip-or { display:flex!important; align-items:center; gap:10px; margin:5px 0; color:var(--dim); font-size:12px; font-weight:400; }
 .mode-tip-or::before,.mode-tip-or::after { content:''; flex:1; height:1px; background:var(--line); }
 .mode-tip-play { font-weight:400; text-wrap:pretty; }
 .mode-tip-engine { white-space:nowrap; font-weight:700; }

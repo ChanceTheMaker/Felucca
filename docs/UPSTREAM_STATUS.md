@@ -3,6 +3,13 @@
 Last reviewed: **2026-10-05**. Update this record when importing or offering a
 feature; follow [UPSTREAM_WORKFLOW.md](UPSTREAM_WORKFLOW.md).
 
+SMK-37 preparation begins separately from RC1 at fork commit
+`7b1164abd2322c279faf9bb57ae22283466b9f53`. The shared Pro/Elite target is
+reserved, with hardware/recovery prerequisites documented in
+[SMK37_PREPARATION.md](SMK37_PREPARATION.md). The default FM-1 build remains
+unchanged. This round imports no firmware, has no SMK hardware validation,
+and does not promote RC1 or submit work upstream.
+
 Installer follow-up on `feat/rc1-installer-retry`: failed discovery, denied MIDI
 permission, interrupted updates and stopped resumes show Try Again below the
 output. Retrying requests MIDI access and rediscovers the device, hides stale

@@ -124,6 +124,9 @@ FM-1 host tests do not substitute for SMK hardware validation.
   offline control/event reports, and the stock baseline test sequence.
 - [Flash and boot evidence](smk37/FLASH_LAYOUT.md): decoded directory/boot
   configuration and the concrete conflict with FM-1 storage addresses.
+- [Arrival report template](smk37/ARRIVAL_REPORT.md): evidence fields for recovery,
+  physical measurements and the first board bring-up PR. The diagnostic guide
+  includes read-only Windows USB snapshots and offline comparisons.
 - `python -m unittest discover -s tests -p "smk37_*_test.py"` runs the preparation
   tests without a device or SDK. Full firmware rebuilds and hardware tests are
   separate from this preparation round; no firmware source has changed here.

@@ -245,10 +245,12 @@ firmware keeps the existing editor without unsupported controls.
 
 ### Optional analytics
 
-The published Salt installer and Studio offer Google Analytics with a remembered
-**Allow analytics / Decline** choice under **Analytics preferences** at the bottom
-of the page. Declining leaves every feature available. Google tracking loads only
-after consent, and is disabled on localhost and other forks.
+The published Salt installer and Studio send cookieless Google Analytics
+measurements by default. **Analytics preferences** at the bottom of the page
+offers **Without cookies**, **Allow analytics cookies**, and **Turn analytics off**.
+Previous declines remain full opt-outs. Every choice leaves all features available;
+localhost and other forks are excluded. Cookieless pings support aggregate
+measurement and eligible modeling, rather than full visitor/session tracking.
 
 Measurements include visits, download clicks, installation attempts and outcomes,
 and browser audio starts. A completed recovery write is reported separately from

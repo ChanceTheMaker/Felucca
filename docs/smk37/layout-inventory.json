@@ -1,0 +1,3633 @@
+{
+  "source_repository": "https://github.com/jonathaslacerda/smk-37-pro-docs",
+  "source_revision": "ab85d7340163ba9e171dc9396e31c034829bbc02",
+  "layouts": [
+    {
+      "product": "MKE-P37_013",
+      "package_sha256": "8af884a8989bfbf33d46adc2ac5f913e1b672be1d253a6b64b25fc60be69bf73",
+      "header_flash_size_field": 1044480,
+      "supplied_flash_bytes": 638976,
+      "chip_key": 38927,
+      "root": [
+        {
+          "name": "uboot.boot",
+          "offset": 160,
+          "bytes": 14384,
+          "flags": 0,
+          "index": 0,
+          "stored_crc16": 29128
+        },
+        {
+          "name": "isd_config.ini",
+          "offset": 14544,
+          "bytes": 699,
+          "flags": 2,
+          "index": 0,
+          "stored_crc16": 28885
+        },
+        {
+          "name": "app_dir_head",
+          "offset": 16384,
+          "bytes": 4294967295,
+          "flags": 129,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "key_mac",
+          "offset": 1044480,
+          "bytes": 4096,
+          "flags": 18,
+          "index": 65535,
+          "stored_crc16": 65535
+        }
+      ],
+      "boot_configuration": {
+        "SPI": {
+          "hex": "345f315f305f30",
+          "ascii": "4_1_0_0"
+        },
+        "OSC": {
+          "hex": "4f534330",
+          "uint32_le": 809718607,
+          "ascii": "OSC0"
+        },
+        "OSC_FREQ": {
+          "hex": "00366e01",
+          "uint32_le": 24000000
+        },
+        "OSC_HC_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "OSC_1PIN_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SYS_CLK": {
+          "hex": "002a7515",
+          "uint32_le": 360000000
+        },
+        "HSB_DIV": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "LSB_DIV": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "UTBD": {
+          "hex": "40420f00",
+          "uint32_le": 1000000
+        },
+        "RESET": {
+          "hex": "504230315f30385f30",
+          "ascii": "PB01_08_0"
+        },
+        "UPDATE_JUMP": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "VLVD": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "ENABLE_SDRAM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_REFRESH_TIME": {
+          "hex": "20000000",
+          "uint32_le": 32
+        },
+        "SDRAM_REFRESH_CYCLES": {
+          "hex": "00100000",
+          "uint32_le": 4096
+        },
+        "SDRAM_MODE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_COLUM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_SIZE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_NOUSB_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_CL": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "SDRAM_DQ_DLY_TRM": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "SDRAM_WLCNT": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_D_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_RLCNT": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_Q_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_PHASE": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_TRFC": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRP": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRCD": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRRD": {
+          "hex": "0c000000",
+          "uint32_le": 12
+        },
+        "SDRAM_TWTR": {
+          "hex": "14000000",
+          "uint32_le": 20
+        },
+        "SDRAM_TRTW": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TWR": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRC": {
+          "hex": "37000000",
+          "uint32_le": 55
+        },
+        "SDRAM_DQS_DLY_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_UDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_LDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_DQ_DLY_INNER_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        }
+      },
+      "application_base": 16384,
+      "entry_point": 33554720,
+      "application_block_bytes": 617651,
+      "files": [
+        {
+          "name": "app.bin",
+          "offset": 288,
+          "bytes": 616980,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 43778,
+          "flash_payload_offset": 16672,
+          "sha256": "46ffcf52db0b2c49c067ff6382f67fd0b16927eefc609e57d39e90f739764613"
+        },
+        {
+          "name": "cfg_tool.bin",
+          "offset": 617268,
+          "bytes": 383,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 11893,
+          "flash_payload_offset": 633652,
+          "sha256": "276579954f076886a6a7694f65dc71c034a63a2c204b76749065c0ac7b010d1b"
+        }
+      ],
+      "regions": [
+        {
+          "name": "VM",
+          "offset": 638976,
+          "bytes": 147456,
+          "flags": 18,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "PRCT",
+          "offset": 0,
+          "bytes": 638976,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "BTIF",
+          "offset": 786432,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRTRIM",
+          "offset": 790528,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRFLASH",
+          "offset": 794624,
+          "bytes": 167936,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USR",
+          "offset": 999424,
+          "bytes": 40960,
+          "flags": 146,
+          "index": 1,
+          "stored_crc16": 65535
+        }
+      ],
+      "region_offset_semantics": "Raw JLFS fields; not validated physical erase/write addresses",
+      "validation": "header, directory, key, application block and file CRCs checked",
+      "limitations": "No physical capacity, RAM map, bootloader execution, resource directory or recovery validation",
+      "source_path": "firmware/mkep37/MKE-P37_013.fwsc"
+    },
+    {
+      "product": "MKE-P37_015",
+      "package_sha256": "280ee7aae59a17c38bc2e854802c7d08f076e51afff13eb5315ad3748476491f",
+      "header_flash_size_field": 1044480,
+      "supplied_flash_bytes": 638976,
+      "chip_key": 38927,
+      "root": [
+        {
+          "name": "uboot.boot",
+          "offset": 160,
+          "bytes": 14384,
+          "flags": 0,
+          "index": 0,
+          "stored_crc16": 29128
+        },
+        {
+          "name": "isd_config.ini",
+          "offset": 14544,
+          "bytes": 699,
+          "flags": 2,
+          "index": 0,
+          "stored_crc16": 28885
+        },
+        {
+          "name": "app_dir_head",
+          "offset": 16384,
+          "bytes": 4294967295,
+          "flags": 129,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "key_mac",
+          "offset": 1044480,
+          "bytes": 4096,
+          "flags": 18,
+          "index": 65535,
+          "stored_crc16": 65535
+        }
+      ],
+      "boot_configuration": {
+        "SPI": {
+          "hex": "345f315f305f30",
+          "ascii": "4_1_0_0"
+        },
+        "OSC": {
+          "hex": "4f534330",
+          "uint32_le": 809718607,
+          "ascii": "OSC0"
+        },
+        "OSC_FREQ": {
+          "hex": "00366e01",
+          "uint32_le": 24000000
+        },
+        "OSC_HC_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "OSC_1PIN_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SYS_CLK": {
+          "hex": "002a7515",
+          "uint32_le": 360000000
+        },
+        "HSB_DIV": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "LSB_DIV": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "UTBD": {
+          "hex": "40420f00",
+          "uint32_le": 1000000
+        },
+        "RESET": {
+          "hex": "504230315f30385f30",
+          "ascii": "PB01_08_0"
+        },
+        "UPDATE_JUMP": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "VLVD": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "ENABLE_SDRAM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_REFRESH_TIME": {
+          "hex": "20000000",
+          "uint32_le": 32
+        },
+        "SDRAM_REFRESH_CYCLES": {
+          "hex": "00100000",
+          "uint32_le": 4096
+        },
+        "SDRAM_MODE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_COLUM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_SIZE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_NOUSB_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_CL": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "SDRAM_DQ_DLY_TRM": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "SDRAM_WLCNT": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_D_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_RLCNT": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_Q_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_PHASE": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_TRFC": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRP": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRCD": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRRD": {
+          "hex": "0c000000",
+          "uint32_le": 12
+        },
+        "SDRAM_TWTR": {
+          "hex": "14000000",
+          "uint32_le": 20
+        },
+        "SDRAM_TRTW": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TWR": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRC": {
+          "hex": "37000000",
+          "uint32_le": 55
+        },
+        "SDRAM_DQS_DLY_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_UDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_LDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_DQ_DLY_INNER_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        }
+      },
+      "application_base": 16384,
+      "entry_point": 33554720,
+      "application_block_bytes": 617683,
+      "files": [
+        {
+          "name": "app.bin",
+          "offset": 288,
+          "bytes": 617012,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 14275,
+          "flash_payload_offset": 16672,
+          "sha256": "4c86ffe1460775d05ba3528423585529cb09891a4631b50444aa4e124af8ac56"
+        },
+        {
+          "name": "cfg_tool.bin",
+          "offset": 617300,
+          "bytes": 383,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 11893,
+          "flash_payload_offset": 633684,
+          "sha256": "276579954f076886a6a7694f65dc71c034a63a2c204b76749065c0ac7b010d1b"
+        }
+      ],
+      "regions": [
+        {
+          "name": "VM",
+          "offset": 638976,
+          "bytes": 147456,
+          "flags": 18,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "PRCT",
+          "offset": 0,
+          "bytes": 638976,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "BTIF",
+          "offset": 786432,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRTRIM",
+          "offset": 790528,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRFLASH",
+          "offset": 794624,
+          "bytes": 167936,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USR",
+          "offset": 999424,
+          "bytes": 40960,
+          "flags": 146,
+          "index": 1,
+          "stored_crc16": 65535
+        }
+      ],
+      "region_offset_semantics": "Raw JLFS fields; not validated physical erase/write addresses",
+      "validation": "header, directory, key, application block and file CRCs checked",
+      "limitations": "No physical capacity, RAM map, bootloader execution, resource directory or recovery validation",
+      "source_path": "firmware/mkep37/MKE-P37_015.fwsc"
+    },
+    {
+      "product": "MKE-P37_016",
+      "package_sha256": "4306ae5b765ab9afb790edf6d02fa75e872897dbd319049e3956ddd283a51429",
+      "header_flash_size_field": 1044480,
+      "supplied_flash_bytes": 643072,
+      "chip_key": 38927,
+      "root": [
+        {
+          "name": "uboot.boot",
+          "offset": 160,
+          "bytes": 14384,
+          "flags": 0,
+          "index": 0,
+          "stored_crc16": 29128
+        },
+        {
+          "name": "isd_config.ini",
+          "offset": 14544,
+          "bytes": 699,
+          "flags": 2,
+          "index": 0,
+          "stored_crc16": 28885
+        },
+        {
+          "name": "app_dir_head",
+          "offset": 16384,
+          "bytes": 4294967295,
+          "flags": 129,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "key_mac",
+          "offset": 1044480,
+          "bytes": 4096,
+          "flags": 18,
+          "index": 65535,
+          "stored_crc16": 65535
+        }
+      ],
+      "boot_configuration": {
+        "SPI": {
+          "hex": "345f315f305f30",
+          "ascii": "4_1_0_0"
+        },
+        "OSC": {
+          "hex": "4f534330",
+          "uint32_le": 809718607,
+          "ascii": "OSC0"
+        },
+        "OSC_FREQ": {
+          "hex": "00366e01",
+          "uint32_le": 24000000
+        },
+        "OSC_HC_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "OSC_1PIN_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SYS_CLK": {
+          "hex": "002a7515",
+          "uint32_le": 360000000
+        },
+        "HSB_DIV": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "LSB_DIV": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "UTBD": {
+          "hex": "40420f00",
+          "uint32_le": 1000000
+        },
+        "RESET": {
+          "hex": "504230315f30385f30",
+          "ascii": "PB01_08_0"
+        },
+        "UPDATE_JUMP": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "VLVD": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "ENABLE_SDRAM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_REFRESH_TIME": {
+          "hex": "20000000",
+          "uint32_le": 32
+        },
+        "SDRAM_REFRESH_CYCLES": {
+          "hex": "00100000",
+          "uint32_le": 4096
+        },
+        "SDRAM_MODE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_COLUM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_SIZE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_NOUSB_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_CL": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "SDRAM_DQ_DLY_TRM": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "SDRAM_WLCNT": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_D_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_RLCNT": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_Q_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_PHASE": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_TRFC": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRP": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRCD": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRRD": {
+          "hex": "0c000000",
+          "uint32_le": 12
+        },
+        "SDRAM_TWTR": {
+          "hex": "14000000",
+          "uint32_le": 20
+        },
+        "SDRAM_TRTW": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TWR": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRC": {
+          "hex": "37000000",
+          "uint32_le": 55
+        },
+        "SDRAM_DQS_DLY_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_UDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_LDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_DQ_DLY_INNER_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        }
+      },
+      "application_base": 16384,
+      "entry_point": 33554720,
+      "application_block_bytes": 620343,
+      "files": [
+        {
+          "name": "app.bin",
+          "offset": 288,
+          "bytes": 619672,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 56280,
+          "flash_payload_offset": 16672,
+          "sha256": "4ace25cc47bb35948761ccdbc8864a125240833ff1e0165a8ee53e3aa0d089ef"
+        },
+        {
+          "name": "cfg_tool.bin",
+          "offset": 619960,
+          "bytes": 383,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 11893,
+          "flash_payload_offset": 636344,
+          "sha256": "276579954f076886a6a7694f65dc71c034a63a2c204b76749065c0ac7b010d1b"
+        }
+      ],
+      "regions": [
+        {
+          "name": "VM",
+          "offset": 643072,
+          "bytes": 143360,
+          "flags": 18,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "PRCT",
+          "offset": 0,
+          "bytes": 643072,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "BTIF",
+          "offset": 786432,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRTRIM",
+          "offset": 790528,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRFLASH",
+          "offset": 794624,
+          "bytes": 167936,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USR",
+          "offset": 999424,
+          "bytes": 40960,
+          "flags": 146,
+          "index": 1,
+          "stored_crc16": 65535
+        }
+      ],
+      "region_offset_semantics": "Raw JLFS fields; not validated physical erase/write addresses",
+      "validation": "header, directory, key, application block and file CRCs checked",
+      "limitations": "No physical capacity, RAM map, bootloader execution, resource directory or recovery validation",
+      "source_path": "firmware/mkep37/MKE-P37_016.fwsc"
+    },
+    {
+      "product": "SMK-37 Elite_015",
+      "package_sha256": "6cb061bda6fc4a285a1a1014e4fc30782278fa62bdc3add75d14b29d4d76253e",
+      "header_flash_size_field": 1044480,
+      "supplied_flash_bytes": 638976,
+      "chip_key": 38927,
+      "root": [
+        {
+          "name": "uboot.boot",
+          "offset": 160,
+          "bytes": 14384,
+          "flags": 0,
+          "index": 0,
+          "stored_crc16": 29128
+        },
+        {
+          "name": "isd_config.ini",
+          "offset": 14544,
+          "bytes": 699,
+          "flags": 2,
+          "index": 0,
+          "stored_crc16": 28885
+        },
+        {
+          "name": "app_dir_head",
+          "offset": 16384,
+          "bytes": 4294967295,
+          "flags": 129,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "key_mac",
+          "offset": 1044480,
+          "bytes": 4096,
+          "flags": 18,
+          "index": 65535,
+          "stored_crc16": 65535
+        }
+      ],
+      "boot_configuration": {
+        "SPI": {
+          "hex": "345f315f305f30",
+          "ascii": "4_1_0_0"
+        },
+        "OSC": {
+          "hex": "4f534330",
+          "uint32_le": 809718607,
+          "ascii": "OSC0"
+        },
+        "OSC_FREQ": {
+          "hex": "00366e01",
+          "uint32_le": 24000000
+        },
+        "OSC_HC_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "OSC_1PIN_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SYS_CLK": {
+          "hex": "002a7515",
+          "uint32_le": 360000000
+        },
+        "HSB_DIV": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "LSB_DIV": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "UTBD": {
+          "hex": "40420f00",
+          "uint32_le": 1000000
+        },
+        "RESET": {
+          "hex": "504230315f30385f30",
+          "ascii": "PB01_08_0"
+        },
+        "UPDATE_JUMP": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "VLVD": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "ENABLE_SDRAM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_REFRESH_TIME": {
+          "hex": "20000000",
+          "uint32_le": 32
+        },
+        "SDRAM_REFRESH_CYCLES": {
+          "hex": "00100000",
+          "uint32_le": 4096
+        },
+        "SDRAM_MODE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_COLUM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_SIZE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_NOUSB_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_CL": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "SDRAM_DQ_DLY_TRM": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "SDRAM_WLCNT": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_D_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_RLCNT": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_Q_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_PHASE": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_TRFC": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRP": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRCD": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRRD": {
+          "hex": "0c000000",
+          "uint32_le": 12
+        },
+        "SDRAM_TWTR": {
+          "hex": "14000000",
+          "uint32_le": 20
+        },
+        "SDRAM_TRTW": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TWR": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRC": {
+          "hex": "37000000",
+          "uint32_le": 55
+        },
+        "SDRAM_DQS_DLY_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_UDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_LDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_DQ_DLY_INNER_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        }
+      },
+      "application_base": 16384,
+      "entry_point": 33554720,
+      "application_block_bytes": 619171,
+      "files": [
+        {
+          "name": "app.bin",
+          "offset": 288,
+          "bytes": 618500,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 43688,
+          "flash_payload_offset": 16672,
+          "sha256": "405b7119be0307d9427451c508b41e59bec2e726b2b284489be9bf4a2621287e"
+        },
+        {
+          "name": "cfg_tool.bin",
+          "offset": 618788,
+          "bytes": 383,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 11893,
+          "flash_payload_offset": 635172,
+          "sha256": "276579954f076886a6a7694f65dc71c034a63a2c204b76749065c0ac7b010d1b"
+        }
+      ],
+      "regions": [
+        {
+          "name": "VM",
+          "offset": 638976,
+          "bytes": 147456,
+          "flags": 18,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "PRCT",
+          "offset": 0,
+          "bytes": 638976,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "BTIF",
+          "offset": 786432,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRTRIM",
+          "offset": 790528,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRFLASH",
+          "offset": 794624,
+          "bytes": 167936,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USR",
+          "offset": 999424,
+          "bytes": 40960,
+          "flags": 146,
+          "index": 1,
+          "stored_crc16": 65535
+        }
+      ],
+      "region_offset_semantics": "Raw JLFS fields; not validated physical erase/write addresses",
+      "validation": "header, directory, key, application block and file CRCs checked",
+      "limitations": "No physical capacity, RAM map, bootloader execution, resource directory or recovery validation",
+      "source_path": "firmware/smk37elite/SMK-37_Elite_015.fwsc"
+    },
+    {
+      "product": "SMK-37 Elite_016",
+      "package_sha256": "b2ee38abfef3ae922e4eecdb8a551e14345300ae6f270265feacd33b6ef99cb6",
+      "header_flash_size_field": 1044480,
+      "supplied_flash_bytes": 643072,
+      "chip_key": 38927,
+      "root": [
+        {
+          "name": "uboot.boot",
+          "offset": 160,
+          "bytes": 14384,
+          "flags": 0,
+          "index": 0,
+          "stored_crc16": 29128
+        },
+        {
+          "name": "isd_config.ini",
+          "offset": 14544,
+          "bytes": 699,
+          "flags": 2,
+          "index": 0,
+          "stored_crc16": 28885
+        },
+        {
+          "name": "app_dir_head",
+          "offset": 16384,
+          "bytes": 4294967295,
+          "flags": 129,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "key_mac",
+          "offset": 1044480,
+          "bytes": 4096,
+          "flags": 18,
+          "index": 65535,
+          "stored_crc16": 65535
+        }
+      ],
+      "boot_configuration": {
+        "SPI": {
+          "hex": "345f315f305f30",
+          "ascii": "4_1_0_0"
+        },
+        "OSC": {
+          "hex": "4f534330",
+          "uint32_le": 809718607,
+          "ascii": "OSC0"
+        },
+        "OSC_FREQ": {
+          "hex": "00366e01",
+          "uint32_le": 24000000
+        },
+        "OSC_HC_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "OSC_1PIN_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SYS_CLK": {
+          "hex": "002a7515",
+          "uint32_le": 360000000
+        },
+        "HSB_DIV": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "LSB_DIV": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "UTBD": {
+          "hex": "40420f00",
+          "uint32_le": 1000000
+        },
+        "RESET": {
+          "hex": "504230315f30385f30",
+          "ascii": "PB01_08_0"
+        },
+        "UPDATE_JUMP": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "VLVD": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "ENABLE_SDRAM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_REFRESH_TIME": {
+          "hex": "20000000",
+          "uint32_le": 32
+        },
+        "SDRAM_REFRESH_CYCLES": {
+          "hex": "00100000",
+          "uint32_le": 4096
+        },
+        "SDRAM_MODE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_COLUM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_SIZE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_NOUSB_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_CL": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "SDRAM_DQ_DLY_TRM": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "SDRAM_WLCNT": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_D_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_RLCNT": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_Q_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_PHASE": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_TRFC": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRP": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRCD": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRRD": {
+          "hex": "0c000000",
+          "uint32_le": 12
+        },
+        "SDRAM_TWTR": {
+          "hex": "14000000",
+          "uint32_le": 20
+        },
+        "SDRAM_TRTW": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TWR": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRC": {
+          "hex": "37000000",
+          "uint32_le": 55
+        },
+        "SDRAM_DQS_DLY_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_UDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_LDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_DQ_DLY_INNER_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        }
+      },
+      "application_base": 16384,
+      "entry_point": 33554720,
+      "application_block_bytes": 621991,
+      "files": [
+        {
+          "name": "app.bin",
+          "offset": 288,
+          "bytes": 621320,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 63769,
+          "flash_payload_offset": 16672,
+          "sha256": "df19613a47b3368c5745ed512819c2c6f7e2eeb60e7ffe020140321d034e3c3c"
+        },
+        {
+          "name": "cfg_tool.bin",
+          "offset": 621608,
+          "bytes": 383,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 11893,
+          "flash_payload_offset": 637992,
+          "sha256": "276579954f076886a6a7694f65dc71c034a63a2c204b76749065c0ac7b010d1b"
+        }
+      ],
+      "regions": [
+        {
+          "name": "VM",
+          "offset": 643072,
+          "bytes": 143360,
+          "flags": 18,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "PRCT",
+          "offset": 0,
+          "bytes": 643072,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "BTIF",
+          "offset": 786432,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRTRIM",
+          "offset": 790528,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRFLASH",
+          "offset": 794624,
+          "bytes": 167936,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USR",
+          "offset": 999424,
+          "bytes": 40960,
+          "flags": 146,
+          "index": 1,
+          "stored_crc16": 65535
+        }
+      ],
+      "region_offset_semantics": "Raw JLFS fields; not validated physical erase/write addresses",
+      "validation": "header, directory, key, application block and file CRCs checked",
+      "limitations": "No physical capacity, RAM map, bootloader execution, resource directory or recovery validation",
+      "source_path": "firmware/smk37elite/SMK-37_Elite_016.fwsc"
+    },
+    {
+      "product": "SMK-37 Pro_011",
+      "package_sha256": "9b55251b42f433f71fba7cd09c68dca2b28f773e40dc4c2d6d985c84ec4aaf2a",
+      "header_flash_size_field": 1044480,
+      "supplied_flash_bytes": 634880,
+      "chip_key": 38927,
+      "root": [
+        {
+          "name": "uboot.boot",
+          "offset": 160,
+          "bytes": 14384,
+          "flags": 0,
+          "index": 0,
+          "stored_crc16": 29128
+        },
+        {
+          "name": "isd_config.ini",
+          "offset": 14544,
+          "bytes": 699,
+          "flags": 2,
+          "index": 0,
+          "stored_crc16": 28885
+        },
+        {
+          "name": "app_dir_head",
+          "offset": 16384,
+          "bytes": 4294967295,
+          "flags": 129,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "key_mac",
+          "offset": 1044480,
+          "bytes": 4096,
+          "flags": 18,
+          "index": 65535,
+          "stored_crc16": 65535
+        }
+      ],
+      "boot_configuration": {
+        "SPI": {
+          "hex": "345f315f305f30",
+          "ascii": "4_1_0_0"
+        },
+        "OSC": {
+          "hex": "4f534330",
+          "uint32_le": 809718607,
+          "ascii": "OSC0"
+        },
+        "OSC_FREQ": {
+          "hex": "00366e01",
+          "uint32_le": 24000000
+        },
+        "OSC_HC_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "OSC_1PIN_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SYS_CLK": {
+          "hex": "002a7515",
+          "uint32_le": 360000000
+        },
+        "HSB_DIV": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "LSB_DIV": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "UTBD": {
+          "hex": "40420f00",
+          "uint32_le": 1000000
+        },
+        "RESET": {
+          "hex": "504230315f30385f30",
+          "ascii": "PB01_08_0"
+        },
+        "UPDATE_JUMP": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "VLVD": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "ENABLE_SDRAM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_REFRESH_TIME": {
+          "hex": "20000000",
+          "uint32_le": 32
+        },
+        "SDRAM_REFRESH_CYCLES": {
+          "hex": "00100000",
+          "uint32_le": 4096
+        },
+        "SDRAM_MODE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_COLUM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_SIZE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_NOUSB_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_CL": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "SDRAM_DQ_DLY_TRM": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "SDRAM_WLCNT": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_D_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_RLCNT": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_Q_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_PHASE": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_TRFC": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRP": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRCD": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRRD": {
+          "hex": "0c000000",
+          "uint32_le": 12
+        },
+        "SDRAM_TWTR": {
+          "hex": "14000000",
+          "uint32_le": 20
+        },
+        "SDRAM_TRTW": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TWR": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRC": {
+          "hex": "37000000",
+          "uint32_le": 55
+        },
+        "SDRAM_DQS_DLY_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_UDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_LDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_DQ_DLY_INNER_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        }
+      },
+      "application_base": 16384,
+      "entry_point": 33554720,
+      "application_block_bytes": 614355,
+      "files": [
+        {
+          "name": "app.bin",
+          "offset": 288,
+          "bytes": 613684,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 23792,
+          "flash_payload_offset": 16672,
+          "sha256": "c102a351f6da88856f6a750749e9e0733c8391978f38880fa2be73e1a1b6e54d"
+        },
+        {
+          "name": "cfg_tool.bin",
+          "offset": 613972,
+          "bytes": 383,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 11893,
+          "flash_payload_offset": 630356,
+          "sha256": "276579954f076886a6a7694f65dc71c034a63a2c204b76749065c0ac7b010d1b"
+        }
+      ],
+      "regions": [
+        {
+          "name": "VM",
+          "offset": 634880,
+          "bytes": 151552,
+          "flags": 18,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "PRCT",
+          "offset": 0,
+          "bytes": 634880,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "BTIF",
+          "offset": 786432,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRTRIM",
+          "offset": 790528,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRFLASH",
+          "offset": 794624,
+          "bytes": 167936,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USR",
+          "offset": 999424,
+          "bytes": 40960,
+          "flags": 146,
+          "index": 1,
+          "stored_crc16": 65535
+        }
+      ],
+      "region_offset_semantics": "Raw JLFS fields; not validated physical erase/write addresses",
+      "validation": "header, directory, key, application block and file CRCs checked",
+      "limitations": "No physical capacity, RAM map, bootloader execution, resource directory or recovery validation",
+      "source_path": "firmware/smk37pro/SMK-37_Pro_011.fwsc"
+    },
+    {
+      "product": "SMK-37 Pro_012",
+      "package_sha256": "c6a9187e706aeae921447ec88e29fecbc618e3f1fc3de54c743c78e41781580a",
+      "header_flash_size_field": 1044480,
+      "supplied_flash_bytes": 638976,
+      "chip_key": 38927,
+      "root": [
+        {
+          "name": "uboot.boot",
+          "offset": 160,
+          "bytes": 14384,
+          "flags": 0,
+          "index": 0,
+          "stored_crc16": 29128
+        },
+        {
+          "name": "isd_config.ini",
+          "offset": 14544,
+          "bytes": 699,
+          "flags": 2,
+          "index": 0,
+          "stored_crc16": 28885
+        },
+        {
+          "name": "app_dir_head",
+          "offset": 16384,
+          "bytes": 4294967295,
+          "flags": 129,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "key_mac",
+          "offset": 1044480,
+          "bytes": 4096,
+          "flags": 18,
+          "index": 65535,
+          "stored_crc16": 65535
+        }
+      ],
+      "boot_configuration": {
+        "SPI": {
+          "hex": "345f315f305f30",
+          "ascii": "4_1_0_0"
+        },
+        "OSC": {
+          "hex": "4f534330",
+          "uint32_le": 809718607,
+          "ascii": "OSC0"
+        },
+        "OSC_FREQ": {
+          "hex": "00366e01",
+          "uint32_le": 24000000
+        },
+        "OSC_HC_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "OSC_1PIN_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SYS_CLK": {
+          "hex": "002a7515",
+          "uint32_le": 360000000
+        },
+        "HSB_DIV": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "LSB_DIV": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "UTBD": {
+          "hex": "40420f00",
+          "uint32_le": 1000000
+        },
+        "RESET": {
+          "hex": "504230315f30385f30",
+          "ascii": "PB01_08_0"
+        },
+        "UPDATE_JUMP": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "VLVD": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "ENABLE_SDRAM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_REFRESH_TIME": {
+          "hex": "20000000",
+          "uint32_le": 32
+        },
+        "SDRAM_REFRESH_CYCLES": {
+          "hex": "00100000",
+          "uint32_le": 4096
+        },
+        "SDRAM_MODE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_COLUM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_SIZE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_NOUSB_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_CL": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "SDRAM_DQ_DLY_TRM": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "SDRAM_WLCNT": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_D_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_RLCNT": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_Q_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_PHASE": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_TRFC": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRP": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRCD": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRRD": {
+          "hex": "0c000000",
+          "uint32_le": 12
+        },
+        "SDRAM_TWTR": {
+          "hex": "14000000",
+          "uint32_le": 20
+        },
+        "SDRAM_TRTW": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TWR": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRC": {
+          "hex": "37000000",
+          "uint32_le": 55
+        },
+        "SDRAM_DQS_DLY_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_UDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_LDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_DQ_DLY_INNER_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        }
+      },
+      "application_base": 16384,
+      "entry_point": 33554720,
+      "application_block_bytes": 616499,
+      "files": [
+        {
+          "name": "app.bin",
+          "offset": 288,
+          "bytes": 615828,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 646,
+          "flash_payload_offset": 16672,
+          "sha256": "7383d5f02dcbb85465c14acbb20df2fa3b8452b505c65a0ac2a9139627cd95b6"
+        },
+        {
+          "name": "cfg_tool.bin",
+          "offset": 616116,
+          "bytes": 383,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 11893,
+          "flash_payload_offset": 632500,
+          "sha256": "276579954f076886a6a7694f65dc71c034a63a2c204b76749065c0ac7b010d1b"
+        }
+      ],
+      "regions": [
+        {
+          "name": "VM",
+          "offset": 638976,
+          "bytes": 147456,
+          "flags": 18,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "PRCT",
+          "offset": 0,
+          "bytes": 638976,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "BTIF",
+          "offset": 786432,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRTRIM",
+          "offset": 790528,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRFLASH",
+          "offset": 794624,
+          "bytes": 167936,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USR",
+          "offset": 999424,
+          "bytes": 40960,
+          "flags": 146,
+          "index": 1,
+          "stored_crc16": 65535
+        }
+      ],
+      "region_offset_semantics": "Raw JLFS fields; not validated physical erase/write addresses",
+      "validation": "header, directory, key, application block and file CRCs checked",
+      "limitations": "No physical capacity, RAM map, bootloader execution, resource directory or recovery validation",
+      "source_path": "firmware/smk37pro/SMK-37_Pro_012.fwsc"
+    },
+    {
+      "product": "SMK-37 Pro_013",
+      "package_sha256": "4ebcb993fbaf834456c3f1391684aa29b26beb7f63d1960c283741be4cb16c40",
+      "header_flash_size_field": 1044480,
+      "supplied_flash_bytes": 638976,
+      "chip_key": 38927,
+      "root": [
+        {
+          "name": "uboot.boot",
+          "offset": 160,
+          "bytes": 14384,
+          "flags": 0,
+          "index": 0,
+          "stored_crc16": 29128
+        },
+        {
+          "name": "isd_config.ini",
+          "offset": 14544,
+          "bytes": 699,
+          "flags": 2,
+          "index": 0,
+          "stored_crc16": 28885
+        },
+        {
+          "name": "app_dir_head",
+          "offset": 16384,
+          "bytes": 4294967295,
+          "flags": 129,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "key_mac",
+          "offset": 1044480,
+          "bytes": 4096,
+          "flags": 18,
+          "index": 65535,
+          "stored_crc16": 65535
+        }
+      ],
+      "boot_configuration": {
+        "SPI": {
+          "hex": "345f315f305f30",
+          "ascii": "4_1_0_0"
+        },
+        "OSC": {
+          "hex": "4f534330",
+          "uint32_le": 809718607,
+          "ascii": "OSC0"
+        },
+        "OSC_FREQ": {
+          "hex": "00366e01",
+          "uint32_le": 24000000
+        },
+        "OSC_HC_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "OSC_1PIN_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SYS_CLK": {
+          "hex": "002a7515",
+          "uint32_le": 360000000
+        },
+        "HSB_DIV": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "LSB_DIV": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "UTBD": {
+          "hex": "40420f00",
+          "uint32_le": 1000000
+        },
+        "RESET": {
+          "hex": "504230315f30385f30",
+          "ascii": "PB01_08_0"
+        },
+        "UPDATE_JUMP": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "VLVD": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "ENABLE_SDRAM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_REFRESH_TIME": {
+          "hex": "20000000",
+          "uint32_le": 32
+        },
+        "SDRAM_REFRESH_CYCLES": {
+          "hex": "00100000",
+          "uint32_le": 4096
+        },
+        "SDRAM_MODE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_COLUM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_SIZE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_NOUSB_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_CL": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "SDRAM_DQ_DLY_TRM": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "SDRAM_WLCNT": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_D_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_RLCNT": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_Q_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_PHASE": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_TRFC": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRP": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRCD": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRRD": {
+          "hex": "0c000000",
+          "uint32_le": 12
+        },
+        "SDRAM_TWTR": {
+          "hex": "14000000",
+          "uint32_le": 20
+        },
+        "SDRAM_TRTW": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TWR": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRC": {
+          "hex": "37000000",
+          "uint32_le": 55
+        },
+        "SDRAM_DQS_DLY_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_UDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_LDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_DQ_DLY_INNER_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        }
+      },
+      "application_base": 16384,
+      "entry_point": 33554720,
+      "application_block_bytes": 617651,
+      "files": [
+        {
+          "name": "app.bin",
+          "offset": 288,
+          "bytes": 616980,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 56009,
+          "flash_payload_offset": 16672,
+          "sha256": "43a6f3abdb3c07f7654a7f869c5b134cfc2ed1c71f714581a6d52528676f37fd"
+        },
+        {
+          "name": "cfg_tool.bin",
+          "offset": 617268,
+          "bytes": 383,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 11893,
+          "flash_payload_offset": 633652,
+          "sha256": "276579954f076886a6a7694f65dc71c034a63a2c204b76749065c0ac7b010d1b"
+        }
+      ],
+      "regions": [
+        {
+          "name": "VM",
+          "offset": 638976,
+          "bytes": 147456,
+          "flags": 18,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "PRCT",
+          "offset": 0,
+          "bytes": 638976,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "BTIF",
+          "offset": 786432,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRTRIM",
+          "offset": 790528,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRFLASH",
+          "offset": 794624,
+          "bytes": 167936,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USR",
+          "offset": 999424,
+          "bytes": 40960,
+          "flags": 146,
+          "index": 1,
+          "stored_crc16": 65535
+        }
+      ],
+      "region_offset_semantics": "Raw JLFS fields; not validated physical erase/write addresses",
+      "validation": "header, directory, key, application block and file CRCs checked",
+      "limitations": "No physical capacity, RAM map, bootloader execution, resource directory or recovery validation",
+      "source_path": "firmware/smk37pro/SMK-37_Pro_013.fwsc"
+    },
+    {
+      "product": "SMK-37 Pro_014",
+      "package_sha256": "a8306f6a2bf88fdf3cfc1fad536c29d61f4599a8cff72a36d535e7d980d02f6b",
+      "header_flash_size_field": 1044480,
+      "supplied_flash_bytes": 634880,
+      "chip_key": 38927,
+      "root": [
+        {
+          "name": "uboot.boot",
+          "offset": 160,
+          "bytes": 14384,
+          "flags": 0,
+          "index": 0,
+          "stored_crc16": 29128
+        },
+        {
+          "name": "isd_config.ini",
+          "offset": 14544,
+          "bytes": 699,
+          "flags": 2,
+          "index": 0,
+          "stored_crc16": 28885
+        },
+        {
+          "name": "app_dir_head",
+          "offset": 16384,
+          "bytes": 4294967295,
+          "flags": 129,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "key_mac",
+          "offset": 1044480,
+          "bytes": 4096,
+          "flags": 18,
+          "index": 65535,
+          "stored_crc16": 65535
+        }
+      ],
+      "boot_configuration": {
+        "SPI": {
+          "hex": "345f315f305f30",
+          "ascii": "4_1_0_0"
+        },
+        "OSC": {
+          "hex": "4f534330",
+          "uint32_le": 809718607,
+          "ascii": "OSC0"
+        },
+        "OSC_FREQ": {
+          "hex": "00366e01",
+          "uint32_le": 24000000
+        },
+        "OSC_HC_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "OSC_1PIN_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SYS_CLK": {
+          "hex": "002a7515",
+          "uint32_le": 360000000
+        },
+        "HSB_DIV": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "LSB_DIV": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "UTBD": {
+          "hex": "40420f00",
+          "uint32_le": 1000000
+        },
+        "RESET": {
+          "hex": "504230315f30385f30",
+          "ascii": "PB01_08_0"
+        },
+        "UPDATE_JUMP": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "VLVD": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "ENABLE_SDRAM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_REFRESH_TIME": {
+          "hex": "20000000",
+          "uint32_le": 32
+        },
+        "SDRAM_REFRESH_CYCLES": {
+          "hex": "00100000",
+          "uint32_le": 4096
+        },
+        "SDRAM_MODE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_COLUM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_SIZE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_NOUSB_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_CL": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "SDRAM_DQ_DLY_TRM": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "SDRAM_WLCNT": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_D_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_RLCNT": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_Q_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_PHASE": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_TRFC": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRP": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRCD": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRRD": {
+          "hex": "0c000000",
+          "uint32_le": 12
+        },
+        "SDRAM_TWTR": {
+          "hex": "14000000",
+          "uint32_le": 20
+        },
+        "SDRAM_TRTW": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TWR": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRC": {
+          "hex": "37000000",
+          "uint32_le": 55
+        },
+        "SDRAM_DQS_DLY_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_UDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_LDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_DQ_DLY_INNER_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        }
+      },
+      "application_base": 16384,
+      "entry_point": 33554720,
+      "application_block_bytes": 615219,
+      "files": [
+        {
+          "name": "app.bin",
+          "offset": 288,
+          "bytes": 614548,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 1598,
+          "flash_payload_offset": 16672,
+          "sha256": "38021c97e7256663e48770654084800391d61dc6d7322d93bbb1cfb7f8ad72e2"
+        },
+        {
+          "name": "cfg_tool.bin",
+          "offset": 614836,
+          "bytes": 383,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 11893,
+          "flash_payload_offset": 631220,
+          "sha256": "276579954f076886a6a7694f65dc71c034a63a2c204b76749065c0ac7b010d1b"
+        }
+      ],
+      "regions": [
+        {
+          "name": "VM",
+          "offset": 634880,
+          "bytes": 151552,
+          "flags": 18,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "PRCT",
+          "offset": 0,
+          "bytes": 634880,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "BTIF",
+          "offset": 786432,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRTRIM",
+          "offset": 790528,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRFLASH",
+          "offset": 794624,
+          "bytes": 167936,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USR",
+          "offset": 999424,
+          "bytes": 40960,
+          "flags": 146,
+          "index": 1,
+          "stored_crc16": 65535
+        }
+      ],
+      "region_offset_semantics": "Raw JLFS fields; not validated physical erase/write addresses",
+      "validation": "header, directory, key, application block and file CRCs checked",
+      "limitations": "No physical capacity, RAM map, bootloader execution, resource directory or recovery validation",
+      "source_path": "firmware/smk37pro/SMK-37_Pro_014.fwsc"
+    },
+    {
+      "product": "SMK-37 Pro_015",
+      "package_sha256": "f7f1831cd7c9ad8b4831b6e71ea0bdbcdff9ae4c4077276b3c965511bf4d4fff",
+      "header_flash_size_field": 1044480,
+      "supplied_flash_bytes": 638976,
+      "chip_key": 38927,
+      "root": [
+        {
+          "name": "uboot.boot",
+          "offset": 160,
+          "bytes": 14384,
+          "flags": 0,
+          "index": 0,
+          "stored_crc16": 29128
+        },
+        {
+          "name": "isd_config.ini",
+          "offset": 14544,
+          "bytes": 699,
+          "flags": 2,
+          "index": 0,
+          "stored_crc16": 28885
+        },
+        {
+          "name": "app_dir_head",
+          "offset": 16384,
+          "bytes": 4294967295,
+          "flags": 129,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "key_mac",
+          "offset": 1044480,
+          "bytes": 4096,
+          "flags": 18,
+          "index": 65535,
+          "stored_crc16": 65535
+        }
+      ],
+      "boot_configuration": {
+        "SPI": {
+          "hex": "345f315f305f30",
+          "ascii": "4_1_0_0"
+        },
+        "OSC": {
+          "hex": "4f534330",
+          "uint32_le": 809718607,
+          "ascii": "OSC0"
+        },
+        "OSC_FREQ": {
+          "hex": "00366e01",
+          "uint32_le": 24000000
+        },
+        "OSC_HC_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "OSC_1PIN_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SYS_CLK": {
+          "hex": "002a7515",
+          "uint32_le": 360000000
+        },
+        "HSB_DIV": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "LSB_DIV": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "UTBD": {
+          "hex": "40420f00",
+          "uint32_le": 1000000
+        },
+        "RESET": {
+          "hex": "504230315f30385f30",
+          "ascii": "PB01_08_0"
+        },
+        "UPDATE_JUMP": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "VLVD": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "ENABLE_SDRAM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_REFRESH_TIME": {
+          "hex": "20000000",
+          "uint32_le": 32
+        },
+        "SDRAM_REFRESH_CYCLES": {
+          "hex": "00100000",
+          "uint32_le": 4096
+        },
+        "SDRAM_MODE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_COLUM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_SIZE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_NOUSB_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_CL": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "SDRAM_DQ_DLY_TRM": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "SDRAM_WLCNT": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_D_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_RLCNT": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_Q_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_PHASE": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_TRFC": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRP": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRCD": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRRD": {
+          "hex": "0c000000",
+          "uint32_le": 12
+        },
+        "SDRAM_TWTR": {
+          "hex": "14000000",
+          "uint32_le": 20
+        },
+        "SDRAM_TRTW": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TWR": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRC": {
+          "hex": "37000000",
+          "uint32_le": 55
+        },
+        "SDRAM_DQS_DLY_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_UDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_LDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_DQ_DLY_INNER_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        }
+      },
+      "application_base": 16384,
+      "entry_point": 33554720,
+      "application_block_bytes": 617683,
+      "files": [
+        {
+          "name": "app.bin",
+          "offset": 288,
+          "bytes": 617012,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 65257,
+          "flash_payload_offset": 16672,
+          "sha256": "36fe8299667d06d4e2c195ea0b125b8e3400a4dc010b45d6989354dd4e172055"
+        },
+        {
+          "name": "cfg_tool.bin",
+          "offset": 617300,
+          "bytes": 383,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 11893,
+          "flash_payload_offset": 633684,
+          "sha256": "276579954f076886a6a7694f65dc71c034a63a2c204b76749065c0ac7b010d1b"
+        }
+      ],
+      "regions": [
+        {
+          "name": "VM",
+          "offset": 638976,
+          "bytes": 147456,
+          "flags": 18,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "PRCT",
+          "offset": 0,
+          "bytes": 638976,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "BTIF",
+          "offset": 786432,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRTRIM",
+          "offset": 790528,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRFLASH",
+          "offset": 794624,
+          "bytes": 167936,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USR",
+          "offset": 999424,
+          "bytes": 40960,
+          "flags": 146,
+          "index": 1,
+          "stored_crc16": 65535
+        }
+      ],
+      "region_offset_semantics": "Raw JLFS fields; not validated physical erase/write addresses",
+      "validation": "header, directory, key, application block and file CRCs checked",
+      "limitations": "No physical capacity, RAM map, bootloader execution, resource directory or recovery validation",
+      "source_path": "firmware/smk37pro/SMK-37_Pro_015.fwsc"
+    },
+    {
+      "product": "SMK-37 Pro_016",
+      "package_sha256": "2d98ce72530e71d617384963423820536f094501299e2cfec0a8d3c3fb6bcfb0",
+      "header_flash_size_field": 1044480,
+      "supplied_flash_bytes": 643072,
+      "chip_key": 38927,
+      "root": [
+        {
+          "name": "uboot.boot",
+          "offset": 160,
+          "bytes": 14384,
+          "flags": 0,
+          "index": 0,
+          "stored_crc16": 29128
+        },
+        {
+          "name": "isd_config.ini",
+          "offset": 14544,
+          "bytes": 699,
+          "flags": 2,
+          "index": 0,
+          "stored_crc16": 28885
+        },
+        {
+          "name": "app_dir_head",
+          "offset": 16384,
+          "bytes": 4294967295,
+          "flags": 129,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "key_mac",
+          "offset": 1044480,
+          "bytes": 4096,
+          "flags": 18,
+          "index": 65535,
+          "stored_crc16": 65535
+        }
+      ],
+      "boot_configuration": {
+        "SPI": {
+          "hex": "345f315f305f30",
+          "ascii": "4_1_0_0"
+        },
+        "OSC": {
+          "hex": "4f534330",
+          "uint32_le": 809718607,
+          "ascii": "OSC0"
+        },
+        "OSC_FREQ": {
+          "hex": "00366e01",
+          "uint32_le": 24000000
+        },
+        "OSC_HC_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "OSC_1PIN_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SYS_CLK": {
+          "hex": "002a7515",
+          "uint32_le": 360000000
+        },
+        "HSB_DIV": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "LSB_DIV": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "UTBD": {
+          "hex": "40420f00",
+          "uint32_le": 1000000
+        },
+        "RESET": {
+          "hex": "504230315f30385f30",
+          "ascii": "PB01_08_0"
+        },
+        "UPDATE_JUMP": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "VLVD": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "ENABLE_SDRAM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_REFRESH_TIME": {
+          "hex": "20000000",
+          "uint32_le": 32
+        },
+        "SDRAM_REFRESH_CYCLES": {
+          "hex": "00100000",
+          "uint32_le": 4096
+        },
+        "SDRAM_MODE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_COLUM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_SIZE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_NOUSB_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_CL": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "SDRAM_DQ_DLY_TRM": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "SDRAM_WLCNT": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_D_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_RLCNT": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_Q_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_PHASE": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_TRFC": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRP": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRCD": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRRD": {
+          "hex": "0c000000",
+          "uint32_le": 12
+        },
+        "SDRAM_TWTR": {
+          "hex": "14000000",
+          "uint32_le": 20
+        },
+        "SDRAM_TRTW": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TWR": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRC": {
+          "hex": "37000000",
+          "uint32_le": 55
+        },
+        "SDRAM_DQS_DLY_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_UDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_LDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_DQ_DLY_INNER_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        }
+      },
+      "application_base": 16384,
+      "entry_point": 33554720,
+      "application_block_bytes": 620375,
+      "files": [
+        {
+          "name": "app.bin",
+          "offset": 288,
+          "bytes": 619704,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 61658,
+          "flash_payload_offset": 16672,
+          "sha256": "0f64fbf6ffc454eea686d78cf89f35e593229765bdcf166f10a8bd714abcb09a"
+        },
+        {
+          "name": "cfg_tool.bin",
+          "offset": 619992,
+          "bytes": 383,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 11893,
+          "flash_payload_offset": 636376,
+          "sha256": "276579954f076886a6a7694f65dc71c034a63a2c204b76749065c0ac7b010d1b"
+        }
+      ],
+      "regions": [
+        {
+          "name": "VM",
+          "offset": 643072,
+          "bytes": 143360,
+          "flags": 18,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "PRCT",
+          "offset": 0,
+          "bytes": 643072,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "BTIF",
+          "offset": 786432,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRTRIM",
+          "offset": 790528,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRFLASH",
+          "offset": 794624,
+          "bytes": 167936,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USR",
+          "offset": 999424,
+          "bytes": 40960,
+          "flags": 146,
+          "index": 1,
+          "stored_crc16": 65535
+        }
+      ],
+      "region_offset_semantics": "Raw JLFS fields; not validated physical erase/write addresses",
+      "validation": "header, directory, key, application block and file CRCs checked",
+      "limitations": "No physical capacity, RAM map, bootloader execution, resource directory or recovery validation",
+      "source_path": "firmware/smk37pro/SMK-37_Pro_016.fwsc"
+    },
+    {
+      "product": "STARRYKEY-37 PLAY_01",
+      "package_sha256": "3ef5d835e88324a925593e1e6959106e16abeabbabf824263803bb236b09224b",
+      "header_flash_size_field": 1044480,
+      "supplied_flash_bytes": 638976,
+      "chip_key": 38927,
+      "root": [
+        {
+          "name": "uboot.boot",
+          "offset": 160,
+          "bytes": 14384,
+          "flags": 0,
+          "index": 0,
+          "stored_crc16": 29128
+        },
+        {
+          "name": "isd_config.ini",
+          "offset": 14544,
+          "bytes": 699,
+          "flags": 2,
+          "index": 0,
+          "stored_crc16": 28885
+        },
+        {
+          "name": "app_dir_head",
+          "offset": 16384,
+          "bytes": 4294967295,
+          "flags": 129,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "key_mac",
+          "offset": 1044480,
+          "bytes": 4096,
+          "flags": 18,
+          "index": 65535,
+          "stored_crc16": 65535
+        }
+      ],
+      "boot_configuration": {
+        "SPI": {
+          "hex": "345f315f305f30",
+          "ascii": "4_1_0_0"
+        },
+        "OSC": {
+          "hex": "4f534330",
+          "uint32_le": 809718607,
+          "ascii": "OSC0"
+        },
+        "OSC_FREQ": {
+          "hex": "00366e01",
+          "uint32_le": 24000000
+        },
+        "OSC_HC_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "OSC_1PIN_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SYS_CLK": {
+          "hex": "002a7515",
+          "uint32_le": 360000000
+        },
+        "HSB_DIV": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "LSB_DIV": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "UTBD": {
+          "hex": "40420f00",
+          "uint32_le": 1000000
+        },
+        "RESET": {
+          "hex": "504230315f30385f30",
+          "ascii": "PB01_08_0"
+        },
+        "UPDATE_JUMP": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "VLVD": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "ENABLE_SDRAM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_REFRESH_TIME": {
+          "hex": "20000000",
+          "uint32_le": 32
+        },
+        "SDRAM_REFRESH_CYCLES": {
+          "hex": "00100000",
+          "uint32_le": 4096
+        },
+        "SDRAM_MODE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_COLUM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_SIZE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_NOUSB_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_CL": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "SDRAM_DQ_DLY_TRM": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "SDRAM_WLCNT": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_D_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_RLCNT": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_Q_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_PHASE": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_TRFC": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRP": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRCD": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRRD": {
+          "hex": "0c000000",
+          "uint32_le": 12
+        },
+        "SDRAM_TWTR": {
+          "hex": "14000000",
+          "uint32_le": 20
+        },
+        "SDRAM_TRTW": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TWR": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRC": {
+          "hex": "37000000",
+          "uint32_le": 55
+        },
+        "SDRAM_DQS_DLY_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_UDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_LDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_DQ_DLY_INNER_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        }
+      },
+      "application_base": 16384,
+      "entry_point": 33554720,
+      "application_block_bytes": 617779,
+      "files": [
+        {
+          "name": "app.bin",
+          "offset": 288,
+          "bytes": 617108,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 24534,
+          "flash_payload_offset": 16672,
+          "sha256": "cbf99e74acaab19321b620cba2ff1c0e9f9513b754125a9a20cd056c8b150239"
+        },
+        {
+          "name": "cfg_tool.bin",
+          "offset": 617396,
+          "bytes": 383,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 11893,
+          "flash_payload_offset": 633780,
+          "sha256": "276579954f076886a6a7694f65dc71c034a63a2c204b76749065c0ac7b010d1b"
+        }
+      ],
+      "regions": [
+        {
+          "name": "VM",
+          "offset": 638976,
+          "bytes": 147456,
+          "flags": 18,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "PRCT",
+          "offset": 0,
+          "bytes": 638976,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "BTIF",
+          "offset": 786432,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRTRIM",
+          "offset": 790528,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRFLASH",
+          "offset": 794624,
+          "bytes": 167936,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USR",
+          "offset": 999424,
+          "bytes": 40960,
+          "flags": 146,
+          "index": 1,
+          "stored_crc16": 65535
+        }
+      ],
+      "region_offset_semantics": "Raw JLFS fields; not validated physical erase/write addresses",
+      "validation": "header, directory, key, application block and file CRCs checked",
+      "limitations": "No physical capacity, RAM map, bootloader execution, resource directory or recovery validation",
+      "source_path": "firmware/starrykey37play/STARRYKEY-37_PLAY_015.fwsc"
+    },
+    {
+      "product": "STARRYKEY-37 PLAY_016",
+      "package_sha256": "3cd57cdd90ee60501c549b9dde53503ef468122e2f34dc110876eefdaf9be3b3",
+      "header_flash_size_field": 1044480,
+      "supplied_flash_bytes": 643072,
+      "chip_key": 38927,
+      "root": [
+        {
+          "name": "uboot.boot",
+          "offset": 160,
+          "bytes": 14384,
+          "flags": 0,
+          "index": 0,
+          "stored_crc16": 29128
+        },
+        {
+          "name": "isd_config.ini",
+          "offset": 14544,
+          "bytes": 699,
+          "flags": 2,
+          "index": 0,
+          "stored_crc16": 28885
+        },
+        {
+          "name": "app_dir_head",
+          "offset": 16384,
+          "bytes": 4294967295,
+          "flags": 129,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "key_mac",
+          "offset": 1044480,
+          "bytes": 4096,
+          "flags": 18,
+          "index": 65535,
+          "stored_crc16": 65535
+        }
+      ],
+      "boot_configuration": {
+        "SPI": {
+          "hex": "345f315f305f30",
+          "ascii": "4_1_0_0"
+        },
+        "OSC": {
+          "hex": "4f534330",
+          "uint32_le": 809718607,
+          "ascii": "OSC0"
+        },
+        "OSC_FREQ": {
+          "hex": "00366e01",
+          "uint32_le": 24000000
+        },
+        "OSC_HC_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "OSC_1PIN_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SYS_CLK": {
+          "hex": "002a7515",
+          "uint32_le": 360000000
+        },
+        "HSB_DIV": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "LSB_DIV": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "UTBD": {
+          "hex": "40420f00",
+          "uint32_le": 1000000
+        },
+        "RESET": {
+          "hex": "504230315f30385f30",
+          "ascii": "PB01_08_0"
+        },
+        "UPDATE_JUMP": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "VLVD": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "ENABLE_SDRAM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_REFRESH_TIME": {
+          "hex": "20000000",
+          "uint32_le": 32
+        },
+        "SDRAM_REFRESH_CYCLES": {
+          "hex": "00100000",
+          "uint32_le": 4096
+        },
+        "SDRAM_MODE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_COLUM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_SIZE": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_PLL3_NOUSB_EN": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_CL": {
+          "hex": "02000000",
+          "uint32_le": 2
+        },
+        "SDRAM_DQ_DLY_TRM": {
+          "hex": "04000000",
+          "uint32_le": 4
+        },
+        "SDRAM_WLCNT": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_D_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_RLCNT": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_Q_DLY": {
+          "hex": "01000000",
+          "uint32_le": 1
+        },
+        "SDRAM_PHASE": {
+          "hex": "03000000",
+          "uint32_le": 3
+        },
+        "SDRAM_TRFC": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRP": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRCD": {
+          "hex": "12000000",
+          "uint32_le": 18
+        },
+        "SDRAM_TRRD": {
+          "hex": "0c000000",
+          "uint32_le": 12
+        },
+        "SDRAM_TWTR": {
+          "hex": "14000000",
+          "uint32_le": 20
+        },
+        "SDRAM_TRTW": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TWR": {
+          "hex": "3c000000",
+          "uint32_le": 60
+        },
+        "SDRAM_TRC": {
+          "hex": "37000000",
+          "uint32_le": 55
+        },
+        "SDRAM_DQS_DLY_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        },
+        "SDRAM_UDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_LDQS_DLY_TRM": {
+          "hex": "0a000000",
+          "uint32_le": 10
+        },
+        "SDRAM_DQ_DLY_INNER_TRM": {
+          "hex": "00000000",
+          "uint32_le": 0
+        }
+      },
+      "application_base": 16384,
+      "entry_point": 33554720,
+      "application_block_bytes": 620503,
+      "files": [
+        {
+          "name": "app.bin",
+          "offset": 288,
+          "bytes": 619832,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 48161,
+          "flash_payload_offset": 16672,
+          "sha256": "d7bb4eef362899e0435e6c5bcecdcf27a94e9ccf0d5a2cc913ff1ccfd1764ae2"
+        },
+        {
+          "name": "cfg_tool.bin",
+          "offset": 620120,
+          "bytes": 383,
+          "flags": 130,
+          "index": 0,
+          "stored_crc16": 11893,
+          "flash_payload_offset": 636504,
+          "sha256": "276579954f076886a6a7694f65dc71c034a63a2c204b76749065c0ac7b010d1b"
+        }
+      ],
+      "regions": [
+        {
+          "name": "VM",
+          "offset": 643072,
+          "bytes": 143360,
+          "flags": 18,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "PRCT",
+          "offset": 0,
+          "bytes": 643072,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "BTIF",
+          "offset": 786432,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRTRIM",
+          "offset": 790528,
+          "bytes": 4096,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USRFLASH",
+          "offset": 794624,
+          "bytes": 167936,
+          "flags": 146,
+          "index": 0,
+          "stored_crc16": 65535
+        },
+        {
+          "name": "USR",
+          "offset": 999424,
+          "bytes": 40960,
+          "flags": 146,
+          "index": 1,
+          "stored_crc16": 65535
+        }
+      ],
+      "region_offset_semantics": "Raw JLFS fields; not validated physical erase/write addresses",
+      "validation": "header, directory, key, application block and file CRCs checked",
+      "limitations": "No physical capacity, RAM map, bootloader execution, resource directory or recovery validation",
+      "source_path": "firmware/starrykey37play/STARRYKEY-37_PLAY_016.fwsc"
+    }
+  ]
+}

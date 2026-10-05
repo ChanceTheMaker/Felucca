@@ -106,16 +106,18 @@ Set `STUDIO_FIXTURE_DIR` to a built `webapp/editor` directory to serve its stati
 assets directly to an isolated test browser. This avoids intermittent shared
 preview connection failures; it does not mock the UI, select behavior or DSP.
 
-## Decorative grille fillers
+## Decorative hardware panels
 
 `feat/studio-hardware-fillers` fills only unused space inside the unified Sound
-cards with framed, perforated speaker-grille panels. Following visual review,
-the inset panel border and shaded surface were restored; jack sockets and
-circular speaker drivers remain removed. The panels use CSS with no external
+cards with understated brushed-aluminum panels and small corner screws. Most
+panels are plain. Perforated grilles are limited to the spare VOICE level cells
+and the first FX section, so there are at most two grilles in the layout.
+The neutral metal finish follows the theme's panel tone. Jack sockets and
+circular speaker drivers remain removed. All artwork is CSS, with no external
 image assets.
 
-In knob mode, grilles occupy spare cells in the existing four-control rows.
-Other grilles fit blank space beneath shorter sections of a shared card. They
+In knob mode, panels occupy spare cells in the existing four-control rows.
+Other panels fit blank space beneath shorter sections of a shared card. They
 hide when that space is too small, including when responsive columns stack.
 They never create extra rows, enlarge cards or occupy gaps between cards.
 Decoration is inert, hidden from assistive technology and ignores pointer input;
@@ -123,7 +125,7 @@ it has no audio or routing behavior.
 
 `web/test_studio_hardware.mjs` passes 48 theme, light/dark, control-mode and
 viewport combinations. It checks bounds, control overlap, noninteraction and
-rebuilds, verifies that no patch plates or drivers remain, and compares
+rebuilds, verifies that plain panels outnumber grilles and no sockets or drivers remain, and compares
 card/control geometry with decoration removed. Desktop and mobile screenshots
 were inspected. The earlier complete Studio regression passed thirteen engines,
 eight languages, 192 layout/theme combinations and actual browser DSP output.

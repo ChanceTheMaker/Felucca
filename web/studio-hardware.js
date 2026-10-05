@@ -2,9 +2,13 @@
 // Decorative rack hardware occupies existing blank space; never sound controls.
 (() => {
   const states=new WeakMap();
-  function grille() {
+  function panel(vented=false) {
     const item=document.createElement('span');
-    item.className='hardware-grille';
+    item.className=`hardware-panel${vented?' hardware-grille':''}`;
+    for(let i=0;i<4;i++) {
+      const screw=document.createElement('span');
+      screw.className='hardware-fastener';item.append(screw);
+    }
     return item;
   }
   function filler(className) {
@@ -21,14 +25,15 @@
       if(!spare)continue;
       const extra=filler('bank-hardware');extra.style.setProperty('--spare-columns',spare);
       // These use only the unused cells in the existing four-control grid row.
-      extra.append(grille());
+      extra.append(panel(count===1 && bank.closest('.unified-card').dataset.section==='VOICE'));
       bank.append(extra);
     }
     for(const section of container.querySelectorAll('.unified-card .bank-section')) {
       const last=section.lastElementChild;
       if(!last)continue;
       const extra=filler('bank-hardware-gap');extra.hidden=true;
-      extra.append(grille());
+      // One vent in the effects strip; other spare areas are quiet blank plates.
+      extra.append(panel(section.closest('.unified-card').dataset.section==='FX' && section===section.parentElement.firstElementChild));
       section.append(extra);sections.push({section,last,extra});
     }
     const state={frame:0};

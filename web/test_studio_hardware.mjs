@@ -49,6 +49,8 @@ try {
  await settle();
  assert((await page.locator('.bank-hardware').count())>0);
  assert((await page.locator('.hardware-grille').count())>0);
+ assert((await page.locator('.hardware-panel:not(.hardware-grille)').count())>(await page.locator('.hardware-grille').count()));
+ assert((await page.locator('.hardware-grille').count())<=2);
  assert.equal(await page.locator('.hardware-plate,.hardware-cone,.hardware-jack-rim,.bank-hardware svg,.bank-hardware-gap svg').count(),0);
  await mkdir('build/screenshots',{recursive:true});
  await page.screenshot({path:'build/screenshots/studio-hardware-desktop.png',fullPage:true,animations:'disabled'});
@@ -63,5 +65,5 @@ try {
  await page.setViewportSize({width:390,height:844});await settle();
  await page.locator('[data-section=VOICE]').screenshot({path:'build/screenshots/studio-hardware-mobile.png',animations:'disabled'});
  assert.deepEqual(errors,[]);
- console.log('Hardware fillers: 48 layout/theme combinations; grille holes only; no control overlap, interaction or card resizing; rebuild passes.');
+ console.log('Hardware fillers: 48 layout/theme combinations; mostly plain panels, at most two grilles; no control overlap, interaction or card resizing; rebuild passes.');
 }finally{await browser.close();}

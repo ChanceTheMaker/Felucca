@@ -6,11 +6,13 @@ feature; follow [UPSTREAM_WORKFLOW.md](UPSTREAM_WORKFLOW.md).
 Local website follow-up: Install opens the initially collapsed Install Progress
 accordion, scrolls to its output, and confirmed
 success reveals an Edit in Studio link. Desktop/mobile, resumed success, failure,
-retry and translations are tested with a simulated updater. Publication is on
-hold at the owner's request; the published site and draft firmware assets are unchanged.
+retry and translations are tested with a simulated updater. The owner authorized
+porting the UI round to the fork's main, separately from this RC1 stack. The
+published site and draft firmware assets remain unchanged.
 The header logo also links home from both pages, with its typography preserved
-and keyboard navigation checked on desktop and mobile. This is a separate local
-feature branch and is subject to the same publication hold.
+and keyboard navigation checked on desktop and mobile. The compact hero preview
+stays clear of both buttons. Section links and Install Progress scroll smoothly,
+respecting reduced-motion preferences. These UI features are separate fork PRs.
 
 ## Baseline and release state
 

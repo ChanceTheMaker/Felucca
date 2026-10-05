@@ -441,7 +441,7 @@ function beginInstallProgress() {
   $("bar").value = 0;
   $("log").textContent = "";
   $("install-progress").focus({preventScroll:true});
-  $("install-progress").scrollIntoView({behavior:"instant", block:"start"});
+  $("install-progress").scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block:"start"});
 }
 let image = null;
 const meta = /*META*/;

@@ -252,6 +252,7 @@
     <progress id="bar" max="100" value="0" aria-label="Installation progress" data-i18n-aria-label="installer.progress"></progress>
     <p id="status" role="status"></p>
     <pre id="log"></pre>
+    <p id="install-retry" hidden><button type="button" id="retry" data-t="retry">Try Again</button></p>
     <p id="studio-handoff" hidden><a class="hero-link" href="../editor/#sound" data-t="editStudio">Edit in Studio</a></p>
   </details>
   <section class="panel-guide" id="fm1-guide" data-section="knobs" aria-labelledby="panel-heading">
@@ -670,7 +671,9 @@ const log = (t) => {
   output.textContent += t + "\n";
   if (follow) output.scrollTop = output.scrollHeight;
 };
+$("retry").addEventListener("click", () => $("go").click());
 function beginInstallProgress() {
+  $("install-retry").hidden = true;
   $("install-progress").open = true;
   $("studio-handoff").hidden = true;
   $("bar").value = 0;
@@ -706,7 +709,7 @@ $("go").addEventListener("click", async () => {
   beginInstallProgress();
   let midi;
   try { midi = await navigator.requestMIDIAccess({ sysex: true }); }
-  catch (e) { track('install_failed', {stage, error_code: 'denied'}); sayK("denied"); $("go").disabled = false; return; }
+  catch (e) { track('install_failed', {stage, error_code: 'denied'}); sayK("denied"); $("go").disabled = false; $("install-retry").hidden = false; return; }
   writing = true;
   let completed = false;
   try {
@@ -745,6 +748,7 @@ $("go").addEventListener("click", async () => {
   writing = false;
   $("go").disabled = false;
   $("studio-handoff").hidden = !completed;
+  $("install-retry").hidden = completed;
 });
 </script>
 <button id="back-to-top" class="back-to-top" type="button" hidden aria-label="Back to top" title="Back to top" data-i18n-aria-label="nav.backToTop" data-i18n-title="nav.backToTop"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-7 7 7-7 7 7"/></svg></button>

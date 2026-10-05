@@ -126,8 +126,9 @@ button:disabled { opacity:.4; }
 select, input[type=text], input[type=number], input[type=search] { border-radius:6px; background:var(--lcd-bg); color:var(--lcd); padding:7px 9px; min-height:34px; }
 .top { background:color-mix(in srgb,var(--panel) 85%,transparent); border:1px solid var(--line); border-radius:12px; box-shadow:none; padding:14px 14px 0; gap:12px 16px; }
 .top > .bar { gap:12px; }
-#connect, #go { background:var(--accent); color:var(--ink); border-color:transparent; padding:9px 16px; border-radius:8px; }
-#connect:hover, #go:hover { background:color-mix(in srgb,var(--accent) 85%,white); color:var(--ink); }
+#connect, #go, #retry { background:var(--accent); color:var(--ink); border-color:transparent; padding:9px 16px; border-radius:8px; }
+#connect:hover, #go:hover, #retry:hover { background:color-mix(in srgb,var(--accent) 85%,white); color:var(--ink); }
+#retry:focus-visible { outline:3px solid var(--fg); outline-offset:3px; }
 .installer-page #go {
   display:inline-flex; align-items:center; justify-content:center; gap:16px;
   min-height:62px; padding:16px 28px; max-width:100%;

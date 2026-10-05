@@ -10,7 +10,10 @@ actions and locks installation controls. Success offers Edit in Studio. Official
 recovery retries preserve the selected package and repeat backup/confirmation
 checks. Eight-language labels and desktop/mobile simulated-device checks cover
 both Salt14 and RC1. This website-only follow-up does not rebuild firmware or
-change the draft RC1 release assets; publication remains separate.
+change the draft RC1 release assets. The owner authorized merging the companion
+[PR #38](https://github.com/ChanceTheMaker/Felucca/pull/38) into the candidate
+branch while [PR #37](https://github.com/ChanceTheMaker/Felucca/pull/37) publishes
+the same website feature with Salt14. Candidate firmware promotion remains separate.
 
 ## 1.0.1 candidate update
 

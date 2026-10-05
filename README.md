@@ -17,6 +17,11 @@ firmware installation. Select **FM-1** to edit your connected instrument.
 Current device firmware is **0.9-salt14 beta**. Website updates do not require
 reflashing the device. Experimental Bluetooth builds are not included in this release.
 
+Development follows the [upstream workflow](docs/UPSTREAM_WORKFLOW.md): receive
+updates in focused PRs, keep Salt differences explicit, and prepare selected
+contributions on clean upstream branches. See [upstream status](docs/UPSTREAM_STATUS.md)
+for the reviewed revision, retained features, and contribution ledger.
+
 Salt14 includes keremimo's TRS MIDI receive-buffer fix: note-off messages are
 processed from the bytes actually received, avoiding stuck notes caused by a
 hardware byte-count mismatch. Install the new firmware to receive this fix.

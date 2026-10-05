@@ -1,0 +1,559 @@
+/* SPDX-License-Identifier: GPL-3.0-only
+   Interface finish: layout and typography, independent of the skin palette. */
+.browser-audio #tabs,
+.browser-audio #trackbar, .browser-audio #factlib,
+.browser-audio #play-channel, .browser-audio label:has(#play-channel) { display:none!important; }
+#audio-volume-label:not([hidden]) { display:inline-flex; align-items:center; gap:8px; font-size:12px; }
+#audio-volume { width:90px; }
+#audio-status { font-size:11px; color:var(--dim); }
+.screenshot-gallery { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr)); gap:18px; margin-top:24px; }
+.screenshot-gallery figure { margin:0; min-width:0; overflow:hidden; border:1px solid var(--line); border-radius:10px; background:var(--panel); }
+.screenshot-gallery a { display:block; }
+.screenshot-gallery img { display:block; width:100%; height:auto; }
+.screenshot-gallery figcaption { padding:10px 12px; color:var(--fg); font-size:12px; }
+.mode-switch { display:inline-flex; padding:3px; gap:3px; border-radius:8px; border:1px solid var(--line); background:var(--bg); box-shadow:inset 0 2px 4px #0005; }
+.mode-switch button { min-width:76px; border:0; border-radius:5px; background:transparent; color:var(--dim); box-shadow:none; }
+.mode-switch button[aria-pressed=true] { background:var(--accent); color:var(--ink); box-shadow:0 1px 4px #0005,inset 0 1px #fff5; }
+.audio-scope:not([hidden]) { display:block; grid-column:1 / -1; width:100%; min-width:0; box-sizing:border-box; position:relative; margin:0 0 12px; height:82px; overflow:hidden; border:1px solid var(--line); border-radius:7px; background:var(--lcd-bg); box-shadow:inset 0 3px 10px #0008,0 1px #ffffff15; }
+.audio-scope canvas { display:block; width:100%; height:100%; color:var(--lcd); --scope-grid:color-mix(in srgb,var(--lcd) 12%,var(--lcd-bg)); }
+.scope-label { position:absolute; z-index:1; left:12px; top:7px; font:9px var(--display-font); letter-spacing:1.3px; color:var(--lcd); pointer-events:none; opacity:.8; }
+.scope-label span { opacity:.6; margin-left:8px; }
+/* Molded red keybed shell; the separate wood border and screw details remain. */
+:root[data-skin=stage] .editor-page .play-keyboard:not(.collapsed) {
+  background:linear-gradient(180deg,#ff7c7955 0,#ffbbb733 2px,transparent 5px,transparent 65%,#65000e77 100%) padding-box,
+    linear-gradient(115deg,#de3442 0%,#be182c 42%,#d72638 72%,#a80f23 100%) padding-box,
+    var(--wood-grain) border-box;
+  box-shadow:inset 0 2px 1px #ffb4a9aa,inset 0 -4px 7px #65000d88,0 -8px 28px #0005;
+  color:#fff4eb;
+}
+:root[data-skin=stage] .editor-page .play-keyboard:not(.collapsed) :is(.play-controls,.play-controls label,.play-controls output,.keyboard-tray),
+:root[data-skin=stage] .editor-page .play-keyboard:not(.collapsed)>p { color:#fff4eb; text-shadow:0 1px 1px #670715; }
+:root { --ui-font:'Segoe UI Variable', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; }
+body { font-family:var(--ui-font); font-size:14px; line-height:1.55; background:radial-gradient(ellipse at 20% 0,color-mix(in srgb,var(--chassis) 20%,var(--desk)),var(--desk) 65%); }
+main { max-width:1560px; margin:24px auto; padding:28px; border:1px solid color-mix(in srgb,var(--line) 55%,transparent); border-radius:20px; background:linear-gradient(155deg,color-mix(in srgb,var(--chassis) 24%,var(--bg)),var(--bg) 28%); box-shadow:0 24px 80px #0005,inset 0 1px #ffffff0a; }
+.masthead { padding-bottom:26px; }
+.brand-row { min-height:90px; }
+.brand-row h1 { font:750 clamp(32px,3.5vw,50px)/1.15 var(--ui-font); letter-spacing:-2px; margin:5px 0 7px; color:var(--fg); }
+.brand-row h1 em { font:inherit; color:var(--accent); }
+.brand-row .eyebrow { color:var(--dim); font:600 10px/1.4 var(--ui-font); letter-spacing:2.5px; }
+.brand-row .tagline { color:var(--dim); font:400 12px/1.5 var(--ui-font); letter-spacing:.25px; }
+.brand-links { gap:18px; }
+.brand-links a, .brand-links button.lang { color:var(--dim); font:12px var(--ui-font); text-decoration:none; }
+.brand-links a:hover, .brand-links button.lang:hover { color:var(--fg); }
+.settings-menu { top:24px; }
+.settings-menu > summary { font-size:21px; padding:10px 12px; border-color:var(--line); color:var(--fg); border-radius:10px; background:#ffffff05; }
+.settings-menu[open] > summary { background:var(--accent); color:var(--ink); }
+.settings-menu .appearance { top:calc(100% + 12px); width:320px; gap:18px; padding:20px; border-radius:14px; box-shadow:0 15px 50px #0008; }
+.settings-menu .appearance label > span { font:500 12px var(--ui-font); letter-spacing:0; text-transform:none; }
+.settings-menu .appearance select { font:12px var(--ui-font); height:36px; border-radius:6px; }
+button, select, input { font-family:var(--ui-font); }
+button { background:var(--button); border:1px solid color-mix(in srgb,var(--line) 65%,transparent); border-radius:7px; padding:7px 12px; font-size:12px; box-shadow:inset 0 1px #ffffff09; transition:background .15s,border-color .15s,box-shadow .15s; }
+button:not(:disabled):hover { filter:none; border-color:var(--accent); background:color-mix(in srgb,var(--accent) 10%,var(--button)); }
+button:not(:disabled):active { transform:none; box-shadow:inset 0 2px 5px #0003; }
+button:disabled { opacity:.4; }
+select, input[type=text], input[type=number], input[type=search] { border-radius:6px; background:var(--lcd-bg); color:var(--lcd); padding:7px 9px; min-height:34px; }
+.top { background:color-mix(in srgb,var(--panel) 85%,transparent); border:1px solid var(--line); border-radius:12px; box-shadow:none; padding:14px 14px 0; gap:12px 16px; }
+.top > .bar { gap:12px; }
+#connect, #go { background:var(--accent); color:var(--ink); border-color:transparent; padding:9px 16px; border-radius:8px; }
+#connect:hover, #go:hover { background:color-mix(in srgb,var(--accent) 85%,white); color:var(--ink); }
+#version, #live, #mock { font:11px var(--ui-font); color:var(--dim); }
+.top #status { display:flex; align-items:center; justify-content:flex-end; background:none; box-shadow:none; color:var(--fg); padding:0; font:12px var(--ui-font); }
+.tabs { gap:4px; background:color-mix(in srgb,var(--bg) 80%,transparent); border-radius:8px; padding:4px; margin-bottom:0; }
+.tabs button { border:0; box-shadow:none; border-radius:6px; background:none; padding:9px 12px; color:var(--dim); font:600 12px var(--ui-font); letter-spacing:0; text-transform:none; }
+.tabs button::before { display:none; }
+.tabs button[aria-selected=true] { background:var(--accent); color:var(--ink); box-shadow:0 2px 6px #0002; }
+.tabs button:not([aria-selected=true]):hover { color:var(--fg); background:var(--button); }
+.trackbar { padding:0 2px 12px; font-size:11px; }
+.seg { gap:6px; }
+.seg button { border-radius:5px; padding:4px 12px; }
+.panel { margin:18px 0; padding:0; background:none; border:none; box-shadow:none; }
+.panel:not(#p-sound) { background:var(--bg); padding:18px; border:1px solid var(--line); border-radius:12px; }
+.browser { grid-template-columns:160px minmax(200px,1fr) auto; background:var(--lcd-bg); border:1px solid color-mix(in srgb,var(--lcd) 24%,var(--lcd-bg)); box-shadow:inset 0 1px 12px #0002; border-radius:10px; padding:14px 16px; gap:20px; }
+.browser label { font:600 10px var(--ui-font); letter-spacing:1.3px; }
+.browser select, #preset { font:500 14px var(--ui-font); height:38px; padding:6px 9px; border-color:color-mix(in srgb,var(--lcd) 20%,transparent); }
+.browser .bar { gap:5px; }
+.browser button { font:500 11px var(--ui-font); padding:5px 10px; }
+#ctlhelp { font:11px/1.5 var(--ui-font); margin:12px 2px 16px; color:var(--dim); }
+.groups { gap:12px; }
+.groups .group, .groups .group[data-controls=knobs] { padding:14px; border-radius:12px; border:1px solid color-mix(in srgb,var(--line) 75%,var(--panel)); background:linear-gradient(155deg,#ffffff06,transparent 65%),var(--panel); box-shadow:0 2px 4px #0001,inset 0 1px #ffffff08; }
+.control-bank { position:relative; transition:border-color .15s,box-shadow .15s; }
+.control-bank:hover { border-color:color-mix(in srgb,var(--accent) 50%,var(--line)); }
+.groups .control-bank[data-controls=knobs] { grid-template-rows:auto 1fr; gap:10px; }
+.control-bank h2 { margin:0 0 8px; padding:3px 100px 10px 0; min-height:32px; border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent); font:650 11px/1.3 var(--ui-font); letter-spacing:.6px; color:var(--fg); }
+.card-tools { position:absolute; right:12px; top:11px; margin:0; gap:3px; }
+.card-tools .card-style { min-height:25px; padding:2px 4px; width:70px; color:var(--dim); font:10px var(--ui-font); border-color:transparent; background:transparent; }
+.card-tools .card-style:hover, .card-tools .card-style:focus { background:var(--lcd-bg); color:var(--lcd); border-color:var(--line); }
+.card-grip { font-size:18px; height:25px; min-width:22px; padding:0 3px; background:none; box-shadow:none; }
+.groups .group[data-controls=knobs] .row { gap:5px; padding:0 0 2px; }
+.groups .group[data-controls=knobs] .row > span:first-child { font:600 10px var(--ui-font); letter-spacing:.5px; color:var(--dim); }
+.groups .group[data-controls=knobs] .row .v { font:500 11px var(--display-font); color:var(--fg); }
+.groups .group[data-controls=knobs] .row select { border-radius:5px; font:11px var(--ui-font); padding:4px; }
+[data-controls=knobs] .dial-control { width:52px; height:52px; margin:2px auto; }
+[data-controls=knobs] .dial-control::before { opacity:.65; }
+[data-controls=knobs] .dial-face { inset:7px; box-shadow:0 3px 5px #0007,inset 0 1px 2px #fff6; }
+[data-controls=knobs] .dial-face::after { left:16px; top:3px; height:11px; transform-origin:50% 15px; }
+.groups .group[data-controls=sliders] .row { min-height:34px; }
+h2 { font-family:var(--ui-font); }
+.list { border-radius:8px; }
+.list td { padding:7px 10px; }
+.grid { gap:6px; }
+.grid button { border-radius:7px; }
+.strip { border-radius:10px; }
+.editor-page .play-keyboard { max-width:1504px; background:linear-gradient(#ffffff04,transparent),var(--bg); border:1px solid var(--line); border-top:2px solid color-mix(in srgb,var(--chassis) 70%,var(--accent)); border-radius:14px 14px 0 0; padding:12px 16px 8px; box-shadow:0 -12px 35px #0005; }
+.editor-page .play-controls { gap:8px 16px; margin:0 0 10px; font:11px var(--ui-font); color:var(--dim); }
+.play-controls button, .play-controls select { font:11px var(--ui-font); min-height:30px; }
+.play-controls input[type=range] { height:18px; }
+.octave-controls { gap:5px; }
+.editor-page .play-controls .keyboard-tray { width:28px; height:28px; min-height:0; font-size:17px; background:none; border-color:transparent; color:var(--dim); }
+.piano-scroll { padding:5px 5px 3px; border-radius:6px; }
+.editor-page .play-keyboard > p { font:10px var(--ui-font); color:var(--dim); margin:6px 0 0; }
+.editor-page .play-keyboard.collapsed { padding:6px 12px; border-radius:10px 10px 0 0; }
+.editor-page .play-keyboard.collapsed .play-controls { margin:0; }
+.editor-page .play-keyboard.collapsed .keyboard-tray { font-size:11px; }
+footer { color:var(--dim); font:11px/1.8 var(--ui-font); margin-top:22px; }
+footer a { text-underline-offset:3px; }
+.hint { border:1px solid var(--line); border-radius:10px; color:var(--dim); }
+/* The finish follows each skin's personality without sacrificing legibility. */
+[data-skin=matrix] main, [data-skin=midnight] main { background:linear-gradient(145deg,color-mix(in srgb,var(--chassis) 30%,var(--bg)),var(--bg) 50%); }
+[data-skin=matrix] .brand-row h1 { font-family:var(--display-font); text-shadow:0 0 22px #67ff9920; }
+[data-skin=dx] main { border-radius:10px; }
+[data-skin=dx] .tabs button { border:0; }
+[data-skin=dx] .brand-row h1 { letter-spacing:-1px; }
+[data-skin=chocolate] main { border-color:#80613c; box-shadow:0 24px 80px #0005,inset 0 1px #d7ab7040; }
+[data-skin=chocolate] .brand-row h1 { font-family:Georgia,serif; font-style:italic; letter-spacing:-2px; }
+[data-skin=vapor] main { background:linear-gradient(135deg,color-mix(in srgb,var(--chassis) 25%,var(--bg)),var(--bg) 50%); }
+[data-skin=vapor] .brand-row h1 { text-shadow:2px 2px #723f8740; font-style:italic; }
+[data-skin=space] main, [data-skin=bauhaus] main { box-shadow:0 24px 70px #0003; }
+[data-skin=bauhaus] main { border-radius:8px; }
+[data-skin=bauhaus] .groups .group { border-radius:6px; }
+[data-skin=arcade] .tabs button { border:0; }
+[data-mode=light] main { background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 5%,white),var(--bg) 40%); }
+[data-mode=light] .brand-row h1 { color:var(--fg); text-shadow:none; }
+[data-contrast=high] main { background:var(--bg); border:2px solid var(--fg); box-shadow:none; }
+[data-contrast=high] .groups .group { background:var(--bg); border:1px solid var(--fg); box-shadow:none; }
+[data-contrast=high] .tabs button { border:1px solid var(--fg); }
+[data-contrast=high] .control-bank h2, [data-contrast=high] .row > span:first-child { color:var(--fg); }
+[data-contrast=high] .brand-row h1 { text-shadow:none; }
+.installer-page main { max-width:1180px; }
+.installer-page .install-console { padding:30px; border-radius:14px; border-color:var(--line); box-shadow:none; }
+.installer-hero { display:grid; grid-template-columns:1fr auto; gap:28px; align-items:center; padding:8px 0 32px; margin-bottom:28px; border-bottom:1px solid var(--line); }
+.installer-hero h2 { font:700 clamp(30px,4vw,48px)/1.13 var(--ui-font); letter-spacing:-1.8px; text-transform:none; border:0; margin:0 0 16px; padding:0; }
+.installer-hero p { max-width:550px; color:var(--dim); font:15px/1.7 var(--ui-font); margin:0; }
+.hero-link { display:inline-block; padding:13px 20px; border-radius:9px; background:var(--accent); color:var(--ink); text-decoration:none; font-weight:650; white-space:nowrap; }
+.installer-page .features { margin-top:34px; }
+.installer-page .features h2 { font:650 24px var(--ui-font); letter-spacing:-.6px; text-transform:none; }
+.installer-page .features ul { gap:12px; margin-bottom:20px; }
+.installer-page .features li { padding:22px; border-radius:10px; border:1px solid var(--line); font:14px/1.6 var(--ui-font); }
+.installer-page .features strong { font-size:15px; margin-bottom:8px; }
+.installer-page .small { font-size:12px; line-height:1.7; }
+:root[data-skin] main { background:linear-gradient(155deg,color-mix(in srgb,var(--chassis) 24%,var(--bg)),var(--bg) 28%); box-shadow:0 24px 80px #0005,inset 0 1px #ffffff0a; }
+:root[data-mode=light] main { background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 5%,white),var(--bg) 40%); box-shadow:0 20px 60px #0002; }
+:root[data-contrast=high] main { background:var(--bg); box-shadow:none; }
+:root[data-full-width=true] main { max-width:none; }
+.groups .group[data-controls=knobs] .row > span:first-child { font-size:11px; }
+.groups .group[data-controls=knobs] .row .v { font-size:12px; }
+@media(min-width:1600px) { main { margin-top:32px; } }
+@media(max-width:1150px) { .browser { grid-template-columns:140px minmax(150px,1fr) auto; } }
+@media(max-width:780px) {
+  main { margin:10px; padding:18px; border-radius:14px; }
+  .masthead { padding-bottom:18px; }
+  .brand-row { min-height:80px; }
+  .brand-row h1 { font-size:32px; letter-spacing:-1.3px; }
+  .brand-row .tagline { font-size:10px; }
+  .settings-menu { top:10px; }
+  .brand-links { gap:12px; }
+  .brand-links a, .brand-links button.lang { font-size:11px; }
+  .top { padding:10px 10px 0; }
+  .top #status { justify-content:flex-start; }
+  .tabs { flex-wrap:wrap; }
+  .tabs button { flex:1 1 80px; font-size:11px; padding:8px 6px; }
+  .browser { grid-template-columns:1fr 1fr; gap:10px; padding:12px; }
+  .browser > div { grid-column:1/-1; }
+  .browser .bar { display:flex; }
+  .groups { gap:10px; }
+  .panel:not(#p-sound) { padding:12px; }
+  .installer-page .install-console { padding:18px; }
+  .installer-hero { grid-template-columns:1fr; gap:18px; }
+  .hero-link { justify-self:start; }
+}
+@media(max-width:600px), (max-height:650px) {
+  .editor-page .play-keyboard { padding:8px 10px 6px; border-radius:10px 10px 0 0; }
+  .editor-page .play-controls { gap:5px 10px; margin-bottom:6px; }
+  .editor-page .play-controls button, .editor-page .play-controls select { min-height:26px; font-size:10px; }
+  .editor-page .play-keyboard > p { font-size:9px; }
+}
+@media(prefers-reduced-motion:reduce) { button, .control-bank { transition:none; } }
+
+/* Material identities. Layout stays shared; faceplates and controls do not. */
+:root[data-skin] {
+  --faceplate:linear-gradient(115deg,#ffffff16,transparent 45%),linear-gradient(var(--chassis),var(--chassis-dark));
+  --badge-fg:#fff4e5;
+  --metal:conic-gradient(from 25deg,#9ea3a6,#41474b 22%,#c6c9c8 42%,#62686b 60%,#d3d6d4 82%,#9ea3a6);
+  --card-radius:8px;
+}
+:root[data-skin] main {
+  background:var(--bg);
+  border-top:0;
+  box-shadow:0 24px 70px #0006,inset 0 1px #ffffff24;
+}
+.masthead {
+  margin:-28px -28px 22px; padding:25px 28px 22px;
+  border-radius:19px 19px 3px 3px;
+  background:var(--faceplate);
+  border-top:1px solid #ffffff40; border-bottom:4px solid #0005;
+  box-shadow:inset 0 1px #ffffff20,0 3px 8px #0003;
+}
+.brand-row h1 {
+  font-family:var(--brand-font); font-weight:900; color:var(--badge-fg);
+  letter-spacing:-1.8px; text-shadow:0 2px 1px #0005;
+}
+.brand-row h1 em { font:inherit; letter-spacing:inherit; color:inherit; }
+.brand-row .eyebrow,.brand-row .tagline,.brand-links a,.brand-links button.lang { color:var(--badge-fg); }
+.brand-row .eyebrow { opacity:.86; }
+.brand-row .tagline { font-family:var(--display-font); font-size:10px; letter-spacing:1.3px; }
+.settings-menu > summary { background:#0003; color:var(--badge-fg); border-color:#ffffff40; box-shadow:inset 0 1px #ffffff24,0 2px 3px #0003; }
+.groups .group,.groups .group[data-controls=knobs] {
+  border-radius:var(--card-radius);
+  background:repeating-linear-gradient(0deg,#ffffff02 0 1px,transparent 1px 3px),linear-gradient(125deg,#ffffff09,transparent 50%),var(--panel);
+  border-color:color-mix(in srgb,var(--line) 75%,var(--panel));
+  box-shadow:inset 0 1px #ffffff24,inset 0 -2px #0003,0 4px 8px #0002;
+}
+.control-bank h2 { font-family:var(--font); color:var(--fg); letter-spacing:1px; }
+.control-bank::after { top:auto; bottom:7px; right:7px; background:linear-gradient(135deg,transparent 40%,#0007 43% 56%,transparent 60%),var(--metal); box-shadow:0 1px 2px #0005; }
+[data-controls=knobs] .dial-face {
+  background:radial-gradient(circle at 36% 25%,#ffffff24,transparent 48%),repeating-conic-gradient(#0002 0deg 3deg,transparent 3deg 12deg),linear-gradient(var(--knob-top),var(--knob-bottom));
+  border:2px solid #16191b;
+  box-shadow:0 4px 5px #0009,0 0 0 2px #0005,inset 0 1px 2px #ffffffa0;
+}
+[data-controls=knobs] .dial-face::before { content:''; position:absolute; inset:5px; border-radius:50%; background:var(--metal); box-shadow:inset 0 0 0 1px #ffffff30,0 1px 2px #0008; }
+[data-controls=knobs] .dial-face::after { left:15px; top:1px; height:12px; transform-origin:50% 15px; background:#fff2c9; box-shadow:0 1px 2px #000; }
+.groups .group[data-controls=knobs] .row .v { padding:2px 5px; min-width:36px; width:auto; background:var(--lcd-bg); color:var(--lcd); border-radius:3px; box-shadow:inset 0 1px 3px #0005,0 1px #ffffff12; }
+.browser { border:3px solid color-mix(in srgb,var(--line) 65%,#000); background:linear-gradient(165deg,#ffffff09,transparent 45%),var(--lcd-bg); box-shadow:inset 0 3px 8px #0006,0 1px #ffffff30; }
+.tabs button { background:linear-gradient(#ffffff12,transparent 45%,#0002),var(--button); color:var(--fg); border:1px solid #0004; border-bottom:3px solid #0005; box-shadow:inset 0 1px #ffffff24,0 2px 3px #0003; }
+.tabs button[aria-selected=true] { background:linear-gradient(#ffffff15,#0000000a),var(--accent); box-shadow:inset 0 1px #ffffff50,0 0 12px color-mix(in srgb,var(--accent) 15%,transparent); }
+.tabs button:active { border-bottom-width:1px; }
+.control-bank[data-controls=sliders] input[type=range] { appearance:none; height:8px; border-radius:5px; border:1px solid #0008; background:color-mix(in srgb,var(--panel) 45%,#000); box-shadow:inset 0 2px 3px #0008,0 1px #ffffff25; }
+.control-bank[data-controls=sliders] input[type=range]::-webkit-slider-thumb { appearance:none; width:15px; height:25px; border:1px solid #17191a; border-radius:3px; background:linear-gradient(transparent 44%,#202426 45% 53%,transparent 54%),linear-gradient(90deg,#72797b,#e3e5e2 25%,#a1a6a5 65%,#666d70); box-shadow:1px 3px 4px #0007,inset 0 1px #fff9; }
+.control-bank[data-controls=sliders] input[type=range]::-moz-range-thumb { width:15px; height:25px; border:1px solid #17191a; border-radius:3px; background:linear-gradient(transparent 44%,#202426 45% 53%,transparent 54%),linear-gradient(90deg,#72797b,#e3e5e2 25%,#a1a6a5); box-shadow:1px 3px 4px #0007; }
+
+/* Stage: red lacquer, black modules, white screen-printed lettering. */
+:root[data-skin=stage] { --faceplate:repeating-linear-gradient(0deg,#ffffff03 0 1px,transparent 1px 3px),linear-gradient(110deg,#d02d36,#99151f 70%,#76121b); }
+[data-skin=stage] .brand-row h1 { font-style:italic; letter-spacing:-2.5px; }
+[data-skin=stage] .groups .group { border-top:3px solid #b5202a; }
+[data-skin=stage] .editor-page .play-keyboard { border-top-color:#ca2832; }
+
+/* DX: olive chassis, mint membrane strips, green character LCD. */
+:root[data-skin=dx] { --faceplate:linear-gradient(115deg,#55594c,#30372e); --card-radius:2px; }
+[data-skin=dx] .brand-row h1 { font-family:Arial,sans-serif; font-style:italic; letter-spacing:2px; text-transform:uppercase; }
+[data-skin=dx] .control-bank h2 { border-bottom:3px solid #82a99e; }
+[data-skin=dx] .tabs button { border-radius:2px; border-top:5px solid #87aaa0; font-family:var(--display-font); text-transform:uppercase; font-size:11px; }
+[data-skin=dx] .browser { border-radius:2px; font-family:var(--display-font); }
+[data-skin=dx] .dial-face::before { background:linear-gradient(#484c43,#242a26); }
+
+/* Matrix: phosphor displays and dark terminal hardware. */
+:root[data-skin=matrix] { --faceplate:repeating-linear-gradient(0deg,#70ff9908 0 1px,transparent 1px 4px),linear-gradient(120deg,#071c11,#020906); --badge-fg:#94ffae; --card-radius:2px; }
+[data-skin=matrix] .brand-row h1 { font-family:Consolas,monospace; letter-spacing:-2px; text-shadow:0 0 18px #68ff9960; }
+[data-skin=matrix] .control-bank h2,[data-skin=matrix] .tabs button { font-family:Consolas,monospace; }
+[data-skin=matrix] .groups .group { border-style:solid; border-top:2px solid var(--accent); }
+[data-skin=matrix] .dial-face::before { background:radial-gradient(circle at 35% 25%,#284d35,#091910); }
+[data-skin=matrix] .dial-face::after { background:#91ffb1; box-shadow:0 0 5px #54ff82; }
+
+/* Chocolate Factory: plum velvet, gilded labels, warm brass hardware. */
+:root[data-skin=chocolate] { --faceplate:repeating-linear-gradient(90deg,#ffffff04 0 2px,transparent 2px 8px),linear-gradient(120deg,#75336f,#36192f); --badge-fg:#ffe0a0; --metal:conic-gradient(from 25deg,#c99f55,#6c431f,#f1d79c,#876033,#ffe8ae,#c99f55); --card-radius:14px; }
+[data-skin=chocolate] .brand-row h1 { font-family:Georgia,serif; font-style:italic; letter-spacing:-2px; }
+[data-skin=chocolate] .masthead { border-bottom-color:#af8543; }
+[data-skin=chocolate] .groups .group { border-color:#967346; box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--panel) 80%,#ab8546),0 4px 8px #0003; }
+[data-skin=chocolate] .control-bank h2 { font-family:Georgia,serif; font-size:12px; }
+[data-skin=chocolate] .tabs button { border-radius:12px 12px 5px 5px; }
+
+/* Vaporwave: sunset neon, chrome, and translucent lavender panels. */
+:root[data-skin=vapor] { --faceplate:linear-gradient(120deg,#713675,#443384 65%,#215f71); --badge-fg:#fff1ff; --metal:conic-gradient(from 25deg,#f2bfff,#61558b,#d5faff,#7d74b6,#ffe0fc,#f2bfff); }
+[data-skin=vapor] .brand-row h1 { font-family:'Trebuchet MS',sans-serif; font-style:italic; letter-spacing:-2px; text-shadow:2px 3px #913075,-1px -1px #8be6f3; }
+[data-skin=vapor] .masthead { border-bottom:3px solid #79e5ef; }
+[data-skin=vapor] .groups .group { border-top:2px solid #cb7bb9; box-shadow:inset 0 1px #f3c6ff40,0 3px 12px #ae45b313; }
+[data-skin=vapor] .browser { border-image:none; border-color:#9c7cb7; }
+
+/* Studio, laboratory and arcade instruments each have their own construction. */
+:root[data-skin=midnight] { --faceplate:repeating-linear-gradient(0deg,#ffffff05 0 1px,transparent 1px 3px),linear-gradient(115deg,#353b43,#11151a); --badge-fg:#f1cb8f; }
+[data-skin=midnight] .groups .group { border-top:2px solid #9d804e; }
+:root[data-skin=space] { --faceplate:linear-gradient(120deg,#e2dfca,#9fa99c); --badge-fg:#233641; --card-radius:5px; }
+[data-skin=space] .brand-row h1 { text-shadow:0 1px #fff7; letter-spacing:1px; text-transform:uppercase; }
+[data-skin=space] .control-bank h2 { font-family:Consolas,monospace; border-bottom:3px solid #bd6c43; }
+:root[data-skin=bauhaus] { --faceplate:linear-gradient(120deg,#f6f0df,#d7d3c5); --badge-fg:#20262b; --card-radius:2px; }
+[data-skin=bauhaus] .brand-row h1 { font-style:normal; text-shadow:none; letter-spacing:-2px; }
+[data-skin=bauhaus] .brand-row h1 em { color:#ae2229; }
+[data-skin=bauhaus] .masthead { border-bottom:4px solid #284e7a; }
+[data-skin=bauhaus] .dial-face::before { background:radial-gradient(circle at 35% 25%,#474c4c,#161b1b); }
+[data-skin=bauhaus] .groups .group { border-top-width:4px; }
+:root[data-skin=ocean] { --faceplate:repeating-linear-gradient(0deg,#ffffff04 0 1px,transparent 1px 3px),linear-gradient(115deg,#286d7d,#153e55); --badge-fg:#d4fff3; }
+[data-skin=ocean] .groups .group { border-top:2px solid #5fa49e; }
+:root[data-skin=arcade] { --faceplate:linear-gradient(115deg,#50223e,#241b39); --badge-fg:#ffdf9c; --card-radius:6px; }
+[data-skin=arcade] .brand-row h1 { font-family:Consolas,monospace; letter-spacing:-2px; text-shadow:3px 3px #a82c57; }
+[data-skin=arcade] .tabs button { border-radius:8px 8px 4px 4px; border-bottom-width:4px; }
+[data-skin=arcade] .dial-face::before { background:radial-gradient(circle at 35% 25%,#e8909f,#672b49); }
+
+/* Light faceplates retain identity; readable panel ink follows light tokens. */
+[data-mode=light] .control-bank h2 { color:var(--fg); }
+:root[data-mode=light] .brand-row h1 { color:var(--badge-fg); }
+:root[data-mode=light][data-skin=bauhaus] .brand-row h1 em { color:#ae2229; }
+:root[data-contrast=high] { --faceplate:var(--bg); --badge-fg:var(--fg); --card-radius:6px; }
+:root[data-contrast=high] main { box-shadow:none; }
+[data-contrast=high] .masthead { border:0; border-bottom:2px solid var(--fg); box-shadow:none; }
+[data-contrast=high] .brand-row h1 { font-family:var(--ui-font); text-shadow:none; }
+[data-contrast=high] .groups .group { background:var(--bg); border:2px solid var(--fg); box-shadow:none; }
+[data-contrast=high] .control-bank::after,[data-contrast=high] .dial-face::before { display:none; }
+[data-contrast=high] .dial-face { background:#000; border:2px solid #fff; box-shadow:0 0 0 1px #000; }
+[data-contrast=high] .dial-face::after { background:#fff; }
+[data-contrast=high] .browser,[data-contrast=high] .groups .group[data-controls=knobs] .row .v { background:var(--bg); color:var(--fg); box-shadow:none; }
+[data-contrast=high] .tabs button { background:var(--bg); color:var(--fg); border:2px solid var(--fg); box-shadow:none; }
+[data-contrast=high] .tabs button[aria-selected=true] { background:var(--accent); color:var(--ink); }
+[data-contrast=high] .settings-menu > summary { background:var(--bg); color:var(--fg); border-color:var(--fg); box-shadow:none; }
+@media(max-width:780px) {
+  .masthead { margin:-18px -18px 18px; padding:20px 18px 18px; border-radius:13px 13px 3px 3px; }
+  .brand-row .tagline { font-size:9px; letter-spacing:.5px; }
+}
+
+/* Wooden end cheeks: decorative, outside the controls and their hit areas.
+   The DX, digital, space and high-contrast skins retain their native materials. */
+:root[data-skin=stage] { --wood-base:#713626; --wood-light:#be7850; --wood-dark:#35170f; }
+:root[data-skin=midnight] { --wood-base:#59402b; --wood-light:#9d7851; --wood-dark:#24190f; }
+:root[data-skin=chocolate] { --wood-base:#673422; --wood-light:#b48248; --wood-dark:#2e160e; }
+:root[data-skin=bauhaus] { --wood-base:#b98d55; --wood-light:#ead0a0; --wood-dark:#74532e; }
+:root[data-skin=ocean] { --wood-base:#8d6039; --wood-light:#c69b60; --wood-dark:#49301d; }
+:root[data-skin] {
+  --wood-grain:
+    linear-gradient(90deg,#00000012,transparent 3%,#ffffff14 23%,transparent 65%,transparent 97%,#00000016),
+    repeating-linear-gradient(88deg,transparent 0 3px,#15090135 4px,transparent 5px 11px,#ffe7b51c 12px,transparent 13px 19px),
+    repeating-linear-gradient(93deg,transparent 0 17px,#180c0733 19px,transparent 21px 37px),
+    repeating-radial-gradient(ellipse at 10% 30%,transparent 0 5px,#1d0b061a 6px,transparent 7px 12px),
+    linear-gradient(100deg,var(--wood-base),color-mix(in srgb,var(--wood-base) 75%,var(--wood-light)) 24%,color-mix(in srgb,var(--wood-base) 55%,var(--wood-light)) 55%,var(--wood-base) 100%);
+}
+/* The cabinet is the box itself, with a recessed metal interior. */
+:root:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) main {
+  position:relative;
+  border:solid transparent; border-width:12px 30px 20px;
+  border-radius:22px; padding:24px;
+  background:linear-gradient(var(--bg),var(--bg)) padding-box,var(--wood-grain) border-box;
+  box-shadow:inset 0 0 0 2px #0008,0 3px 0 var(--wood-dark),0 6px 0 #21150f,0 28px 65px #0006;
+}
+:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) .masthead {
+  margin:-24px -24px 22px; padding:24px;
+  border-radius:8px 8px 0 0;
+  box-shadow:inset 0 2px 5px #0006,0 2px 0 #0007,0 3px 0 #ffffff15;
+}
+/* Countersunk fasteners are located in the wood, not in the content. */
+:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) main::before,
+:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) main::after {
+  content:''; position:absolute; top:22px; width:8px; height:8px;
+  pointer-events:none; border-radius:50%;
+  background:linear-gradient(130deg,transparent 42%,#151515 44% 56%,transparent 58%),radial-gradient(circle at 35% 25%,#c0b7a1,#3a352f 70%);
+  box-shadow:0 0 0 2px #160c0750,inset 0 1px #fff5,0 1px 1px #0009;
+}
+:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) main::before { left:-19px; }
+:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) main::after { right:-19px; }
+:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) .editor-page .play-keyboard:not(.collapsed) {
+  border:solid transparent; border-width:8px 24px 0; border-radius:15px 15px 0 0;
+  background:linear-gradient(150deg,color-mix(in srgb,var(--panel) 85%,white),var(--bg) 55%) padding-box,var(--wood-grain) border-box;
+  box-shadow:inset 0 1px 4px #0009,0 -8px 28px #0005;
+  padding:12px 14px 8px;
+}
+@media(max-width:780px) {
+  :root:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) main {
+    border-width:7px 12px 12px; border-radius:16px; padding:14px;
+  }
+  :is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) .masthead { margin:-14px -14px 18px; padding:18px 14px; }
+  :is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) main::before,
+  :is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) main::after { display:none; }
+  :is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) .editor-page .play-keyboard:not(.collapsed) { border-width:5px 10px 0; padding:8px 8px 6px; }
+}
+
+/* Licensed display faces are self-hosted wordmark subsets, not UI fonts. */
+:root[data-skin=stage] { --wordmark:'Racing Sans One'; --wordmark-weight:400; }
+:root[data-skin=matrix] { --wordmark:'Orbitron'; --wordmark-weight:700; }
+:root[data-skin=dx] { --wordmark:'Audiowide'; --wordmark-weight:400; }
+:root[data-skin=chocolate] { --wordmark:'Berkshire Swash'; --wordmark-weight:400; }
+:root[data-skin=vapor] { --wordmark:'Righteous'; --wordmark-weight:400; }
+:root[data-skin=midnight] { --wordmark:'Syncopate'; --wordmark-weight:700; }
+:root[data-skin=space] { --wordmark:'Orbitron'; --wordmark-weight:700; }
+:root[data-skin=bauhaus] { --wordmark:'Josefin Sans'; --wordmark-weight:700; }
+:root[data-skin=ocean] { --wordmark:'Sora'; --wordmark-weight:700; }
+:root[data-skin=arcade] { --wordmark:'Bungee'; --wordmark-weight:400; }
+:root[data-skin=hicon] { --wordmark:var(--ui-font); --wordmark-weight:800; }
+:root[data-skin] .brand-row h1 {
+  font-family:var(--wordmark),var(--brand-font); font-weight:var(--wordmark-weight);
+  font-style:normal; font-synthesis:none; font-size:clamp(32px,3.5vw,54px);
+  line-height:1.3; letter-spacing:-.6px; text-transform:none;
+}
+:root[data-skin] .brand-row h1 em { font:inherit; letter-spacing:inherit; }
+:root[data-skin=midnight] .brand-row h1 { font-size:clamp(30px,3.2vw,48px); letter-spacing:-1px; }
+:root[data-skin=arcade] .brand-row h1 { letter-spacing:0; text-shadow:0 2px #241526,3px 4px #b13660; }
+:root[data-skin=vapor] .brand-row h1 { text-shadow:2px 3px #913075,-1px -1px #8be6f3; }
+:root[data-skin=chocolate] .brand-row h1 { text-shadow:0 1px #3e2411,0 3px 3px #19091b80; }
+@media(max-width:780px) {
+  :root[data-skin] .brand-row h1 { font-size:clamp(23px,6vw,36px); letter-spacing:-.5px; }
+  :root[data-skin=midnight] .brand-row h1 { font-size:clamp(20px,5.3vw,32px); letter-spacing:-.8px; }
+}
+
+/* Hardware detail layer: all indicators reflect existing control states. */
+:root:not([data-contrast=high]) .top {
+  border:1px solid color-mix(in srgb,var(--line) 70%,#000);
+  box-shadow:inset 0 1px #ffffff30,inset 0 -2px #0006,0 3px 6px #0003;
+  background:linear-gradient(120deg,#ffffff08,transparent 50%),var(--panel);
+}
+:root:not([data-contrast=high]) .browser { position:relative; padding-top:20px; border-width:5px; border-radius:9px; }
+:root:not([data-contrast=high]) .browser::before {
+  content:''; position:absolute; inset:0; border-radius:4px; pointer-events:none;
+  background:linear-gradient(172deg,#ffffff14 0%,#ffffff05 23%,transparent 23.5% 100%);
+  box-shadow:inset 0 2px 5px #0009,inset 0 -1px #ffffff18;
+}
+:root:not([data-contrast=high]) .browser label { letter-spacing:1.7px; text-shadow:0 0 8px color-mix(in srgb,var(--lcd) 18%,transparent); }
+:root:not([data-contrast=high]) .browser select { box-shadow:inset 0 1px 3px #0005,0 1px #ffffff12; }
+:root:not([data-contrast=high]) :is(.browser button,.seg button,.octave-controls button,#play-stop,#play-sustain) {
+  background:linear-gradient(180deg,#ffffff15,transparent 32%,#00000012 76%,#0003),var(--button);
+  border:1px solid #0005; border-bottom:3px solid #0008;
+  box-shadow:inset 0 1px #ffffff40,inset 1px 0 #ffffff10,0 2px 3px #0005;
+}
+:root:not([data-contrast=high]) :is(.browser button,.seg button,.octave-controls button,#play-stop,#play-sustain):not(:disabled):active {
+  box-shadow:inset 0 2px 4px #0007; transform:translateY(1px);
+}
+:root:not([data-contrast=high]) .seg button[aria-pressed=true],
+:root:not([data-contrast=high]) #play-sustain[aria-pressed=true] {
+  color:var(--ink); background:linear-gradient(#0002,#ffffff0a),var(--accent);
+  box-shadow:inset 0 2px 4px #0005,0 0 7px color-mix(in srgb,var(--accent) 25%,transparent);
+}
+/* Jewel lenses on selected tabs and the actual sustain state. */
+:root:not([data-contrast=high]) .tabs button::before,
+:root:not([data-contrast=high]) #play-sustain::before {
+  content:''; display:inline-block; width:6px; height:6px; margin-right:7px; vertical-align:middle;
+  border:1px solid #000b; border-radius:50%;
+  background:radial-gradient(circle at 35% 25%,#ffffff50,#252a27 65%);
+  box-shadow:0 0 0 1px #ffffff20,inset 0 1px 2px #0008;
+}
+:root:not([data-contrast=high]) .tabs button[aria-selected=true]::before,
+:root:not([data-contrast=high]) #play-sustain[aria-pressed=true]::before {
+  background:radial-gradient(circle at 35% 25%,#fff,#d6ff97 25%,#2c8728 80%);
+  box-shadow:0 0 0 1px #0005,0 0 5px #99ff6a80;
+}
+/* Encoder travel follows the actual parameter value, with a 90-degree dead zone. */
+:root:not([data-contrast=high]) [data-controls=knobs] .dial-control::after {
+  content:''; position:absolute; inset:3px; pointer-events:none; border-radius:50%;
+  background:conic-gradient(from 225deg,var(--accent) 0deg calc(var(--turn,-135deg) + 135deg),var(--line) calc(var(--turn,-135deg) + 135deg) 270deg,transparent 270deg);
+  mask:radial-gradient(transparent 62%,#000 65% 70%,transparent 73%);
+}
+:root:not([data-contrast=high]) .groups .group[data-controls=knobs] .row > span:first-child {
+  font-size:10px; font-weight:700; letter-spacing:.8px;
+}
+:root:not([data-contrast=high]) .groups .group[data-controls=knobs] .row .v {
+  border:1px solid color-mix(in srgb,var(--lcd) 15%,var(--lcd-bg));
+  box-shadow:inset 0 2px 3px #0005,0 1px #ffffff15;
+}
+/* Rack fasteners sit in the unused lower corners of the parameter panels. */
+:root:not([data-contrast=high]) .control-bank::before,
+:root:not([data-contrast=high]) .control-bank::after {
+  content:''; position:absolute; bottom:7px; width:6px; height:6px; pointer-events:none;
+  border:1px solid #0008; border-radius:50%;
+  background:linear-gradient(135deg,transparent 40%,#17191b 43% 56%,transparent 59%),var(--metal);
+  box-shadow:0 0 0 1px #0004,0 1px #ffffff18;
+}
+:root:not([data-contrast=high]) .control-bank::before { left:7px; }
+:root:not([data-contrast=high]) .control-bank::after { right:7px; }
+/* The membrane instruments retain their flat switches; arcade gets round keycaps. */
+[data-skin=dx] .tabs button::before,[data-skin=matrix] .tabs button::before { border-radius:1px; }
+[data-skin=arcade] .seg button { border-radius:50%; min-width:32px; }
+[data-mode=light] .browser label { text-shadow:none; }
+@media(max-width:780px) {
+  :root:not([data-contrast=high]) .tabs button::before { margin-right:4px; width:5px; height:5px; }
+}
+
+/* Compact nameplate; no bottom rule or ornamental perforation row. */
+:root[data-skin] .masthead { padding-top:12px; padding-bottom:12px; margin-bottom:14px; border-bottom:0; box-shadow:inset 0 1px 3px #0003; }
+:root[data-skin] .brand-row { min-height:0; }
+:root[data-skin] .brand-row h1 { margin:2px 0; line-height:1.15; }
+:root[data-skin] .brand-row .eyebrow { font-size:9px; line-height:1.2; }
+:root[data-skin] .brand-row .tagline { font-size:9px; line-height:1.3; }
+:root[data-skin] .settings-menu { top:50%; transform:translateY(-50%); }
+:root[data-contrast=high] .masthead { box-shadow:none; }
+/* Four countersunk screws on the cabinet and expanded keyboard housing. */
+:root {
+  --screw: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cdefs%3E%3CradialGradient id='s' cx='.32' cy='.22' r='.8'%3E%3Cstop stop-color='%23eee4cd'/%3E%3Cstop offset='.55' stop-color='%23958f83'/%3E%3Cstop offset='1' stop-color='%233a3835'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='6' cy='6' r='5.7' fill='%2300000066'/%3E%3Ccircle cx='6' cy='6' r='4.4' fill='url(%23s)' stroke='%23201e1a' stroke-width='.7'/%3E%3Cpath d='m3.7 8.3 4.6-4.6' stroke='%23191614' stroke-width='1.4'/%3E%3C/svg%3E");
+}
+:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) main::before,
+:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) main::after {
+  top:14px; bottom:14px; height:auto; width:12px; border:0; border-radius:0; box-shadow:none;
+  background:var(--screw) center top / 12px 12px no-repeat,var(--screw) center bottom / 12px 12px no-repeat;
+}
+:root:not([data-contrast=high]) .play-keyboard:not(.collapsed)::before,
+:root:not([data-contrast=high]) .play-keyboard:not(.collapsed)::after {
+  content:''; position:absolute; top:10px; bottom:10px; width:12px; pointer-events:none;
+  background:var(--screw) center top / 12px 12px no-repeat,var(--screw) center bottom / 12px 12px no-repeat;
+}
+:root:not([data-contrast=high]) .play-keyboard::before { left:2px; }
+:root:not([data-contrast=high]) .play-keyboard::after { right:2px; }
+:root:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) .play-keyboard::before { left:-18px; }
+:root:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) .play-keyboard::after { right:-18px; }
+@media(max-width:780px) {
+  :root[data-skin] .masthead { padding-top:10px; padding-bottom:10px; margin-bottom:12px; }
+  :root:not([data-contrast=high]) .play-keyboard:not(.collapsed)::before,
+  :root:not([data-contrast=high]) .play-keyboard:not(.collapsed)::after { width:7px; background-size:7px 7px; }
+  :root:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) .play-keyboard::before { left:-9px; }
+  :root:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) .play-keyboard::after { right:-9px; }
+}
+
+/* Model D Walnut: a vintage analog panel with walnut cheeks and rocker accents. */
+:root[data-skin=modeld] {
+  --wood-base:#795035; --wood-light:#ba8b59; --wood-dark:#3f291a;
+  --faceplate:repeating-linear-gradient(0deg,#ffffff03 0 1px,transparent 1px 3px),linear-gradient(120deg,#343330,#181918);
+  --badge-fg:#f8efd5; --card-radius:3px;
+  --wordmark:'Righteous'; --wordmark-weight:400; --brand-font:Georgia,serif;
+  --chassis:#35332d; --chassis-dark:#161716; --edge:#795035;
+  --piano-active:#a4542d; --knob-top:#434440; --knob-bottom:#111310;
+}
+:root[data-skin=modeld][data-mode=dark] {
+  --bg:#20211e; --fg:#f1ecd7; --dim:#c6c1ac; --line:#68695e; --desk:#141410;
+  --panel:#292b26; --button:#40433b; --accent:#efb37c; --ink:#241a12;
+  --lcd:#e9deb9; --lcd-bg:#161c17;
+}
+:root[data-skin=modeld][data-mode=light] {
+  --bg:#e5dfcf; --fg:#292b24; --dim:#54574b; --line:#aaa58e; --desk:#bdb49e;
+  --panel:#f4efdf; --button:#d8d1bd; --accent:#894421; --ink:#fff6e7;
+  --lcd:#303824; --lcd-bg:#d9dfc2;
+}
+[data-skin=modeld] .control-bank h2 { border-bottom:2px solid var(--dim); letter-spacing:1.5px; }
+[data-skin=modeld] .groups .group { box-shadow:inset 0 1px #ffffff26,0 3px 5px #0004; }
+[data-skin=modeld] .tabs button { border-radius:3px; border-top:4px solid #719da6; }
+[data-skin=modeld] .tabs button:nth-child(3n) { border-top-color:#c9804c; }
+[data-skin=modeld] .dial-face { background:repeating-conic-gradient(#111 0deg 4deg,#41443b 5deg 11deg); }
+[data-skin=modeld] .dial-face::before { inset:7px; }
+[data-skin=modeld] .dial-face::after { background:#fff4d0; }
+.cabinet-grille { display:none; }
+/* Recessed perforated speaker grilles on wooden and vintage metal cabinets. */
+:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean],[data-skin=dx],[data-skin=space]) .cabinet-grille {
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(24px,6vw,96px);
+  position:absolute; left:16px; right:16px; bottom:-28px; height:22px; pointer-events:none;
+}
+.cabinet-grille::before,.cabinet-grille::after {
+  content:''; min-width:0; border:2px solid #211b13; border-radius:5px;
+  background:radial-gradient(circle,#080a09 1.5px,transparent 2px) 0 0 / 6px 6px,
+    radial-gradient(circle,#080a09 1.5px,transparent 2px) 3px 3px / 6px 6px,
+    linear-gradient(#726959,#414338);
+  box-shadow:inset 0 3px 4px #000c,0 1px #ffe0a260,0 -1px #23150c80;
+}
+:root:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) main { border-bottom-width:34px; }
+:root:is([data-skin=dx],[data-skin=space]) main { position:relative; padding-bottom:56px; }
+:is([data-skin=dx],[data-skin=space]) .cabinet-grille {
+  left:28px; right:28px; bottom:12px;
+}
+:is([data-skin=dx],[data-skin=space]) .cabinet-grille::before,
+:is([data-skin=dx],[data-skin=space]) .cabinet-grille::after {
+  border-color:#272d2c;
+  background:radial-gradient(circle,#090d0e 1.5px,transparent 2px) 0 0 / 6px 6px,
+    radial-gradient(circle,#090d0e 1.5px,transparent 2px) 3px 3px / 6px 6px,
+    linear-gradient(#7a8582,#424b4a);
+  box-shadow:inset 0 3px 4px #000c,0 1px #ffffff50,0 0 0 2px color-mix(in srgb,var(--line) 70%,var(--panel));
+}
+@media(max-width:780px) {
+  :root:is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean]) main { border-bottom-width:26px; }
+  :is([data-skin=stage],[data-skin=modeld],[data-skin=midnight],[data-skin=chocolate],[data-skin=bauhaus],[data-skin=ocean],[data-skin=dx],[data-skin=space]) .cabinet-grille { left:8px; right:8px; bottom:-21px; height:16px; }
+  :root:is([data-skin=dx],[data-skin=space]) main { padding-bottom:44px; }
+  :is([data-skin=dx],[data-skin=space]) .cabinet-grille { left:18px; right:18px; bottom:12px; }
+}

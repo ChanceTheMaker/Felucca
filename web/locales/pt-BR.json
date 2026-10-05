@@ -183,7 +183,7 @@
   "installer.direct": "Conecte o cabo USB diretamente ao computador. Não é necessário probe nem Transporter.",
   "installer.brick": "Se a instalação falhar e o FM-1 não iniciar mais, será necessário um Transporter para recuperá-lo:",
   "installer.beta": "Embora testado no dispositivo, este firmware é uma versão beta.\nO autor não se responsabiliza por danos ou falhas no FM-1 causados por este firmware personalizado. Use por sua conta e risco.",
-  "installer.back": "Para voltar ao firmware oficial, use o M-UPGRADE da M-VAVE (Downloads → PC Software → M-UPGRADE) e o firmware oficial (PC Firmware → FM-1 V15).",
+  "installer.back": "Baixe o FM-1 V15 da M-VAVE e selecione o FM-1.fwsc sem alterações. A validação é local, sem envio a um servidor.",
   "installer.loadfail": "Não foi possível carregar: ",
   "installer.start": "Iniciando",
   "installer.verify": "Verificando",
@@ -415,5 +415,16 @@
   "editor.songBusy": "Pare antes de editar",
   "editor.songInvalid": "Verifique os espaços e as repetições",
   "editor.songPlaying": "Reproduzindo linha",
-  "editor.songSaved": "Sequência alterada. Salve um projeto para preservar."
+  "editor.songSaved": "Sequência alterada. Salve um projeto para preservar.",
+  "installer.stockTitle": "Voltar ao firmware oficial V15",
+  "installer.stockFile": "FM-1.fwsc oficial",
+  "installer.stockGo": "Fazer backup e voltar à V15",
+  "installer.stockBackup": "A música atual e salva, os bancos, as amostras e as configurações são salvos primeiro. Firmwares antigos precisam atualizar o Felucca para backups completos. Para restaurar, reinstale o Felucca e use o editor.",
+  "installer.stockRecovery": "Retomar atualização interrompida: já salvei um backup completo neste computador",
+  "installer.stockValid": "V15 oficial verificado",
+  "installer.stockConfirm": "O backup completo foi salvo neste computador? Continue para voltar à V15. A V15 não abre músicas do Felucca.",
+  "installer.stockNeedBackup": "O carregador de atualização não exporta backups. Retome somente se já salvou um backup completo.",
+  "installer.stockUnsupported": "Esta versão do Felucca não suporta backups completos. Instale primeiro a versão atual.",
+  "installer.backup": "Salvando backup completo ",
+  "installer.stockError": "Não foi possível validar o firmware oficial: "
 }

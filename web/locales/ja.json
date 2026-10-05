@@ -192,7 +192,7 @@
   "installer.direct": "USB ケーブルはパソコンに直接つないでください。Probe や Transporter などの機材は不要です。",
   "installer.brick": "万一インストールに失敗して起動しなくなった場合は、復旧に Transporter が必要です:",
   "installer.beta": "実機でテスト済みですが、このファームウェアはベータ版です。\nこのカスタムファームウェアを使ったことで FM-1 が壊れたり不具合が起きたりしても、作者は一切の責任を負いません。自己責任でお使いください。",
-  "installer.back": "公式ファームウェアに戻すには、M-VAVE 公式のアップデーター M-UPGRADE（Downloads → PC Software → M-UPGRADE）と公式ファームウェア（PC Firmware → FM-1 V15）が必要です。",
+  "installer.back": "M-VAVEから公式FM-1 V15を取得し、未変更のFM-1.fwscを選んでください。ファイルはこのブラウザ内で検証し、サーバーへ送りません。",
   "installer.nomidi": "このブラウザでは使えません。Chrome か Edge で開いてください。",
   "installer.loadfail": "読み込めませんでした: ",
   "installer.start": "開始します",
@@ -415,5 +415,16 @@
   "editor.songBusy": "停止してから編集してください",
   "editor.songInvalid": "スロットと回数を確認してください",
   "editor.songPlaying": "再生中の行",
-  "editor.songSaved": "並び順を変更しました。プロジェクトを保存すると残せます。"
+  "editor.songSaved": "並び順を変更しました。プロジェクトを保存すると残せます。",
+  "installer.stockTitle": "公式V15に戻す",
+  "installer.stockFile": "公式FM-1.fwsc",
+  "installer.stockGo": "バックアップして公式V15へ戻す",
+  "installer.stockBackup": "現在の曲・保存曲・音色バンク・サンプル・設定を先に保存します。全体バックアップ非対応版は、Feluccaを更新してから行ってください。復元はFeluccaを再インストールしてエディタから行います。",
+  "installer.stockRecovery": "更新中断の再開：全体バックアップはすでにパソコンへ保存済み",
+  "installer.stockValid": "公式V15を確認しました",
+  "installer.stockConfirm": "全体バックアップファイルをパソコンに保存できましたか？ 続けると公式V15へ戻します。Feluccaの曲は公式V15では開けません。",
+  "installer.stockNeedBackup": "書き込みモードからはバックアップできません。保存済みバックアップがある場合だけ、更新中断の再開にチェックしてください。",
+  "installer.stockUnsupported": "このFeluccaは全体バックアップに未対応です。先に最新版をインストールしてください。",
+  "installer.backup": "全体バックアップ保存中 ",
+  "installer.stockError": "公式ファイルを確認できません: "
 }

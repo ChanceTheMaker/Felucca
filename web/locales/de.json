@@ -183,7 +183,7 @@
   "installer.direct": "Verbinde das USB-Kabel direkt mit dem Computer. Kein Probe oder Transporter erforderlich.",
   "installer.brick": "Wenn die Installation fehlschlägt und der FM-1 nicht mehr startet, ist zur Wiederherstellung ein Transporter nötig:",
   "installer.beta": "Diese Firmware wurde am Gerät getestet, ist aber eine Beta.\nDer Autor übernimmt keine Verantwortung für Schäden oder Fehlfunktionen des FM-1 durch diese angepasste Firmware. Nutzung auf eigene Gefahr.",
-  "installer.back": "Zur Rückkehr zur offiziellen Firmware brauchst du M-VAVEs M-UPGRADE (Downloads → PC Software → M-UPGRADE) und die offizielle Firmware (PC Firmware → FM-1 V15).",
+  "installer.back": "FM-1 V15 von M-VAVE herunterladen und die unveränderte FM-1.fwsc auswählen. Die Prüfung erfolgt lokal, ohne Upload.",
   "installer.loadfail": "Laden fehlgeschlagen: ",
   "installer.start": "Starten",
   "installer.verify": "Prüfen",
@@ -415,5 +415,16 @@
   "editor.songBusy": "Vor dem Bearbeiten stoppen",
   "editor.songInvalid": "Speicherplätze und Wiederholungen prüfen",
   "editor.songPlaying": "Spiele Zeile",
-  "editor.songSaved": "Kette geändert. Zum Behalten ein Projekt speichern."
+  "editor.songSaved": "Kette geändert. Zum Behalten ein Projekt speichern.",
+  "installer.stockTitle": "Zur offiziellen V15 zurückkehren",
+  "installer.stockFile": "Offizielle FM-1.fwsc",
+  "installer.stockGo": "Sichern und zu V15 zurückkehren",
+  "installer.stockBackup": "Aktuelle und gespeicherte Musik, Klangbänke, Samples und Einstellungen werden zuerst gesichert. Ältere Firmware benötigt für vollständige Backups ein Felucca-Update. Zur Wiederherstellung Felucca installieren und den Editor verwenden.",
+  "installer.stockRecovery": "Unterbrochenes Update fortsetzen: Ein vollständiges Backup ist bereits auf diesem Computer gespeichert",
+  "installer.stockValid": "Offizielle V15 geprüft",
+  "installer.stockConfirm": "Ist das vollständige Backup auf diesem Computer gespeichert? Fortfahren, um V15 wiederherzustellen. V15 kann Felucca-Musik nicht öffnen.",
+  "installer.stockNeedBackup": "Der Update-Loader kann kein Backup exportieren. Nur fortsetzen, wenn bereits ein vollständiges Backup gespeichert ist.",
+  "installer.stockUnsupported": "Diese Felucca-Version unterstützt keine vollständigen Backups. Zuerst die aktuelle Version installieren.",
+  "installer.backup": "Vollständiges Backup wird gespeichert ",
+  "installer.stockError": "Offizielle Firmware kann nicht geprüft werden: "
 }

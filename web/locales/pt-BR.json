@@ -497,5 +497,8 @@
   "widgets.outScale": "Fora da escala",
   "widgets.previousPattern": "Padrão anterior",
   "widgets.nextPattern": "Próximo padrão",
-  "widgets.previewHelp": "Prévia dos parâmetros, não do áudio ao vivo. Os estágios do envelope usam escalas de tempo distintas."
+  "widgets.previewHelp": "Prévia dos parâmetros, não do áudio ao vivo. Os estágios do envelope usam escalas de tempo distintas.",
+  "widgets.source": "Origem",
+  "widgets.destination": "Destino",
+  "widgets.amount": "Intensidade"
 }

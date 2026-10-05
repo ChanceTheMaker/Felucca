@@ -12,6 +12,7 @@ The integrated upstream baseline remains v1.0.1, commit
   guide and an editable cutoff handle.
 - Envelope and envelope destinations share a card. Attack, decay, sustain and
   release handles support pointer dragging, arrow keys, Shift+arrows, Home and End.
+  Double-click an envelope or cutoff handle to restore the parameter default.
 - Voice settings share a card; LFO and destinations share another. The waveform
   preview follows waveform and phase, with quick waveform selection.
 - The effects strip contains FX levels, slicer, delay, reverb and chorus. The
@@ -45,8 +46,8 @@ slicer pattern bits are verified against their C tables.
 - `node web/test_studio_widgets.mjs`: all firmware scale masks and slicer patterns,
   LFO shapes/phase, arpeggiator traversal/repeat, envelope and filter bounds.
 - `web/test_studio_panels.mjs`: local Chrome interactions, pointer/keyboard
-  editing, simulated device pushes, all thirteen engines, translated labels,
-  card ordering, 96 theme/control/viewport combinations (320-1440 pixels), generic
+  editing and reset, simulated device pushes, all thirteen engines, eight languages,
+  card ordering, 192 light/dark/theme/control/viewport combinations (320-1440 pixels), generic
   firmware fallback and actual WASM/audio-worklet output.
 - Built RC1 preview and inspected desktop/mobile screenshots in slider and knob
   modes. The logo after `[Salt]` is a separate prerequisite change.
@@ -65,3 +66,20 @@ browser audio, never a physical MIDI device.
 No firmware, DSP, protocol or release-package change is included. Physical FM-1
 validation remains pending. This is a fork review branch; no upstream submission,
 merge, firmware promotion or website publication is part of this round.
+
+## Review follow-up
+
+`fix/studio-widget-polish` follows the separate typing-keyboard correction on
+`fix/studio-piano-shortcuts`. Its review fixes include:
+
+- The cutoff handle uses the same logarithmic frequency axis and response curve
+  as the plot. Pointer-to-cutoff conversion is verified at all 128 values.
+- Arpeggiator pitches are separate horizontal gate-length bars, avoiding diagonal
+  lines that looked like pitch glide.
+- Pressed graph handles keep their position; the generic button active style
+  previously removed their centering transform. The decorative SVG cannot
+  intercept pointer input. Browser tests verify no value jump on press, real
+  dragging, and double-click reset.
+- Larger captions, 28-pixel handle targets, 32-pixel shortcut buttons and more
+  legible out-of-scale notes improve use on small displays.
+- The modulation matrix has translated Source, Destination and Amount headings.

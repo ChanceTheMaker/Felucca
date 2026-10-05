@@ -124,6 +124,14 @@ is [fork PR #49](https://github.com/ChanceTheMaker/Felucca/pull/49), dependent o
 [RC1 branding PR #48](https://github.com/ChanceTheMaker/Felucca/pull/48); stable
 branding is separately [PR #47](https://github.com/ChanceTheMaker/Felucca/pull/47).
 
+Studio review follow-up `fix/studio-widget-polish` corrects graph handle placement
+and pressed-state movement, adds parameter reset, separates arpeggiator note
+bars, enlarges graph controls and labels the modulation matrix in all eight
+languages. It builds on keyboard [PR #50](https://github.com/ChanceTheMaker/Felucca/pull/50).
+The existing web suite, graph-model checks and expanded browser checks cover the
+changes; see [STUDIO_VISUAL_PANELS.md](STUDIO_VISUAL_PANELS.md). No firmware or
+upstream baseline changes, merge or publication are included.
+
 No new upstream PR has been authorized or submitted during this round. Preparing
 and documenting candidates does not imply upstream acceptance. For each future
 contribution, append the following information:

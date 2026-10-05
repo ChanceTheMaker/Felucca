@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import './studio-widgets.js';
-const {scaleNotes,slicerSteps,lfoValue,arpNotes,envelopePoints,filterPoints}=globalThis.FeluccaWidgets;
+const {scaleNotes,slicerSteps,lfoValue,arpNotes,arpSegments,envelopePoints,filterPoints,filterHandle,filterCutAt}=globalThis.FeluccaWidgets;
 const source=name=>readFileSync(new URL(`../firmware/src/${name}`,import.meta.url),'utf8');
 const table=(file,name)=>source(file).match(new RegExp(`\\b${name}\\[[^]*?=\\s*\\{([^]*?)\\};`))[1].replace(/\/\*[^]*?\*\//g,'');
 const masks=table('seq.c','SCALE_MASK').split(',').map(s=>s.trim()).filter(Boolean).map(s=>Function(`return (${s});`)());
@@ -29,4 +29,24 @@ for(const v of [0,1,64,127]) {
  for(const res of [0,127])assert(filterPoints(v,res).every(([x,y])=>Number.isFinite(x)&&Number.isFinite(y)&&y>=8&&y<=86));
 }
 assert(envelopePoints([0,0,127,0])[3][1]<envelopePoints([0,0,0,0])[3][1]);
+// The cutoff handle must use the same logarithmic Hz axis as the response plot,
+// and round-trip pointer coordinates across the full MIDI parameter range.
+for(let cut=0;cut<=127;cut++) {
+ const [x,y]=filterHandle(cut,64);
+ assert(Math.abs(filterCutAt(x)-cut)<1e-8);
+ assert(x>=8 && x<=252 && y>=8 && y<=86);
+ const hz=20*Math.pow(1000,(x-8)/244);
+ assert(Math.abs(hz-30*Math.pow(16000/30,cut/127))<1e-8);
+}
+assert(filterHandle(64,127)[1]<filterHandle(64,0)[1]);
+// Arpeggiator notes remain separate even at maximum gate; no diagonal pitch
+// transitions imply a glide that the synth wasn't asked to play.
+assert.deepEqual(arpSegments(0,1,0,127),[]);
+for(const gate of [0,64,127]) {
+ const bars=arpSegments(1,2,0,gate);assert.equal(bars.length,16);
+ bars.forEach(([[x,y],[end,y2]],i)=>{
+  assert.equal(y,y2);assert(end>x);
+  if(i<15)assert(end<bars[i+1][0][0]);
+ });
+}
 console.log('Studio widget models: all 16 firmware scales and slicer patterns, LFO phase/shapes, arp traversal/repeat, envelope and filter bounds pass.');

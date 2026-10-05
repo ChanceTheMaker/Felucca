@@ -497,5 +497,8 @@
   "widgets.outScale": "スケール外",
   "widgets.previousPattern": "前のパターン",
   "widgets.nextPattern": "次のパターン",
-  "widgets.previewHelp": "設定のプレビューです。実際の音声ではありません。エンベロープの各段階は異なる時間軸で表示されます。"
+  "widgets.previewHelp": "設定のプレビューです。実際の音声ではありません。エンベロープの各段階は異なる時間軸で表示されます。",
+  "widgets.source": "ソース",
+  "widgets.destination": "出力先",
+  "widgets.amount": "深さ"
 }

@@ -497,5 +497,8 @@
   "widgets.outScale": "Fuera de la escala",
   "widgets.previousPattern": "Patrón anterior",
   "widgets.nextPattern": "Patrón siguiente",
-  "widgets.previewHelp": "Vista de parámetros, no audio en vivo. Las etapas de envolvente usan escalas de tiempo distintas."
+  "widgets.previewHelp": "Vista de parámetros, no audio en vivo. Las etapas de envolvente usan escalas de tiempo distintas.",
+  "widgets.source": "Origen",
+  "widgets.destination": "Destino",
+  "widgets.amount": "Cantidad"
 }

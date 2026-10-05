@@ -45,19 +45,32 @@
     return [[8,86],[16+a/127*55,12],[88+d/127*55,86-s/127*74],
       [178,86-s/127*74],[198+r/127*54,86]];
   }
+  const filterHz = cut => 30*Math.pow(16000/30,clamp(cut,0,127)/127);
+  const frequencyX = hz => 8+Math.log(hz/20)/Math.log(1000)*244;
+  const filterCutAt = x => clamp(Math.log((20*Math.pow(1000,(x-8)/244))/30)/Math.log(16000/30)*127,0,127);
+  function filterY(hz, cut, res) {
+    const ratio=hz/filterHz(cut), q=.5+clamp(res,0,127)/127*7.5;
+    const db=-10*Math.log10((1-ratio*ratio)**2+(ratio/q)**2);
+    return clamp(28-db*.95,8,86);
+  }
+  const filterHandle = (cut,res) => [frequencyX(filterHz(cut)),filterY(filterHz(cut),cut,res)];
   function filterPoints(cut, res) {
     // Illustrative two-pole LP response, not a measurement of the modulated DSP.
-    const fc=30*Math.pow(16000/30,clamp(cut,0,127)/127), q=.5+clamp(res,0,127)/127*7.5;
     return Array.from({length:81},(_,i)=>{
-      const ratio=20*Math.pow(1000,i/80)/fc;
-      const db=-10*Math.log10((1-ratio*ratio)**2+(ratio/q)**2);
-      return [8+i/80*244,clamp(28-db*.95,8,86)];
+      const hz=20*Math.pow(1000,i/80);
+      return [frequencyX(hz),filterY(hz,cut,res)];
+    });
+  }
+  function arpSegments(mode,octaves,order,gate) {
+    return arpNotes(mode,octaves,order).map((n,i)=>{
+      const x=8+i*15.2,y=83-n/43*67;
+      return [[x,y],[x+Math.max(1,clamp(gate,0,127)/128*15.2),y]];
     });
   }
   const pathOf = points => points.map(([x,y],i)=>`${i?'L':'M'}${x.toFixed(2)},${y.toFixed(2)}`).join(' ');
   const svgNode = (tag, attrs) => { const e=document.createElementNS('http://www.w3.org/2000/svg',tag); for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);return e; };
   function mount(kind, options) {
-    const {read, write, format, t, begin, end, filterIds} = options;
+    const {read, write, format, t, begin, end, reset, filterIds} = options;
     const root=document.createElement('div');root.className=`studio-widget widget-${kind}`;root.dataset.widget=kind;
     const caption=document.createElement('div');caption.className='widget-caption';
     const label=document.createElement('span'), value=document.createElement('span');caption.append(label,value);
@@ -81,6 +94,7 @@
       b.addEventListener('pointermove',e=>{if(pointer===e.pointerId)setAt(e);});
       const finish=e=>{if(pointer!==e.pointerId)return;pointer=null;end?.(id);};
       b.addEventListener('pointerup',finish);b.addEventListener('pointercancel',finish);b.addEventListener('lostpointercapture',finish);
+      b.addEventListener('dblclick',e=>{e.preventDefault();e.stopPropagation();reset?.(id);});
       b.addEventListener('keydown',e=>{
         const delta={ArrowLeft:-1,ArrowDown:-1,ArrowRight:1,ArrowUp:1}[e.key];
         if(delta==null&&!['Home','End'].includes(e.key))return;
@@ -96,7 +110,7 @@
       handle(4,'release',()=>points()[4],x=>(x-198)/54*127);
     }
     if(kind==='filter') {
-      handle(filterIds[0],'cutoff',()=>[8+read(filterIds[0])/127*244,50],x=>(x-8)/244*127);
+      handle(filterIds[0],'cutoff',()=>filterHandle(...filterIds.map(read)),filterCutAt);
     }
     if(kind==='lfo') for(const [i,wave] of ['SIN','TRI','SAW','SQR','S&H'].entries()) {
       const b=button(wave,()=>write(10,i));updateFns.push(()=>{b.setAttribute('aria-label',`${t('waveform')}: ${wave}`);b.setAttribute('aria-pressed',String(read(10)===i));});
@@ -118,7 +132,7 @@
       updateFns.push(()=>{prev.setAttribute('aria-label',t('previousPattern'));next.setAttribute('aria-label',t('nextPattern'));});
     }
     function update() {
-      let points=[], summary='';
+      let points=[], summary='', segments=null;
       label.textContent=t({env:'envelope',filter:'filter',lfo:'waveform',scale:'scale',arp:'arpExample',slicer:'slicer'}[kind]);
       root.classList.toggle('widget-off',(kind==='arp'&&!read(17))||(kind==='slicer'&&!read(45)));
       if(kind==='env') {points=envelopePoints([1,2,3,4].map(read));summary=`${format(1)} / ${format(4)}`;}
@@ -126,9 +140,8 @@
       if(kind==='lfo') {points=Array.from({length:161},(_,i)=>[8+i/160*244,49-33*lfoValue(read(10),i/160*2+read(11)/128)]);summary=format(9);}
       if(kind==='scale') summary=`${format(25)} · ${format(26)}`;
       if(kind==='arp') {
-        const notes=arpNotes(read(17),read(19),read(24));
         // Representative pitches only: probability, swing and held notes aren't playback telemetry.
-        points=notes.flatMap((n,i)=>[[8+i*15.2,83-n/43*67],[8+i*15.2+Math.max(2,read(20)/127*12),83-n/43*67]]);
+        segments=arpSegments(read(17),read(19),read(24),read(20));
         summary=`${format(17)} · ${format(18)}`;
       }
       if(kind==='slicer') {
@@ -136,11 +149,12 @@
         points=steps.flatMap((on,i)=>[[8+i*15.2,on?22:read(45)===2?49:22+read(48)/127*61],[8+(i+1)*15.2,on?22:read(45)===2?49:22+read(48)/127*61]]);
         summary=`${format(45)} · ${read(46)}/16`;
       }
-      line.setAttribute('d',pathOf(points));area.setAttribute('d',points.length?`${pathOf(points)} L252,90 L8,90 Z`:'');
+      line.setAttribute('d',segments?segments.map(pathOf).join(' '):pathOf(points));
+      area.setAttribute('d',points.length?`${pathOf(points)} L252,90 L8,90 Z`:'');
       value.textContent=summary;plot.title=t('previewHelp');plot.setAttribute('role','group');plot.setAttribute('aria-label',`${label.textContent}: ${summary}`);
       for(const update of updateFns)update();
     }
     update();return {element:root,update};
   }
-  globalThis.FeluccaWidgets={mount,scaleNotes,slicerSteps,lfoValue,arpNotes,envelopePoints,filterPoints};
+  globalThis.FeluccaWidgets={mount,scaleNotes,slicerSteps,lfoValue,arpNotes,arpSegments,envelopePoints,filterPoints,filterHandle,filterCutAt};
 })();

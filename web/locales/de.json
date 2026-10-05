@@ -497,5 +497,8 @@
   "widgets.outScale": "Außerhalb der Skala",
   "widgets.previousPattern": "Vorheriges Muster",
   "widgets.nextPattern": "Nächstes Muster",
-  "widgets.previewHelp": "Parametervorschau, kein Live-Audio. Hüllkurvenphasen verwenden getrennte Zeitmaßstäbe."
+  "widgets.previewHelp": "Parametervorschau, kein Live-Audio. Hüllkurvenphasen verwenden getrennte Zeitmaßstäbe.",
+  "widgets.source": "Quelle",
+  "widgets.destination": "Ziel",
+  "widgets.amount": "Stärke"
 }

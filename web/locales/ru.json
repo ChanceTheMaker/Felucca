@@ -497,5 +497,8 @@
   "widgets.outScale": "Вне лада",
   "widgets.previousPattern": "Предыдущий рисунок",
   "widgets.nextPattern": "Следующий рисунок",
-  "widgets.previewHelp": "Предпросмотр параметров, не текущего звука. Этапы огибающей имеют разные масштабы времени."
+  "widgets.previewHelp": "Предпросмотр параметров, не текущего звука. Этапы огибающей имеют разные масштабы времени.",
+  "widgets.source": "Источник",
+  "widgets.destination": "Назначение",
+  "widgets.amount": "Глубина"
 }

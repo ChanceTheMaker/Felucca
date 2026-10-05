@@ -247,7 +247,7 @@
   "ui.minimizeKeyboard": "收起键盘",
   "ui.studioPreview": "Studio 预览",
   "ui.previewAlt": "Felucca [Salt] Studio — {theme}，{mode}",
-  "ui.wireTitle": "FM-1 合成器线框图",
+  "ui.wireTitle": "FM-1 合成器",
   "ui.wireDesc": "FM-1 配有八个旋钮、屏幕、十二个功能按钮、八度按钮和 27 个触摸琴键。",
   "site.fm_1_sound_laboratory": "FM-1 / 声音实验室",
   "site.synthesizer_sequencer_performance_editor": "合成器 • 音序器 • 演奏编辑器",

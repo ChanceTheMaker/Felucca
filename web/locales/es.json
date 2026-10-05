@@ -348,7 +348,7 @@
   "ui.themeThumbnail": "Tema {theme} de Studio",
   "ui.clickToPlay": "Haz clic para tocar",
   "ui.clickToPlayEdit": "Haz clic para tocar/editar",
-  "guide.title": "Conoce tu FM-1",
+  "guide.title": "Conoce los nuevos controles de tu FM-1 personalizado...",
   "guide.intro": "Elige un grupo para resaltar los controles y descubrir sus funciones.",
   "guide.illustration": "Ilustración del panel de control del FM-1",
   "guide.groups": "Grupos de controles",
@@ -394,5 +394,6 @@
   "nav.manual": "Manual",
   "nav.studio": "Studio",
   "nav.themes": "Temas",
-  "nav.features": "Funciones"
+  "nav.features": "Funciones",
+  "nav.backToTop": "Volver arriba"
 }

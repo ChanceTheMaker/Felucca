@@ -348,7 +348,7 @@
   "ui.themeThumbnail": "{theme} Studio theme",
   "ui.clickToPlay": "Click to Play",
   "ui.clickToPlayEdit": "Click to Play/Edit",
-  "guide.title": "Meet your FM-1",
+  "guide.title": "Meet your new custom FM-1 controls...",
   "guide.intro": "Choose a group to highlight the controls and learn what they do.",
   "guide.illustration": "Illustrated FM-1 control panel",
   "guide.groups": "Control groups",
@@ -394,5 +394,6 @@
   "nav.manual": "Manual",
   "nav.studio": "Studio",
   "nav.themes": "Themes",
-  "nav.features": "Features"
+  "nav.features": "Features",
+  "nav.backToTop": "Back to top"
 }

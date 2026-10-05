@@ -6,6 +6,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
+<script defer src="analytics.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Felucca [Salt] Studio</title>
 <style>
@@ -2089,6 +2090,7 @@ async function connect() {
     if (BROWSER_AUDIO) {
       if (!browserSynth) { const {BrowserSynth} = await audioModule; browserSynth = new BrowserSynth(); }
       await browserSynth.start();
+      window.FeluccaAnalytics?.track('browser_audio_started');
       browserSynth.showScope($('scope-canvas'));
       browserSynth.volume(Number($('audio-volume').value) / 100);
       $('audio-status').textContent = 'Browser audio · One sound · Built-in samples';

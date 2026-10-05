@@ -4,6 +4,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
+<script defer src="analytics.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Felucca [Salt] Studio — FM-1 Installer</title>
 <style>
@@ -44,7 +45,13 @@
   </div>
   <div class="install-console">
   <div class="installer-hero" lang="en">
-    <div><h2>A little synth.<br>A bigger playground.</h2><p>Play a sound in your browser or connect your FM-1. A hands-on editor, expressive MIDI, and twelve looks to make it yours.</p><a class="hero-link" href="../editor/">Open Studio ↗</a></div>
+    <div><h2>A little synth.<br>A bigger playground.</h2><p>Play a sound in your browser or connect your FM-1. A hands-on editor, expressive MIDI, and twelve looks to make it yours.</p>
+      <div class="hero-actions">
+        <div class="install-action"><button id="go" disabled data-t="install"></button><p class="small" id="release"></p></div>
+        <a class="hero-link" href="../editor/">Open Studio ↗</a>
+      </div>
+      <p class="small beta-notice" data-t="beta" style="white-space:pre-line"></p>
+    </div>
     <div class="hero-instrument"><svg viewBox="0 0 640 410" role="img" aria-labelledby="fm1-wire-title fm1-wire-desc" xmlns="http://www.w3.org/2000/svg">
 <title id="fm1-wire-title">FM-1 synthesizer wireframe</title>
 <desc id="fm1-wire-desc">The FM-1's rounded enclosure, eight rotary controls, central screen, twelve function buttons, octave buttons, and 27 touch keys.</desc>
@@ -133,12 +140,10 @@
 <text x="540" y="202" font-size="6">REC</text>
 </g></svg></div>
   </div>
-  <p class="install-action"><button id="go" disabled data-t="install"></button></p>
-  <p class="small" id="release"></p>
+  <p><strong data-t="installIntro"></strong></p>
   <p data-t="intro"></p>
   <p data-t="warn"></p>
   <p class="small" data-t="direct"></p>
-  <p class="small" data-t="beta"></p>
   <p class="small"><span data-t="brick"></span>
     <a href="https://github.com/kurogedelic/FM-1-transporter" target="_blank" rel="noopener" style="color:inherit">FM-1-transporter</a></p>
   <p class="small" data-t="back"></p>
@@ -199,13 +204,14 @@
 const $ = (id) => document.getElementById(id);
 const TEXT = {
   ja: {
+    installIntro: "インストール方法:",
     intro: "FM-1 を USB で接続してください。（Chrome か Edge で使えます）",
     warn: "書き込み中は USB を抜かないでください。",
-    install: "Felucca [Salt] をインストール", other: "English",
+    install: "Felucca [Salt] ベータ版をインストール", other: "English",
     editor: "エディタ（インストール後、パソコンから音色やシーケンスを編集）",
     direct: "USB ケーブルはパソコンに直接つないでください。Probe や Transporter などの機材は不要です。",
     brick: "万一インストールに失敗して起動しなくなった場合は、復旧に Transporter が必要です:",
-    beta: "これはベータ版で、不安定な場合があります。このカスタムファームウェアを使ったことで FM-1 が壊れたり不具合が起きたりしても、作者は一切の責任を負いません。自己責任でお使いください。",
+    beta: "実機でテスト済みですが、このファームウェアはベータ版です。\nこのカスタムファームウェアを使ったことで FM-1 が壊れたり不具合が起きたりしても、作者は一切の責任を負いません。自己責任でお使いください。",
     back: "公式ファームウェアに戻すには、M-VAVE 公式のアップデーター M-UPGRADE（Downloads → PC Software → M-UPGRADE）と公式ファームウェア（PC Firmware → FM-1 V15）が必要です。",
     nomidi: "このブラウザでは使えません。Chrome か Edge で開いてください。", loadfail: "読み込めませんでした: ",
     start: "開始します", verify: "確認中", loader: "書き込みモードに切り替え中", write: "書き込み中",
@@ -223,13 +229,14 @@ const TEXT = {
     license: "GPL-3.0、無保証。ソース:",
   },
   en: {
+    installIntro: "To install:",
     intro: "Connect the FM-1 by USB. (Works in Chrome or Edge.)",
     warn: "Do not unplug the USB cable while writing.",
-    install: "Install Felucca [Salt]", other: "日本語",
+    install: "Install Felucca [Salt] Beta", other: "日本語",
     editor: "Open Studio — play in your browser or edit your connected FM-1",
     direct: "Connect the USB cable directly to the computer. No probe or Transporter is needed.",
     brick: "If an install fails and the FM-1 no longer starts, recovering it needs a Transporter:",
-    beta: "This is a beta and may be unstable. The author accepts no responsibility if your FM-1 is damaged or misbehaves because of this custom firmware. Use it at your own risk.",
+    beta: "Although tested on device, this firmware is a beta.\nThe author accepts no responsibility if your FM-1 is damaged or misbehaves because of this custom firmware. Use it at your own risk.",
     back: "To go back to the official firmware you need M-VAVE's official updater, M-UPGRADE (Downloads → PC Software → M-UPGRADE), and the official firmware (PC Firmware → FM-1 V15).",
     nomidi: "This browser cannot do it. Open the page in Chrome or Edge.", loadfail: "Could not load: ",
     start: "Starting", verify: "Verifying", loader: "Switching to update mode", write: "Writing",
@@ -282,15 +289,22 @@ window.addEventListener("beforeunload", (e) => { if (writing) { e.preventDefault
 })();
 
 $("go").addEventListener("click", async () => {
+  const track = (name, props = {}) => window.FeluccaAnalytics?.track(name, {firmware_version: meta.version, ...props});
+  track('install_attempt');
+  let stage = 'permission', writeTracked = false;
   $("go").disabled = true;
   let midi;
   try { midi = await navigator.requestMIDIAccess({ sysex: true }); }
-  catch (e) { sayK("denied"); $("go").disabled = false; return; }
+  catch (e) { track('install_failed', {stage, error_code: 'denied'}); sayK("denied"); $("go").disabled = false; return; }
   writing = true;
   try {
     const up = new Updater(midi, log);
+    stage = 'discovery';
     const total = 74 + 1167;
     const step = (k, a) => {
+      stage = k;
+      if (k === 'write' && !writeTracked) { writeTracked = true; track('install_write_started'); }
+      if (k === 'done') track('install_success');
       log(`${k} ${a ?? ""}`);
       if (k === "start") sayK("start");
       if (k === "verify") { sayK("verify"); $("bar").value = (a / total) * 100; }
@@ -302,11 +316,15 @@ $("go").addEventListener("click", async () => {
     const ota = await up.find((id) => /^ota-/i.test(id.model));
     if (ota) {
       ota.link.close();
-      sayK((await up.resume(image, step)) ? "done" : "stopped");
+      const completed = await up.resume(image, step);
+      track(completed ? 'install_resume_complete' : 'install_failed', completed ? {} : {stage, error_code: 'stopped'});
+      sayK(completed ? "done" : "stopped");
     } else {
       await up.install(image, meta.product, step);
     }
   } catch (e) {
+    const codes = ['notfound', 'model', 'lost', 'stopped', 'noloader', 'noreturn', 'mismatch', 'badreq'];
+    track('install_failed', {stage, error_code: codes.includes(e?.code) ? e.code : 'unknown'});
     if (e && e.code && TEXT[lang][e.code]) sayK(e.code, e.detail || "");
     else sayK("error", e && e.message);
     log(String(e && e.stack || e));

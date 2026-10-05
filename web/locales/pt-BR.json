@@ -344,5 +344,6 @@
   "site.octx": "Oct+",
   "ui.modeTipConnect": "Conecte seu FM-1",
   "ui.modeTipOr": "ou",
-  "ui.modeTipPlay": "Toque com o {engine} integrado ao navegador."
+  "ui.modeTipPlay": "Toque com o {engine} integrado ao navegador.",
+  "ui.themeThumbnail": "Tema {theme} do Studio"
 }

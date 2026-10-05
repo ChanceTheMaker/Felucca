@@ -344,5 +344,6 @@
   "site.octx": "Oct+",
   "ui.modeTipConnect": "Verbinde deinen FM-1",
   "ui.modeTipOr": "oder",
-  "ui.modeTipPlay": "Spiele den im Browser integrierten {engine}."
+  "ui.modeTipPlay": "Spiele den im Browser integrierten {engine}.",
+  "ui.themeThumbnail": "Studio-Theme {theme}"
 }

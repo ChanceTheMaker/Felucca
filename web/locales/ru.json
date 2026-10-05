@@ -344,5 +344,6 @@
   "site.octx": "Oct+",
   "ui.modeTipConnect": "Подключите FM-1",
   "ui.modeTipOr": "или",
-  "ui.modeTipPlay": "Играйте на встроенном в браузер {engine}."
+  "ui.modeTipPlay": "Играйте на встроенном в браузер {engine}.",
+  "ui.themeThumbnail": "Тема {theme} для Studio"
 }

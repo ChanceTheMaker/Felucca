@@ -344,5 +344,6 @@
   "site.octx": "Oct+",
   "ui.modeTipConnect": "连接 FM-1",
   "ui.modeTipOr": "或",
-  "ui.modeTipPlay": "演奏浏览器内置的 {engine}。"
+  "ui.modeTipPlay": "演奏浏览器内置的 {engine}。",
+  "ui.themeThumbnail": "Studio 的 {theme} 主题"
 }

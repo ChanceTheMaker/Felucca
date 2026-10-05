@@ -344,5 +344,6 @@
   "site.octx": "Oct+",
   "ui.modeTipConnect": "FM-1 に接続",
   "ui.modeTipOr": "または",
-  "ui.modeTipPlay": "ブラウザー内蔵の {engine} を演奏。"
+  "ui.modeTipPlay": "ブラウザー内蔵の {engine} を演奏。",
+  "ui.themeThumbnail": "Studio の {theme} テーマ"
 }

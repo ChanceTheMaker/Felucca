@@ -46,6 +46,15 @@ connection. Check enumeration again after disconnect tests.
 | `transport.jsonl` | Play, stop, record and mode buttons; note which emit no MIDI |
 | `reconnect.jsonl` | Record pre-disconnect behavior; reconnect and start a separate recording |
 
+The [stock user manual](https://manuals.plus/m/738cb672a06387f72361bfdf2964525526bde947c6cc4dea5a4a6f458745caab.pdf),
+printed pages 4-8, documents separate knob/fader banks and a pad-bank change
+using both bank buttons. Capture each bank independently. Record key/pad
+channels, velocity settings and whether pad aftertouch is enabled. ARP and
+Note Repeat have musical latch settings, while PATCH/PARA/FX use a page latch;
+distinguish them when diagnosing repeated or sustained notes. This manual
+describes factory reset but does not establish a forced firmware-recovery
+procedure. Keep recovery as an unresolved requirement.
+
 The JSON report shows channel numbers 1-16, MIDI note numbers, note-on velocity
 ranges, CC ranges, 14-bit pitch-bend values, channel/poly pressure and message
 counts. Relative encoders may use values such as 1/127 rather than a continuous

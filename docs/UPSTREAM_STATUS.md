@@ -35,13 +35,20 @@ files differ. FM-1's main store address falls inside the SMK stock application
 span, so the reserved-target build guard remains in place. See
 [flash and boot evidence](smk37/FLASH_LAYOUT.md). No firmware is built or flashed.
 
-`feat/smk37-arrival-evidence` adds read-only Windows USB snapshots, offline
+[Draft PR #44](https://github.com/ChanceTheMaker/Felucca/pull/44),
+`feat/smk37-arrival-evidence`, adds read-only Windows USB snapshots, offline
 before/after comparisons and a local arrival-report template. Instance paths
 are hashed before saving. All 37 preparation tests pass, including seven USB
 tests; actual Windows enumeration saved a 26-node host baseline locally without
 an SMK attached. This does not validate SMK interfaces, recovery or any board
-pinout. The previously queued website deployment still reports queued at this
-check and is independent of this work.
+pinout. Stock-manual bank/latch distinctions are added to the capture guide;
+forced firmware recovery remains unverified.
+
+The separately requested saxophone options are documented and queued in
+[draft PR #43](https://github.com/ChanceTheMaker/Felucca/pull/43), based directly
+on RC1 rather than the SMK stack. It proposes sampled-tenor improvements,
+expression, a browser reed prototype and measured hardware integration; it
+contains no new engine implementation.
 
 Installer follow-up on `feat/rc1-installer-retry`: failed discovery, denied MIDI
 permission, interrupted updates and stopped resumes show Try Again below the

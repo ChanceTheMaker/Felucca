@@ -3,6 +3,15 @@
 Last reviewed: **2026-10-05**. Update this record when importing or offering a
 feature; follow [UPSTREAM_WORKFLOW.md](UPSTREAM_WORKFLOW.md).
 
+Installer follow-up on `feat/rc1-installer-retry`: failed discovery, denied MIDI
+permission, interrupted updates and stopped resumes show Try Again below the
+output. Retrying requests MIDI access and rediscovers the device, hides stale
+actions and locks installation controls. Success offers Edit in Studio. Official
+recovery retries preserve the selected package and repeat backup/confirmation
+checks. Eight-language labels and desktop/mobile simulated-device checks cover
+both Salt14 and RC1. This website-only follow-up does not rebuild firmware or
+change the draft RC1 release assets; publication remains separate.
+
 ## 1.0.1 candidate update
 
 Pinned source: upstream v1.0.1, `20c275e39f75fa820978032efaceddfc5283c8cb`,

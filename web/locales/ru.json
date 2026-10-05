@@ -477,5 +477,6 @@
   "nav.backToTop": "Наверх",
   "site.release_candidate": "Кандидат в релиз 1.0-salt1rc1 — проверка на устройстве ещё не выполнена. Опубликованная версия — Salt14.",
   "installer.progress": "Ход установки",
-  "installer.editStudio": "Редактировать в Studio"
+  "installer.editStudio": "Редактировать в Studio",
+  "installer.retry": "Попробовать снова"
 }

@@ -162,7 +162,22 @@
       container.append(...[...container.children].sort((a,b) => (ranks.get(a.dataset.cardKey) ?? 999) - (ranks.get(b.dataset.cardKey) ?? 999)));
     }
   }
-  window.FeluccaSkin = { enhance, sync, decorate };
+  function setLanguageFlag(button, language) {
+    const english = language === 'ja';
+    button.setAttribute('aria-label', english ? 'Switch to English' : '日本語に切り替え');
+    button.title = english ? 'English' : '日本語';
+    let flag = '<rect width="60" height="40" fill="#fff"/><circle cx="30" cy="20" r="12" fill="#bc002d"/>';
+    if (english) {
+      flag = '<rect width="60" height="40" fill="#fff"/>';
+      for (let row = 0; row < 7; row++) flag += `<rect y="${row * 80 / 13}" width="60" height="${40 / 13}" fill="#b22234"/>`;
+      flag += '<rect width="26" height="21.54" fill="#3c3b6e"/>';
+      for (let row = 0; row < 9; row++) for (let col = 0; col < (row % 2 ? 5 : 6); col++) {
+        flag += `<circle cx="${2.2 + col * 4.3 + (row % 2 ? 2.15 : 0)}" cy="${1.5 + row * 2.3}" r=".7" fill="#fff"/>`;
+      }
+    }
+    button.innerHTML = `<svg viewBox="0 0 60 40" aria-hidden="true" focusable="false">${flag}</svg>`;
+  }
+  window.FeluccaSkin = { enhance, sync, decorate, setLanguageFlag };
   document.addEventListener('DOMContentLoaded', () => {
     const host = document.querySelector('[data-appearance]');
     if (!host) return;

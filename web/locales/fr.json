@@ -348,7 +348,7 @@
   "ui.themeThumbnail": "Thème {theme} de Studio",
   "ui.clickToPlay": "Cliquez pour jouer",
   "ui.clickToPlayEdit": "Cliquez pour jouer/modifier",
-  "guide.title": "Découvrez votre FM-1",
+  "guide.title": "Découvrez les nouvelles commandes de votre FM-1 personnalisé...",
   "guide.intro": "Choisissez un groupe pour repérer les commandes et découvrir leurs fonctions.",
   "guide.illustration": "Illustration du panneau de commande du FM-1",
   "guide.groups": "Groupes de commandes",
@@ -394,5 +394,6 @@
   "nav.manual": "Manuel",
   "nav.studio": "Studio",
   "nav.themes": "Thèmes",
-  "nav.features": "Fonctions"
+  "nav.features": "Fonctions",
+  "nav.backToTop": "Retour en haut"
 }

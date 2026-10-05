@@ -348,7 +348,7 @@
   "ui.themeThumbnail": "Studio の {theme} テーマ",
   "ui.clickToPlay": "クリックして演奏",
   "ui.clickToPlayEdit": "クリックして演奏・編集",
-  "guide.title": "FM-1の操作ガイド",
+  "guide.title": "新しいカスタムFM-1の操作ガイド...",
   "guide.intro": "グループを選ぶと、対応する操作部とその機能が表示されます。",
   "guide.illustration": "FM-1操作パネルのイラスト",
   "guide.groups": "操作グループ",
@@ -394,5 +394,6 @@
   "nav.manual": "ガイド",
   "nav.studio": "Studio",
   "nav.themes": "テーマ",
-  "nav.features": "機能"
+  "nav.features": "機能",
+  "nav.backToTop": "ページの先頭へ"
 }

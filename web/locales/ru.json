@@ -348,7 +348,7 @@
   "ui.themeThumbnail": "Тема {theme} для Studio",
   "ui.clickToPlay": "Нажмите, чтобы играть",
   "ui.clickToPlayEdit": "Нажмите для игры/редактирования",
-  "guide.title": "Знакомство с FM-1",
+  "guide.title": "Знакомьтесь с новым управлением вашего настроенного FM-1...",
   "guide.intro": "Выберите группу, чтобы подсветить элементы управления и узнать их назначение.",
   "guide.illustration": "Иллюстрация панели управления FM-1",
   "guide.groups": "Группы управления",
@@ -394,5 +394,6 @@
   "nav.manual": "Руководство",
   "nav.studio": "Studio",
   "nav.themes": "Темы",
-  "nav.features": "Функции"
+  "nav.features": "Функции",
+  "nav.backToTop": "Наверх"
 }

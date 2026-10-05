@@ -61,6 +61,32 @@ original recordings may contain device-specific data and remain local.
 
 ## Record hardware identity
 
+Use [ARRIVAL_REPORT.md](ARRIVAL_REPORT.md) as the local session record. The USB
+helper reads Windows' present USB PnP nodes without opening hardware handles
+or sending MIDI. It hashes instance paths before saving; do not publish the
+local captures merely because serial suffixes are omitted.
+
+Run before connecting the SMK, then again after connecting it:
+
+```powershell
+python tools/smk37_usb.py snapshot --label before-connect --out build/arrival/usb-before.json
+python tools/smk37_usb.py snapshot --label stock-connected --out build/arrival/usb-stock.json
+python tools/smk37_usb.py diff build/arrival/usb-before.json build/arrival/usb-stock.json
+```
+
+The diff reports added, removed and changed nodes with VID/PID, interface number,
+device class and status where Windows exposes them. It does not automatically
+identify the keyboard: other devices can change during the same interval.
+Compare composite-device parents and child interfaces, then separately list
+MIDI inputs and OS audio endpoints. Some audio/MIDI endpoints live outside the
+USB PnP namespace and are not included. Instance keys may change with ports or
+update modes; a changed key is not proof of a different physical device.
+
+Snapshot requires Windows PowerShell's `Get-PnpDevice` and permission to query
+PnP information; offline `diff` requires only Python on any platform. Existing
+files are never overwritten. After locating a documented stock update procedure,
+capture that mode under a new filename and compare it with normal operation.
+
 Save stock version, model/board revision when known, USB VID/PID, port names,
 mode/channel settings, and package checksums alongside the captures. On Windows,
 Device Manager's device properties provide Hardware IDs. Note which USB audio
@@ -81,3 +107,8 @@ The suite covers both FWSC wrappers and malformed containers, board selection,
 MIDI channels/zero-velocity releases, repeated notes, controller/pressure ranges,
 SysEx framing, malformed records and receive-only capture lifecycle. The MIDI
 backend is simulated; physical port reliability remains an arrival test.
+
+USB tests cover composite interfaces, missing VID/PID on hubs, case-insensitive
+instance paths, serial omission, separate identical models, malformed snapshots
+and added/removed/changed nodes. Actual host enumeration can be checked before
+arrival; it does not establish keyboard behavior.

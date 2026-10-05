@@ -25,7 +25,8 @@
 .studio-preview[data-side=above]::before { bottom:-7px; border-bottom:1px solid var(--accent); border-right:1px solid var(--accent); }
 .studio-preview img { display:block; position:relative; width:100%; height:auto; border-radius:9px; }
 .studio-preview > div { padding:8px 4px 2px; font:600 12px/1.4 var(--ui-font); }
-.installer-page .studio-gallery-link { display:flex; align-items:center; justify-content:center; box-sizing:border-box; width:100%; }
+.installer-page .studio-gallery-link { display:flex; flex-direction:column; gap:4px; align-items:center; justify-content:center; box-sizing:border-box; width:100%; text-align:center; }
+.studio-gallery-subtitle { max-width:100%; white-space:normal; overflow-wrap:anywhere; font-size:0.8em; font-weight:normal; text-transform:none; letter-spacing:normal; }
 .browser-audio #tabs,
 .browser-audio #trackbar, .browser-audio #factlib,
 .browser-audio #play-channel, .browser-audio label:has(#play-channel) { display:none!important; }
@@ -72,6 +73,16 @@ main { max-width:1560px; margin:24px auto; padding:28px; border:1px solid color-
 .brand-row .brand-links .installer-button:hover { background:color-mix(in srgb,var(--badge-fg) 15%,transparent); }
 .brand-row .brand-links button.lang { display:grid; place-items:center; flex-shrink:0; float:none; width:42px; height:38px; padding:7px; border:0; border-radius:8px; background:transparent; box-shadow:none; }
 .brand-links button.lang svg { display:block; width:27px; height:18px; border-radius:2px; box-shadow:none; }
+.language-picker { position:relative; display:inline-flex; align-items:center; flex-shrink:0; }
+.language-options { position:absolute; z-index:1200; right:0; top:calc(100% + 8px); width:210px; max-width:calc(100vw - 48px); padding:6px; box-sizing:border-box; border:1px solid var(--line); border-radius:10px; background:var(--panel); box-shadow:0 12px 35px #0006; }
+.language-options[hidden] { display:none; }
+.language-options button { display:block; width:100%; padding:9px 12px; border:0; background:transparent; box-shadow:none; color:var(--fg); text-align:left; font:13px/1.4 var(--ui-font),system-ui,sans-serif; }
+.language-options button[aria-pressed=true] { background:var(--accent); color:var(--ink); }
+.language-picker button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.studio-gallery-section { margin:24px 0; }
+:root:lang(zh-CN) { --ui-font:system-ui,'Microsoft YaHei','PingFang SC',sans-serif; }
+.analytics-banner, .analytics-choice, .features { overflow-wrap:anywhere; }
+@media(max-width:780px) { .brand-links { flex-wrap:wrap; } }
 .brand-links :is(.installer-button,button.lang):focus-visible { outline:2px solid var(--badge-fg); outline-offset:3px; }
 .settings-menu { top:24px; }
 .settings-menu > summary { font-size:21px; padding:10px 12px; border-color:var(--line); color:var(--fg); border-radius:10px; background:#ffffff05; }
@@ -109,6 +120,15 @@ select, input[type=text], input[type=number], input[type=search] { border-radius
 .mode-tip.below::before { left:calc(var(--tip-arrow-x) - 6px); top:-7px; transform:rotate(135deg); }
 .mode-tip button { flex-shrink:0; display:grid; place-items:center; min-width:32px; min-height:32px; padding:0; color:var(--fg); background:transparent; border:0; box-shadow:none; font-size:22px; }
 .mode-tip button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.mode-tip-copy { flex:1; min-width:0; text-align:center; padding-right:20px; }
+.mode-tip-copy > span { display:block; }
+.mode-tip-copy > .mode-tip-connect { display:flex; align-items:center; justify-content:center; gap:7px; }
+.usb-symbol { width:18px; height:23px; flex-shrink:0; color:var(--accent); }
+.mode-tip-or { display:flex!important; align-items:center; gap:10px; margin:5px 0; color:var(--dim); font-size:11px; font-weight:400; }
+.mode-tip-or::before,.mode-tip-or::after { content:''; flex:1; height:1px; background:var(--line); }
+.mode-tip-play { font-weight:400; text-wrap:pretty; }
+.mode-tip-engine { white-space:nowrap; font-weight:700; }
+.mode-tip button { position:absolute; right:5px; top:5px; }
 @keyframes mode-tip-enter { from { opacity:0; transform:translateX(7px); } to { opacity:1; transform:translateX(0); } }
 @media(prefers-reduced-motion:reduce) { .mode-tip:not([hidden]) { animation:none; } .installer-page #go { transition:none; } }
 #version, #live, #mock { font:11px var(--ui-font); color:var(--dim); }

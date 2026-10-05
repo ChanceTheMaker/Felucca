@@ -1,7 +1,7 @@
 <!doctype html>
 <!-- SPDX-License-Identifier: GPL-3.0-only
      Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments -->
-<html lang="ja">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <script defer src="analytics.js"></script>
@@ -34,86 +34,88 @@
 <link rel="stylesheet" href="skin.css">
 <link rel="stylesheet" href="interface.css">
 <link rel="stylesheet" href="fonts.css">
+<script src="locales.js"></script>
+<script src="i18n.js"></script>
 <script src="skin.js"></script>
 </head>
 <body class="installer-page">
 <main>
   <div class="masthead"><div class="brand-row">
-    <div><div class="eyebrow">FM-1 / Custom firmware</div><h1>Felucca <em>[Salt]</em></h1><p class="tagline">SMALL INSTRUMENT. BIG POSSIBILITIES.</p></div>
-    <div class="brand-links"><a class="installer-button" href="../editor/">Open Studio ↗</a><button class="lang" id="lang"></button></div>
+    <div><div class="eyebrow"><span data-i18n="site.fm_1_custom_firmware">FM-1 / Custom firmware</span></div><h1>Felucca <em>[Salt]</em></h1><p class="tagline"><span data-i18n="site.small_instrument_big_possibilities">SMALL INSTRUMENT. BIG POSSIBILITIES.</span></p></div>
+    <div class="brand-links"><a class="installer-button" href="../editor/"><span data-i18n="site.open_studio">Open Studio ↗</span></a><button class="lang" id="lang"></button></div>
   </div>
-  <div class="appearance" data-appearance aria-label="Website appearance"></div>
+  <div class="appearance" data-appearance aria-label="Website appearance" data-i18n-aria-label="site.website_appearance"></div>
   </div>
   <div class="install-console">
-  <div class="installer-hero" lang="en">
-    <div><h2>A little synth.<br>A bigger playground.</h2><p>Play a sound in your browser or connect your FM-1. A hands-on editor, expressive MIDI, and twelve looks to make it yours.</p>
+  <div class="installer-hero">
+    <div><h2><span data-i18n="site.a_little_synth">A little synth.</span><br><span data-i18n="site.a_bigger_playground">A bigger playground.</span></h2><p><span data-i18n="site.play_a_sound_in_your_browser_or_connect_your_fm_1_a_hands_on_edi">Play a sound in your browser or connect your FM-1. A hands-on editor, expressive MIDI, and twelve looks to make it yours.</span></p>
       <div class="hero-actions">
         <div class="install-action"><button id="go" disabled data-t="install"></button><p class="small" id="release"></p></div>
-        <a class="hero-link" href="../editor/">Open Studio ↗</a>
+        <a class="hero-link" href="../editor/"><span data-i18n="site.open_studio">Open Studio ↗</span></a>
       </div>
       <p class="small beta-notice" data-t="beta" style="white-space:pre-line"></p>
     </div>
     <div class="hero-instrument"><svg viewBox="0 0 640 410" role="img" aria-labelledby="fm1-wire-title fm1-wire-desc" xmlns="http://www.w3.org/2000/svg">
-<title id="fm1-wire-title">FM-1 synthesizer wireframe</title>
-<desc id="fm1-wire-desc">The FM-1's rounded enclosure, eight rotary controls, central screen, twelve function buttons, octave buttons, and 27 touch keys.</desc>
+<title id="fm1-wire-title" data-i18n="ui.wireTitle">FM-1 synthesizer wireframe</title>
+<desc id="fm1-wire-desc" data-i18n="ui.wireDesc">The FM-1's rounded enclosure, eight rotary controls, central screen, twelve function buttons, octave buttons, and 27 touch keys.</desc>
 <defs>
- <g id="fm1-knob"><circle r="13"/><ellipse cy="3" rx="16" ry="15" opacity=".35"/><path d="M0 -10v7" stroke-width="2.5"/></g>
- <g id="fm1-key"><rect width="24" height="49" rx="12"/><path d="M12 12v24" opacity=".65" stroke-width="2.5"/></g>
+ <g id="fm1-knob"><circle r="13"/></circle><ellipse cy="3" rx="16" ry="15" opacity=".35"/></ellipse><path d="M0 -10v7" stroke-width="2.5"/></path></g>
+ <g id="fm1-key"><rect width="24" height="49" rx="12"/></rect><path d="M12 12v24" opacity=".65" stroke-width="2.5"/></path></g>
 </defs>
 <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
- <path class="wire-secondary" d="M40 101v257q0 27 30 27h500q30 0 30-27V101M46 364q10 10 26 10h497q15 0 24-10"/>
- <rect x="40" y="55" width="560" height="320" rx="30"/>
- <rect x="52" y="67" width="536" height="296" rx="23" class="wire-secondary"/>
- <g class="wire-secondary" stroke-dasharray="2 6"><path d="M28 55H613M28 375H613M40 40V393M600 40V393"/></g>
- <g><use href="#fm1-knob" x="87" y="105"/><use href="#fm1-knob" x="146" y="105"/><use href="#fm1-knob" x="87" y="161"/><use href="#fm1-knob" x="146" y="161"/>
- <use href="#fm1-knob" x="358" y="105"/><use href="#fm1-knob" x="421" y="105"/><use href="#fm1-knob" x="484" y="105"/><use href="#fm1-knob" x="547" y="105"/></g>
- <rect x="185" y="78" width="133" height="131" rx="17"/>
- <rect x="199" y="93" width="105" height="99" rx="3" class="wire-secondary"/>
- <g class="wire-display"><path d="M208 164l7-8 5 10 7-3 4-13 6 17 5-4 5 0 5-10 6 14 7-5 5-11 6 17 5-8 5 4 6-5"/><path class="wire-secondary" d="M208 125h87M208 175h87M233 132v11m23-11v11m23-11v11"/></g>
- <rect x="72" y="197" width="90" height="27" rx="6"/>
- <rect x="77" y="202" width="34" height="16" rx="3"/><rect x="119" y="202" width="37" height="16" rx="3"/>
- <rect x="337" y="142" width="230" height="81" rx="12"/>
- <rect x="60" y="240" width="520" height="117" rx="20"/>
+ <path class="wire-secondary" d="M40 101v257q0 27 30 27h500q30 0 30-27V101M46 364q10 10 26 10h497q15 0 24-10"/></path>
+ <rect x="40" y="55" width="560" height="320" rx="30"/></rect>
+ <rect x="52" y="67" width="536" height="296" rx="23" class="wire-secondary"/></rect>
+ <g class="wire-secondary" stroke-dasharray="2 6"><path d="M28 55H613M28 375H613M40 40V393M600 40V393"/></path></g>
+ <g><use href="#fm1-knob" x="87" y="105"/></use><use href="#fm1-knob" x="146" y="105"/></use><use href="#fm1-knob" x="87" y="161"/></use><use href="#fm1-knob" x="146" y="161"/></use>
+ <use href="#fm1-knob" x="358" y="105"/></use><use href="#fm1-knob" x="421" y="105"/></use><use href="#fm1-knob" x="484" y="105"/></use><use href="#fm1-knob" x="547" y="105"/></use></g>
+ <rect x="185" y="78" width="133" height="131" rx="17"/></rect>
+ <rect x="199" y="93" width="105" height="99" rx="3" class="wire-secondary"/></rect>
+ <g class="wire-display"><path d="M208 164l7-8 5 10 7-3 4-13 6 17 5-4 5 0 5-10 6 14 7-5 5-11 6 17 5-8 5 4 6-5"/></path><path class="wire-secondary" d="M208 125h87M208 175h87M233 132v11m23-11v11m23-11v11"/></path></g>
+ <rect x="72" y="197" width="90" height="27" rx="6"/></rect>
+ <rect x="77" y="202" width="34" height="16" rx="3"/></rect><rect x="119" y="202" width="37" height="16" rx="3"/></rect>
+ <rect x="337" y="142" width="230" height="81" rx="12"/></rect>
+ <rect x="60" y="240" width="520" height="117" rx="20"/></rect>
 
-<rect x="346" y="151" width="29" height="27" rx="5"/>
-<rect x="382" y="151" width="29" height="27" rx="5"/>
-<rect x="418" y="151" width="29" height="27" rx="5"/>
-<rect x="454" y="151" width="29" height="27" rx="5"/>
-<rect x="490" y="151" width="29" height="27" rx="5"/>
-<rect x="526" y="151" width="29" height="27" rx="5"/>
-<rect x="346" y="185" width="29" height="27" rx="5"/>
-<rect x="382" y="185" width="29" height="27" rx="5"/>
-<rect x="418" y="185" width="29" height="27" rx="5"/>
-<rect x="454" y="185" width="29" height="27" rx="5"/>
-<rect x="490" y="185" width="29" height="27" rx="5"/>
-<rect x="526" y="185" width="29" height="27" rx="5"/>
-<use href="#fm1-key" x="68" y="302"/>
-<use href="#fm1-key" x="100" y="302"/>
-<use href="#fm1-key" x="132" y="302"/>
-<use href="#fm1-key" x="164" y="302"/>
-<use href="#fm1-key" x="196" y="302"/>
-<use href="#fm1-key" x="228" y="302"/>
-<use href="#fm1-key" x="260" y="302"/>
-<use href="#fm1-key" x="292" y="302"/>
-<use href="#fm1-key" x="324" y="302"/>
-<use href="#fm1-key" x="356" y="302"/>
-<use href="#fm1-key" x="388" y="302"/>
-<use href="#fm1-key" x="420" y="302"/>
-<use href="#fm1-key" x="452" y="302"/>
-<use href="#fm1-key" x="484" y="302"/>
-<use href="#fm1-key" x="516" y="302"/>
-<use href="#fm1-key" x="548" y="302"/>
-<use href="#fm1-key" x="84" y="248"/>
-<use href="#fm1-key" x="116" y="248"/>
-<use href="#fm1-key" x="148" y="248"/>
-<use href="#fm1-key" x="212" y="248"/>
-<use href="#fm1-key" x="244" y="248"/>
-<use href="#fm1-key" x="308" y="248"/>
-<use href="#fm1-key" x="340" y="248"/>
-<use href="#fm1-key" x="372" y="248"/>
-<use href="#fm1-key" x="436" y="248"/>
-<use href="#fm1-key" x="468" y="248"/>
-<use href="#fm1-key" x="532" y="248"/>
+<rect x="346" y="151" width="29" height="27" rx="5"/></rect>
+<rect x="382" y="151" width="29" height="27" rx="5"/></rect>
+<rect x="418" y="151" width="29" height="27" rx="5"/></rect>
+<rect x="454" y="151" width="29" height="27" rx="5"/></rect>
+<rect x="490" y="151" width="29" height="27" rx="5"/></rect>
+<rect x="526" y="151" width="29" height="27" rx="5"/></rect>
+<rect x="346" y="185" width="29" height="27" rx="5"/></rect>
+<rect x="382" y="185" width="29" height="27" rx="5"/></rect>
+<rect x="418" y="185" width="29" height="27" rx="5"/></rect>
+<rect x="454" y="185" width="29" height="27" rx="5"/></rect>
+<rect x="490" y="185" width="29" height="27" rx="5"/></rect>
+<rect x="526" y="185" width="29" height="27" rx="5"/></rect>
+<use href="#fm1-key" x="68" y="302"/></use>
+<use href="#fm1-key" x="100" y="302"/></use>
+<use href="#fm1-key" x="132" y="302"/></use>
+<use href="#fm1-key" x="164" y="302"/></use>
+<use href="#fm1-key" x="196" y="302"/></use>
+<use href="#fm1-key" x="228" y="302"/></use>
+<use href="#fm1-key" x="260" y="302"/></use>
+<use href="#fm1-key" x="292" y="302"/></use>
+<use href="#fm1-key" x="324" y="302"/></use>
+<use href="#fm1-key" x="356" y="302"/></use>
+<use href="#fm1-key" x="388" y="302"/></use>
+<use href="#fm1-key" x="420" y="302"/></use>
+<use href="#fm1-key" x="452" y="302"/></use>
+<use href="#fm1-key" x="484" y="302"/></use>
+<use href="#fm1-key" x="516" y="302"/></use>
+<use href="#fm1-key" x="548" y="302"/></use>
+<use href="#fm1-key" x="84" y="248"/></use>
+<use href="#fm1-key" x="116" y="248"/></use>
+<use href="#fm1-key" x="148" y="248"/></use>
+<use href="#fm1-key" x="212" y="248"/></use>
+<use href="#fm1-key" x="244" y="248"/></use>
+<use href="#fm1-key" x="308" y="248"/></use>
+<use href="#fm1-key" x="340" y="248"/></use>
+<use href="#fm1-key" x="372" y="248"/></use>
+<use href="#fm1-key" x="436" y="248"/></use>
+<use href="#fm1-key" x="468" y="248"/></use>
+<use href="#fm1-key" x="532" y="248"/></use>
 </g><g fill="currentColor" font-size="7" text-anchor="middle">
 <text x="87" y="81">MASTER</text>
 <text x="146" y="81">SELECT</text>
@@ -152,50 +154,52 @@
   <progress id="bar" max="100" value="0"></progress>
   <p id="status"></p>
   <pre id="log"></pre>
-  <p><a href="../editor/" style="color:inherit" data-t="editor"></a></p>
-  <section class="features" aria-labelledby="website-features-title" lang="en">
-    <h2 id="website-features-title">New on the website</h2>
-    <p>These updates are available now in the editor. No firmware update is needed for browser sound.</p>
-    <ul>
-      <li><strong>FM-1 / Browser mode switch.</strong> Select Browser to start the local sound engine, or FM-1 to edit your connected instrument. Switching back stops browser playback.</li>
-      <li><strong>A synth without the hardware.</strong> Nine Felucca engines, 54 factory presets, built-in samples, live sound controls, chords, sustain, and a separate browser volume.</li>
-      <li><strong>Live oscilloscope.</strong> A full-width display follows the actual browser audio output and matches your selected theme.</li>
-      <li><strong>Twelve hardware-inspired themes.</strong> Stage Red, Matrix, vintage DX, Model D, Chocolate, Vaporwave, and more, with light/dark modes and a dedicated high-contrast theme. Wood, molded surfaces, screws, and display fonts give each its own character.</li>
-      <li><strong>Your controls, your layout.</strong> Choose knobs or sliders per Sound card, drag cards to rearrange them, and switch to full width from the menu.</li>
-      <li><strong>A keyboard that stays within reach.</strong> Play with your mouse, touch, or computer keys. The docked keyboard starts at the FM-1's F3–G5 range, adds shaded extra keys on wide screens, and folds into a tray.</li>
-    </ul>
-    <p>Browser mode currently plays one sound. Sequencing, track mixing, sample uploads, and projects are not connected to browser playback yet. Save sound edits with <b>Save to file</b>. The full device editor remains available in FM-1 mode.</p>
-    <p><a class="hero-link studio-gallery-link" href="../editor/">Open Studio →</a></p>
-    <div class="screenshot-gallery" aria-label="Editor screenshots">
-      <figure><a href="screenshots/stage.jpg" target="_blank" rel="noopener"><img src="screenshots/stage.jpg" width="1440" height="1100" loading="lazy" alt="Stage Red editor with wood sides, red keyboard surround, and a live oscilloscope"></a><figcaption>Stage Red · Browser synth &amp; oscilloscope</figcaption></figure>
-      <figure><a href="screenshots/matrix.jpg" target="_blank" rel="noopener"><img src="screenshots/matrix.jpg" width="1440" height="1100" loading="lazy" alt="Matrix editor theme with green illuminated controls"></a><figcaption>Matrix · Green phosphor display</figcaption></figure>
-      <figure><a href="screenshots/dx.jpg" target="_blank" rel="noopener"><img src="screenshots/dx.jpg" width="1440" height="1100" loading="lazy" alt="Vintage DX editor theme and its hardware-style controls"></a><figcaption>Vintage DX · Digital heritage</figcaption></figure>
-      <figure><a href="screenshots/modeld.jpg" target="_blank" rel="noopener"><img src="screenshots/modeld.jpg" width="1440" height="1100" loading="lazy" alt="Model D editor theme with a wooden cabinet and analog-style controls"></a><figcaption>Model D · Wood &amp; analog character</figcaption></figure>
-      <figure><a href="screenshots/vapor.jpg" target="_blank" rel="noopener"><img src="screenshots/vapor.jpg" width="1440" height="1100" loading="lazy" alt="Vaporwave editor theme with colorful synth controls"></a><figcaption>Vaporwave · Color after dark</figcaption></figure>
-      <figure><a href="screenshots/hicon.jpg" target="_blank" rel="noopener"><img src="screenshots/hicon.jpg" width="1440" height="1100" loading="lazy" alt="Light high-contrast editor theme with dark, clearly defined controls"></a><figcaption>High Contrast · Light mode</figcaption></figure>
+  <section class="studio-gallery-section">
+    <p><a class="hero-link studio-gallery-link" href="../editor/"><span data-i18n="site.open_studiox">Open Studio →</span><span class="studio-gallery-subtitle" data-t="editor"></span></a></p>
+    <div class="screenshot-gallery" aria-label="Editor screenshots" data-i18n-aria-label="site.editor_screenshots">
+      <figure><a href="../editor/?theme=stage&amp;mode=dark"><img src="screenshots/stage.jpg" width="1440" height="1100" loading="lazy" alt="Stage Red editor with wood sides, red keyboard surround, and a live oscilloscope" data-i18n-alt="site.stage_red_editor_with_wood_sides_red_keyboard_surround_and_a_liv"></a><figcaption><span data-i18n="site.stage_red_browser_synth">Stage Red · Browser synth</span> &amp; <span data-i18n="site.oscilloscopex">oscilloscope</span></figcaption></figure>
+      <figure><a href="../editor/?theme=matrix&amp;mode=dark"><img src="screenshots/matrix.jpg" width="1440" height="1100" loading="lazy" alt="Matrix editor theme with green illuminated controls" data-i18n-alt="site.matrix_editor_theme_with_green_illuminated_controls"></a><figcaption><span data-i18n="site.matrix_green_phosphor_display">Matrix · Green phosphor display</span></figcaption></figure>
+      <figure><a href="../editor/?theme=dx&amp;mode=dark"><img src="screenshots/dx.jpg" width="1440" height="1100" loading="lazy" alt="Vintage DX editor theme and its hardware-style controls" data-i18n-alt="site.vintage_dx_editor_theme_and_its_hardware_style_controls"></a><figcaption><span data-i18n="site.vintage_dx_digital_heritage">Vintage DX · Digital heritage</span></figcaption></figure>
+      <figure><a href="../editor/?theme=modeld&amp;mode=dark"><img src="screenshots/modeld.jpg" width="1440" height="1100" loading="lazy" alt="Model D editor theme with a wooden cabinet and analog-style controls" data-i18n-alt="site.model_d_editor_theme_with_a_wooden_cabinet_and_analog_style_cont"></a><figcaption><span data-i18n="site.model_d_wood">Model D · Wood</span> &amp; <span data-i18n="site.analog_character">analog character</span></figcaption></figure>
+      <figure><a href="../editor/?theme=vapor&amp;mode=dark"><img src="screenshots/vapor.jpg" width="1440" height="1100" loading="lazy" alt="Vaporwave editor theme with colorful synth controls" data-i18n-alt="site.vaporwave_editor_theme_with_colorful_synth_controls"></a><figcaption><span data-i18n="site.vaporwave_color_after_dark">Vaporwave · Color after dark</span></figcaption></figure>
+      <figure><a href="../editor/?theme=hicon&amp;mode=light"><img src="screenshots/hicon.jpg" width="1440" height="1100" loading="lazy" alt="Light high-contrast editor theme with dark, clearly defined controls" data-i18n-alt="site.light_high_contrast_editor_theme_with_dark_clearly_defined_contr"></a><figcaption><span data-i18n="site.high_contrast_light_mode">High Contrast · Light mode</span></figcaption></figure>
     </div>
-    <p class="small">Actual editor screenshots. Select an image to view it full size.</p>
+    <p class="small"><span data-i18n="site.actual_editor_screenshots_select_an_image_to_view_it_full_size">Choose a thumbnail to open Studio in that theme.</span></p>
   </section>
-  <section class="features" aria-labelledby="features-title" lang="en">
-    <h2 id="features-title">On the FM-1: Felucca [Salt] firmware features</h2>
-    <p>Included in 0.9-salt13, building on the original Felucca firmware:</p>
+  <section class="features" aria-labelledby="website-features-title">
+    <h2 id="website-features-title"><span data-i18n="site.new_on_the_website">New on the website</span></h2>
+    <p><span data-i18n="site.these_updates_are_available_now_in_the_editor_no_firmware_update">These updates are available now in the editor. No firmware update is needed for browser sound.</span></p>
     <ul>
-      <li><strong>3.5 mm TRS MIDI input.</strong> Play through USB or TRS, with TRS enabled by default.</li>
-      <li><strong>Expressive playing.</strong> Sustain pedal, pitch bend with adjustable MIDI bend sensitivity, mod wheel, and MIDI reset and all-notes-off handling.</li>
-      <li><strong>External MIDI sync.</strong> Select internal, USB, or TRS clock, with MIDI Start, Stop, and Continue. Includes keremimo's clock-sync contribution.</li>
-      <li><strong>More screen colors.</strong> Twenty palettes in total, including eight light palettes and high-contrast options for both light and dark backgrounds.</li>
-      <li><strong>Clearer display.</strong> Select regular or bold text, with distinct track colors and status colors for playback, recording, and MIDI activity.</li>
-      <li><strong>Preset favorites.</strong> Star factory presets and saved user sounds, then browse all sounds or favorites only. Small favorites lists show each entry once; stars and the filter are saved.</li>
-      <li><strong>MIDI monitor.</strong> Choose Off, Events, or Notes. The bottom-right of the waveform shows the latest event or currently held notes and chords, including notes held by the sustain pedal.</li>
-      <li><strong>New web editor controls.</strong> Settings &gt; Device display controls palette, font, and monitor mode. Library &gt; Device presets manages favorite stars and filtering. Settings &gt; GLOBAL selects the clock source.</li>
+      <li><strong><span data-i18n="site.fm_1_browser_mode_switch">FM-1 / Browser mode switch.</span></strong> <span data-i18n="site.select_browser_to_start_the_local_sound_engine_or_fm_1_to_edit_y">Select Browser to start the local sound engine, or FM-1 to edit your connected instrument. Switching back stops browser playback.</span></li>
+      <li><strong><span data-i18n="site.a_synth_without_the_hardware">A synth without the hardware.</span></strong> <span data-i18n="site.nine_felucca_engines_54_factory_presets_built_in_samples_live_so">Nine Felucca engines, 54 factory presets, built-in samples, live sound controls, chords, sustain, and a separate browser volume.</span></li>
+      <li><strong><span data-i18n="site.live_oscilloscope">Live oscilloscope.</span></strong> <span data-i18n="site.a_full_width_display_follows_the_actual_browser_audio_output_and">A full-width display follows the actual browser audio output and matches your selected theme.</span></li>
+      <li><strong><span data-i18n="site.twelve_hardware_inspired_themes">Twelve hardware-inspired themes.</span></strong> <span data-i18n="site.stage_red_matrix_vintage_dx_model_d_chocolate_vaporwave_and_more">Stage Red, Matrix, vintage DX, Model D, Chocolate, Vaporwave, and more, with light/dark modes and a dedicated high-contrast theme. Wood, molded surfaces, screws, and display fonts give each its own character.</span></li>
+      <li><strong><span data-i18n="site.your_controls_your_layout">Your controls, your layout.</span></strong> <span data-i18n="site.choose_knobs_or_sliders_per_sound_card_drag_cards_to_rearrange_t">Choose knobs or sliders per Sound card, drag cards to rearrange them, and switch to full width from the menu.</span></li>
+      <li><strong><span data-i18n="site.a_keyboard_that_stays_within_reach">A keyboard that stays within reach.</span></strong> <span data-i18n="site.play_with_your_mouse_touch_or_computer_keys_the_docked_keyboard_">Play with your mouse, touch, or computer keys. The docked keyboard starts at the FM-1's F3–G5 range, adds shaded extra keys on wide screens, and folds into a tray.</span></li>
     </ul>
-    <p>Install Felucca [Salt] and reconnect the editor to use the new web controls. Favorites bookmark sounds; save edited sounds to a user slot to keep your changes.</p>
+    <p><span data-i18n="site.browser_mode_currently_plays_one_sound_sequencing_track_mixing_s">Browser mode currently plays one sound. Sequencing, track mixing, sample uploads, and projects are not connected to browser playback yet. Save sound edits with</span> <b><span data-i18n="site.save_to_file">Save to file</span></b><span data-i18n="site.the_full_device_editor_remains_available_in_fm_1_mode">. The full device editor remains available in FM-1 mode.</span></p>
+
+  </section>
+  <section class="features" aria-labelledby="features-title">
+    <h2 id="features-title"><span data-i18n="site.on_the_fm_1_felucca_salt_firmware_features">On the FM-1: Felucca [Salt] firmware features</span></h2>
+    <p><span data-i18n="site.included_in_0_9_salt13_building_on_the_original_felucca_firmware">Included in 0.9-salt13, building on the original Felucca firmware:</span></p>
+    <ul>
+      <li><strong><span data-i18n="site.3_5_mm_trs_midi_input">3.5 mm TRS MIDI input.</span></strong> <span data-i18n="site.play_through_usb_or_trs_with_trs_enabled_by_default">Play through USB or TRS, with TRS enabled by default.</span></li>
+      <li><strong><span data-i18n="site.expressive_playing">Expressive playing.</span></strong> <span data-i18n="site.sustain_pedal_pitch_bend_with_adjustable_midi_bend_sensitivity_m">Sustain pedal, pitch bend with adjustable MIDI bend sensitivity, mod wheel, and MIDI reset and all-notes-off handling.</span></li>
+      <li><strong><span data-i18n="site.external_midi_sync">External MIDI sync.</span></strong> <span data-i18n="site.select_internal_usb_or_trs_clock_with_midi_start_stop_and_contin">Select internal, USB, or TRS clock, with MIDI Start, Stop, and Continue. Includes keremimo's clock-sync contribution.</span></li>
+      <li><strong><span data-i18n="site.more_screen_colors">More screen colors.</span></strong> <span data-i18n="site.twenty_palettes_in_total_including_eight_light_palettes_and_high">Twenty palettes in total, including eight light palettes and high-contrast options for both light and dark backgrounds.</span></li>
+      <li><strong><span data-i18n="site.clearer_display">Clearer display.</span></strong> <span data-i18n="site.select_regular_or_bold_text_with_distinct_track_colors_and_statu">Select regular or bold text, with distinct track colors and status colors for playback, recording, and MIDI activity.</span></li>
+      <li><strong><span data-i18n="site.preset_favorites">Preset favorites.</span></strong> <span data-i18n="site.star_factory_presets_and_saved_user_sounds_then_browse_all_sound">Star factory presets and saved user sounds, then browse all sounds or favorites only. Small favorites lists show each entry once; stars and the filter are saved.</span></li>
+      <li><strong><span data-i18n="site.midi_monitor">MIDI monitor.</span></strong> <span data-i18n="site.choose_off_events_or_notes_the_bottom_right_of_the_waveform_show">Choose Off, Events, or Notes. The bottom-right of the waveform shows the latest event or currently held notes and chords, including notes held by the sustain pedal.</span></li>
+      <li><strong><span data-i18n="site.new_web_editor_controls">New web editor controls.</span></strong> <span data-i18n="site.settings">Settings</span> &gt; <span data-i18n="site.device_display_controls_palette_font_and_monitor_mode_library">Device display controls palette, font, and monitor mode. Library</span> &gt; <span data-i18n="site.device_presets_manages_favorite_stars_and_filtering_settings">Device presets manages favorite stars and filtering. Settings</span> &gt; <span data-i18n="site.global_selects_the_clock_source">GLOBAL selects the clock source.</span></li>
+    </ul>
+    <p><span data-i18n="site.install_felucca_salt_and_reconnect_the_editor_to_use_the_new_web">Install Felucca [Salt] and reconnect the editor to use the new web controls. Favorites bookmark sounds; save edited sounds to a user slot to keep your changes.</span></p>
   </section>
   <p class="small">Felucca [Salt] by Chance Roth (<a href="https://github.com/ChanceTheMaker" target="_blank" rel="noopener" style="color:inherit">@ChanceTheMaker</a>).<br>
-    Based on Felucca by Leo Kuroshita (@kurogedelic), <a href="https://hugelton.com" target="_blank" rel="noopener" style="color:inherit">Hügelton Instruments</a>.<br>
-    Font: Terminus (Dimitar Toshkov Zhekov, SIL OFL 1.1). Samples: Versilian Studios VSCO-2 Community Edition and VCSL (CC0 1.0), and the Hügelton Sample Pack (© Hügelton Instruments, not CC0).<br>
-    Test build. M-VAVE and FM-1 are trademarks of their respective owners.<br>
-    <a href="../../source/Felucca-Salt-source.zip" style="color:inherit">Download this release's source code</a><br>
+    <span data-i18n="site.based_on_felucca_by_leo_kuroshita_kurogedelic">Based on Felucca by Leo Kuroshita (@kurogedelic),</span> <a href="https://hugelton.com" target="_blank" rel="noopener" style="color:inherit">Hügelton Instruments</a>.<br>
+    <span data-i18n="site.font_terminus_dimitar_toshkov_zhekov_sil_ofl_1_1_samples_versili">Font: Terminus (Dimitar Toshkov Zhekov, SIL OFL 1.1). Samples: Versilian Studios VSCO-2 Community Edition and VCSL (CC0 1.0), and the Hügelton Sample Pack (© Hügelton Instruments, not CC0).</span><br>
+    <span data-i18n="site.test_build_m_vave_and_fm_1_are_trademarks_of_their_respective_ow">Test build. M-VAVE and FM-1 are trademarks of their respective owners.</span><br>
+    <a href="../../source/Felucca-Salt-source.zip" style="color:inherit"><span data-i18n="site.download_this_release_s_source_code">Download this release's source code</span></a><br>
     <span data-t="license"></span> <a href="https://github.com/hugelton/Felucca" target="_blank" rel="noopener" style="color:inherit">github.com/hugelton/Felucca</a></p>
   </div>
   <div class="cabinet-grille" aria-hidden="true"></div>
@@ -446,75 +450,25 @@ class Updater {
 }
 
 const $ = (id) => document.getElementById(id);
-const TEXT = {
-  ja: {
-    installIntro: "インストール方法:",
-    intro: "FM-1 を USB で接続してください。（Chrome か Edge で使えます）",
-    warn: "書き込み中は USB を抜かないでください。",
-    install: "Felucca [Salt] ベータ版をインストール", other: "English",
-    editor: "エディタ（インストール後、パソコンから音色やシーケンスを編集）",
-    direct: "USB ケーブルはパソコンに直接つないでください。Probe や Transporter などの機材は不要です。",
-    brick: "万一インストールに失敗して起動しなくなった場合は、復旧に Transporter が必要です:",
-    beta: "実機でテスト済みですが、このファームウェアはベータ版です。\nこのカスタムファームウェアを使ったことで FM-1 が壊れたり不具合が起きたりしても、作者は一切の責任を負いません。自己責任でお使いください。",
-    back: "公式ファームウェアに戻すには、M-VAVE 公式のアップデーター M-UPGRADE（Downloads → PC Software → M-UPGRADE）と公式ファームウェア（PC Firmware → FM-1 V15）が必要です。",
-    nomidi: "このブラウザでは使えません。Chrome か Edge で開いてください。", loadfail: "読み込めませんでした: ",
-    start: "開始します", verify: "確認中", loader: "書き込みモードに切り替え中", write: "書き込み中",
-    reboot: "再起動中", done: "完了しました", stopped: "途中で止まりました。USB を挿し直してもう一度押してください。",
-    error: "エラー: ",
-    denied: "MIDI（SysEx）の使用が許可されませんでした。アドレスバーのサイト設定で MIDI を許可して、もう一度押してください。",
-    notfound: "FM-1 が見つかりません。USB ケーブル（データ通信用か）を確かめ、MIDI を使う他のアプリを閉じてから、もう一度押してください。",
-    model: "接続されている機器は FM-1 ではありません。",
-    lost: "USB の接続が切れました。挿し直してもう一度押してください。",
-    noloader: "書き込みモードの FM-1 が見つかりません。USB を挿し直してもう一度押してください（終わるまで書き込みモードのままです）。",
-    noreturn: "FM-1 が戻ってきません。電源を入れ直してください。",
-    mismatch: "書き込みは終わりましたが、FM-1 が別のバージョンを報告しています: ",
-    badpkg: "インストールするファイルが壊れています。ページを再読み込みしてください。",
-    leave: "書き込み中です。ページを閉じないでください。",
-    license: "GPL-3.0、無保証。ソース:",
-  },
-  en: {
-    installIntro: "To install:",
-    intro: "Connect the FM-1 by USB. (Works in Chrome or Edge.)",
-    warn: "Do not unplug the USB cable while writing.",
-    install: "Install Felucca [Salt] Beta", other: "日本語",
-    editor: "Open Studio — play in your browser or edit your connected FM-1",
-    direct: "Connect the USB cable directly to the computer. No probe or Transporter is needed.",
-    brick: "If an install fails and the FM-1 no longer starts, recovering it needs a Transporter:",
-    beta: "Although tested on device, this firmware is a beta.\nThe author accepts no responsibility if your FM-1 is damaged or misbehaves because of this custom firmware. Use it at your own risk.",
-    back: "To go back to the official firmware you need M-VAVE's official updater, M-UPGRADE (Downloads → PC Software → M-UPGRADE), and the official firmware (PC Firmware → FM-1 V15).",
-    nomidi: "This browser cannot do it. Open the page in Chrome or Edge.", loadfail: "Could not load: ",
-    start: "Starting", verify: "Verifying", loader: "Switching to update mode", write: "Writing",
-    reboot: "Restarting", done: "Done", stopped: "Stopped. Replug the USB cable and press Install again.",
-    error: "Error: ",
-    denied: "MIDI (SysEx) access was not allowed. Allow MIDI in the site settings (address bar) and press Install again.",
-    notfound: "FM-1 not found. Check the USB cable (a data cable), close other apps that use MIDI, and press Install again.",
-    model: "The connected device is not an FM-1.",
-    lost: "The USB connection was lost. Replug it and press Install again.",
-    noloader: "The FM-1 in update mode was not found. Replug the USB cable and press Install again (it stays in update mode until it is finished).",
-    noreturn: "The FM-1 did not come back. Power-cycle it.",
-    mismatch: "Written, but the FM-1 reports another version: ",
-    badpkg: "The file to install is damaged. Reload the page.",
-    leave: "Writing. Do not close the page.",
-    license: "GPL-3.0, no warranty. Source:",
-  },
-};
-let lang = (navigator.language || "en").toLowerCase().startsWith("ja") ? "ja" : "en";
+const I18N = window.FeluccaI18n;
+const TEXT = Object.fromEntries(I18N.languages.map(l => [l.code, I18N.namespace("installer", l.code)]));
+let lang = I18N.language;
 const t = (k) => TEXT[lang][k];
 let lastKey = null, lastArg = "";
 function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-t]").forEach((e) => { e.textContent = t(e.dataset.t); });
-  window.FeluccaSkin.setLanguageFlag($("lang"), lang);
+  I18N.apply();
   if (lastKey) $("status").textContent = t(lastKey) + lastArg;
 }
-$("lang").addEventListener("click", () => { lang = lang === "ja" ? "en" : "ja"; applyLang(); });
+I18N.onChange(() => { lang = I18N.language; applyLang(); });
 applyLang();
 const sayK = (k, arg = "") => { lastKey = k; lastArg = arg; $("status").textContent = t(k) + arg; };
 const say = (txt) => { lastKey = null; $("status").textContent = txt; };
 const log = (t) => { $("log").textContent += t + "\n"; };
 let image = null;
 const meta = {"version": "0.9-salt13", "product": "FM-1_909", "pkg": "../../firmware/felucca-0.9-salt13.fwsc"};
-$("release").textContent = `Version ${meta.version} - FM-1`;
+I18N.text($('release'), 'ui.version', {version:meta.version});
 
 let writing = false;
 window.addEventListener("beforeunload", (e) => { if (writing) { e.preventDefault(); e.returnValue = t("leave"); } });

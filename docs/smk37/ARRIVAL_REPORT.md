@@ -14,6 +14,7 @@ Keep personal recordings and device identifiers local.
 | Board revision, if later inspected | Unknown | |
 | USB connection/cable/host | Unknown | |
 | USB VID/PID and interface numbers | Unknown | USB before/after diff |
+| Match to stock descriptor candidates | Unknown | Compare with INTERFACES.md; ID alone does not identify model |
 | MIDI input names | Unknown | `midi-inputs.json` |
 | Audio input/output endpoints | Unknown | OS audio settings observation |
 | Stock presets/settings exported | Unknown | Note exactly what was exportable |

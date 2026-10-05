@@ -1,0 +1,814 @@
+{
+  "source_repository": "https://github.com/jonathaslacerda/smk-37-pro-docs",
+  "source_revision": "ab85d7340163ba9e171dc9396e31c034829bbc02",
+  "reports": [
+    {
+      "product": "MKE-P37_013",
+      "package_sha256": "8af884a8989bfbf33d46adc2ac5f913e1b672be1d253a6b64b25fc60be69bf73",
+      "application_sha256": "46ffcf52db0b2c49c067ff6382f67fd0b16927eefc609e57d39e90f739764613",
+      "application_bytes": 616980,
+      "offset_basis": "Byte offset within decoded app.bin; not a physical address",
+      "evidence": "Static candidates only; runtime enumeration and code references unverified",
+      "usb_device_candidates": [
+        {
+          "app_offset": 359215,
+          "usb_bcd": "0200",
+          "device_class": 0,
+          "device_subclass": 0,
+          "device_protocol": 0,
+          "ep0_packet_bytes": 64,
+          "vid": "4353",
+          "pid": "4B4D",
+          "device_bcd": "0100",
+          "manufacturer_string_index": 1,
+          "product_string_index": 2,
+          "serial_string_index": 3,
+          "configurations": 1
+        }
+      ],
+      "diagnostic_strings": [
+        {
+          "app_offset": 357211,
+          "text": "sdram"
+        },
+        {
+          "app_offset": 358171,
+          "text": "midi_route"
+        },
+        {
+          "app_offset": 383563,
+          "text": "usb_update_mode"
+        },
+        {
+          "app_offset": 568567,
+          "text": "Zusb_update2.bin"
+        },
+        {
+          "app_offset": 568603,
+          "text": "Zuart_user.bin"
+        },
+        {
+          "app_offset": 568657,
+          "text": "Zusb_hid_ota.bin"
+        },
+        {
+          "app_offset": 608768,
+          "text": "sdram_powerup_ok"
+        }
+      ],
+      "source_path": "firmware/mkep37/MKE-P37_013.fwsc"
+    },
+    {
+      "product": "MKE-P37_015",
+      "package_sha256": "280ee7aae59a17c38bc2e854802c7d08f076e51afff13eb5315ad3748476491f",
+      "application_sha256": "4c86ffe1460775d05ba3528423585529cb09891a4631b50444aa4e124af8ac56",
+      "application_bytes": 617012,
+      "offset_basis": "Byte offset within decoded app.bin; not a physical address",
+      "evidence": "Static candidates only; runtime enumeration and code references unverified",
+      "usb_device_candidates": [
+        {
+          "app_offset": 359247,
+          "usb_bcd": "0200",
+          "device_class": 0,
+          "device_subclass": 0,
+          "device_protocol": 0,
+          "ep0_packet_bytes": 64,
+          "vid": "4353",
+          "pid": "4B4D",
+          "device_bcd": "0100",
+          "manufacturer_string_index": 1,
+          "product_string_index": 2,
+          "serial_string_index": 3,
+          "configurations": 1
+        }
+      ],
+      "diagnostic_strings": [
+        {
+          "app_offset": 357243,
+          "text": "sdram"
+        },
+        {
+          "app_offset": 358203,
+          "text": "midi_route"
+        },
+        {
+          "app_offset": 383595,
+          "text": "usb_update_mode"
+        },
+        {
+          "app_offset": 568599,
+          "text": "Zusb_update2.bin"
+        },
+        {
+          "app_offset": 568635,
+          "text": "Zuart_user.bin"
+        },
+        {
+          "app_offset": 568689,
+          "text": "Zusb_hid_ota.bin"
+        },
+        {
+          "app_offset": 608800,
+          "text": "sdram_powerup_ok"
+        }
+      ],
+      "source_path": "firmware/mkep37/MKE-P37_015.fwsc"
+    },
+    {
+      "product": "MKE-P37_016",
+      "package_sha256": "4306ae5b765ab9afb790edf6d02fa75e872897dbd319049e3956ddd283a51429",
+      "application_sha256": "4ace25cc47bb35948761ccdbc8864a125240833ff1e0165a8ee53e3aa0d089ef",
+      "application_bytes": 619672,
+      "offset_basis": "Byte offset within decoded app.bin; not a physical address",
+      "evidence": "Static candidates only; runtime enumeration and code references unverified",
+      "usb_device_candidates": [
+        {
+          "app_offset": 361823,
+          "usb_bcd": "0200",
+          "device_class": 0,
+          "device_subclass": 0,
+          "device_protocol": 0,
+          "ep0_packet_bytes": 64,
+          "vid": "4353",
+          "pid": "344B",
+          "device_bcd": "0100",
+          "manufacturer_string_index": 0,
+          "product_string_index": 2,
+          "serial_string_index": 3,
+          "configurations": 1
+        }
+      ],
+      "diagnostic_strings": [
+        {
+          "app_offset": 359775,
+          "text": "sdram"
+        },
+        {
+          "app_offset": 360737,
+          "text": "midi_route"
+        },
+        {
+          "app_offset": 385802,
+          "text": "USB Rec-"
+        },
+        {
+          "app_offset": 386193,
+          "text": "usb_update_mode"
+        },
+        {
+          "app_offset": 571183,
+          "text": "Zusb_update2.bin"
+        },
+        {
+          "app_offset": 571219,
+          "text": "Zuart_user.bin"
+        },
+        {
+          "app_offset": 571273,
+          "text": "Zusb_hid_ota.bin"
+        },
+        {
+          "app_offset": 611456,
+          "text": "sdram_powerup_ok"
+        }
+      ],
+      "source_path": "firmware/mkep37/MKE-P37_016.fwsc"
+    },
+    {
+      "product": "SMK-37 Elite_015",
+      "package_sha256": "6cb061bda6fc4a285a1a1014e4fc30782278fa62bdc3add75d14b29d4d76253e",
+      "application_sha256": "405b7119be0307d9427451c508b41e59bec2e726b2b284489be9bf4a2621287e",
+      "application_bytes": 618500,
+      "offset_basis": "Byte offset within decoded app.bin; not a physical address",
+      "evidence": "Static candidates only; runtime enumeration and code references unverified",
+      "usb_device_candidates": [
+        {
+          "app_offset": 360776,
+          "usb_bcd": "0200",
+          "device_class": 0,
+          "device_subclass": 0,
+          "device_protocol": 0,
+          "ep0_packet_bytes": 64,
+          "vid": "4353",
+          "pid": "4B4D",
+          "device_bcd": "0100",
+          "manufacturer_string_index": 1,
+          "product_string_index": 2,
+          "serial_string_index": 3,
+          "configurations": 1
+        }
+      ],
+      "diagnostic_strings": [
+        {
+          "app_offset": 358753,
+          "text": "sdram"
+        },
+        {
+          "app_offset": 359711,
+          "text": "midi_route"
+        },
+        {
+          "app_offset": 360742,
+          "text": "SMK-37 Elite_015"
+        },
+        {
+          "app_offset": 361404,
+          "text": "SMK-37 Elite_015"
+        },
+        {
+          "app_offset": 385163,
+          "text": "usb_update_mode"
+        },
+        {
+          "app_offset": 570183,
+          "text": "Zusb_update2.bin"
+        },
+        {
+          "app_offset": 570219,
+          "text": "Zuart_user.bin"
+        },
+        {
+          "app_offset": 570273,
+          "text": "Zusb_hid_ota.bin"
+        },
+        {
+          "app_offset": 610272,
+          "text": "sdram_powerup_ok"
+        }
+      ],
+      "source_path": "firmware/smk37elite/SMK-37_Elite_015.fwsc"
+    },
+    {
+      "product": "SMK-37 Elite_016",
+      "package_sha256": "b2ee38abfef3ae922e4eecdb8a551e14345300ae6f270265feacd33b6ef99cb6",
+      "application_sha256": "df19613a47b3368c5745ed512819c2c6f7e2eeb60e7ffe020140321d034e3c3c",
+      "application_bytes": 621320,
+      "offset_basis": "Byte offset within decoded app.bin; not a physical address",
+      "evidence": "Static candidates only; runtime enumeration and code references unverified",
+      "usb_device_candidates": [
+        {
+          "app_offset": 363372,
+          "usb_bcd": "0200",
+          "device_class": 0,
+          "device_subclass": 0,
+          "device_protocol": 0,
+          "ep0_packet_bytes": 64,
+          "vid": "4353",
+          "pid": "354B",
+          "device_bcd": "0100",
+          "manufacturer_string_index": 0,
+          "product_string_index": 2,
+          "serial_string_index": 3,
+          "configurations": 1
+        }
+      ],
+      "diagnostic_strings": [
+        {
+          "app_offset": 361317,
+          "text": "sdram"
+        },
+        {
+          "app_offset": 362281,
+          "text": "midi_route"
+        },
+        {
+          "app_offset": 363338,
+          "text": "SMK-37 Elite_016"
+        },
+        {
+          "app_offset": 364004,
+          "text": "SMK-37 Elite_016"
+        },
+        {
+          "app_offset": 387450,
+          "text": "USB Rec-"
+        },
+        {
+          "app_offset": 387841,
+          "text": "usb_update_mode"
+        },
+        {
+          "app_offset": 572851,
+          "text": "Zusb_update2.bin"
+        },
+        {
+          "app_offset": 572887,
+          "text": "Zuart_user.bin"
+        },
+        {
+          "app_offset": 572941,
+          "text": "Zusb_hid_ota.bin"
+        },
+        {
+          "app_offset": 613088,
+          "text": "sdram_powerup_ok"
+        }
+      ],
+      "source_path": "firmware/smk37elite/SMK-37_Elite_016.fwsc"
+    },
+    {
+      "product": "SMK-37 Pro_011",
+      "package_sha256": "9b55251b42f433f71fba7cd09c68dca2b28f773e40dc4c2d6d985c84ec4aaf2a",
+      "application_sha256": "c102a351f6da88856f6a750749e9e0733c8391978f38880fa2be73e1a1b6e54d",
+      "application_bytes": 613684,
+      "offset_basis": "Byte offset within decoded app.bin; not a physical address",
+      "evidence": "Static candidates only; runtime enumeration and code references unverified",
+      "usb_device_candidates": [
+        {
+          "app_offset": 354974,
+          "usb_bcd": "0200",
+          "device_class": 0,
+          "device_subclass": 0,
+          "device_protocol": 0,
+          "ep0_packet_bytes": 64,
+          "vid": "4C4A",
+          "pid": "4155",
+          "device_bcd": "0100",
+          "manufacturer_string_index": 1,
+          "product_string_index": 2,
+          "serial_string_index": 3,
+          "configurations": 1
+        }
+      ],
+      "diagnostic_strings": [
+        {
+          "app_offset": 352997,
+          "text": "sdram"
+        },
+        {
+          "app_offset": 353911,
+          "text": "midi_route"
+        },
+        {
+          "app_offset": 354508,
+          "text": "SMK-37 Pro_011"
+        },
+        {
+          "app_offset": 355544,
+          "text": "SMK-37 Pro_011"
+        },
+        {
+          "app_offset": 379128,
+          "text": "usb_update_mode"
+        },
+        {
+          "app_offset": 564151,
+          "text": "Zusb_update2.bin"
+        },
+        {
+          "app_offset": 564187,
+          "text": "Zuart_user.bin"
+        },
+        {
+          "app_offset": 564241,
+          "text": "Zusb_hid_ota.bin"
+        },
+        {
+          "app_offset": 605472,
+          "text": "sdram_powerup_ok"
+        }
+      ],
+      "source_path": "firmware/smk37pro/SMK-37_Pro_011.fwsc"
+    },
+    {
+      "product": "SMK-37 Pro_012",
+      "package_sha256": "c6a9187e706aeae921447ec88e29fecbc618e3f1fc3de54c743c78e41781580a",
+      "application_sha256": "7383d5f02dcbb85465c14acbb20df2fa3b8452b505c65a0ac2a9139627cd95b6",
+      "application_bytes": 615828,
+      "offset_basis": "Byte offset within decoded app.bin; not a physical address",
+      "evidence": "Static candidates only; runtime enumeration and code references unverified",
+      "usb_device_candidates": [
+        {
+          "app_offset": 356959,
+          "usb_bcd": "0200",
+          "device_class": 0,
+          "device_subclass": 0,
+          "device_protocol": 0,
+          "ep0_packet_bytes": 64,
+          "vid": "4C4A",
+          "pid": "4155",
+          "device_bcd": "0100",
+          "manufacturer_string_index": 1,
+          "product_string_index": 2,
+          "serial_string_index": 3,
+          "configurations": 1
+        }
+      ],
+      "diagnostic_strings": [
+        {
+          "app_offset": 354961,
+          "text": "sdram"
+        },
+        {
+          "app_offset": 355911,
+          "text": "midi_route"
+        },
+        {
+          "app_offset": 356491,
+          "text": "SMK-37 Pro_012"
+        },
+        {
+          "app_offset": 357588,
+          "text": "SMK-37 Pro_012"
+        },
+        {
+          "app_offset": 381217,
+          "text": "usb_update_mode"
+        },
+        {
+          "app_offset": 566231,
+          "text": "Zusb_update2.bin"
+        },
+        {
+          "app_offset": 566267,
+          "text": "Zuart_user.bin"
+        },
+        {
+          "app_offset": 566321,
+          "text": "Zusb_hid_ota.bin"
+        },
+        {
+          "app_offset": 607616,
+          "text": "sdram_powerup_ok"
+        }
+      ],
+      "source_path": "firmware/smk37pro/SMK-37_Pro_012.fwsc"
+    },
+    {
+      "product": "SMK-37 Pro_013",
+      "package_sha256": "4ebcb993fbaf834456c3f1391684aa29b26beb7f63d1960c283741be4cb16c40",
+      "application_sha256": "43a6f3abdb3c07f7654a7f869c5b134cfc2ed1c71f714581a6d52528676f37fd",
+      "application_bytes": 616980,
+      "offset_basis": "Byte offset within decoded app.bin; not a physical address",
+      "evidence": "Static candidates only; runtime enumeration and code references unverified",
+      "usb_device_candidates": [
+        {
+          "app_offset": 359219,
+          "usb_bcd": "0200",
+          "device_class": 0,
+          "device_subclass": 0,
+          "device_protocol": 0,
+          "ep0_packet_bytes": 64,
+          "vid": "4353",
+          "pid": "4B4D",
+          "device_bcd": "0100",
+          "manufacturer_string_index": 1,
+          "product_string_index": 2,
+          "serial_string_index": 3,
+          "configurations": 1
+        }
+      ],
+      "diagnostic_strings": [
+        {
+          "app_offset": 357211,
+          "text": "sdram"
+        },
+        {
+          "app_offset": 358171,
+          "text": "midi_route"
+        },
+        {
+          "app_offset": 358751,
+          "text": "SMK-37 Pro_013"
+        },
+        {
+          "app_offset": 359848,
+          "text": "SMK-37 Pro_013"
+        },
+        {
+          "app_offset": 383563,
+          "text": "usb_update_mode"
+        },
+        {
+          "app_offset": 568567,
+          "text": "Zusb_update2.bin"
+        },
+        {
+          "app_offset": 568603,
+          "text": "Zuart_user.bin"
+        },
+        {
+          "app_offset": 568657,
+          "text": "Zusb_hid_ota.bin"
+        },
+        {
+          "app_offset": 608768,
+          "text": "sdram_powerup_ok"
+        }
+      ],
+      "source_path": "firmware/smk37pro/SMK-37_Pro_013.fwsc"
+    },
+    {
+      "product": "SMK-37 Pro_014",
+      "package_sha256": "a8306f6a2bf88fdf3cfc1fad536c29d61f4599a8cff72a36d535e7d980d02f6b",
+      "application_sha256": "38021c97e7256663e48770654084800391d61dc6d7322d93bbb1cfb7f8ad72e2",
+      "application_bytes": 614548,
+      "offset_basis": "Byte offset within decoded app.bin; not a physical address",
+      "evidence": "Static candidates only; runtime enumeration and code references unverified",
+      "usb_device_candidates": [
+        {
+          "app_offset": 355558,
+          "usb_bcd": "0200",
+          "device_class": 0,
+          "device_subclass": 0,
+          "device_protocol": 0,
+          "ep0_packet_bytes": 64,
+          "vid": "4C4A",
+          "pid": "4155",
+          "device_bcd": "0100",
+          "manufacturer_string_index": 1,
+          "product_string_index": 2,
+          "serial_string_index": 3,
+          "configurations": 1
+        }
+      ],
+      "diagnostic_strings": [
+        {
+          "app_offset": 353541,
+          "text": "sdram"
+        },
+        {
+          "app_offset": 354494,
+          "text": "midi_route"
+        },
+        {
+          "app_offset": 355092,
+          "text": "SMK-37 Pro_014"
+        },
+        {
+          "app_offset": 356128,
+          "text": "SMK-37 Pro_014"
+        },
+        {
+          "app_offset": 379992,
+          "text": "usb_update_mode"
+        },
+        {
+          "app_offset": 565015,
+          "text": "Zusb_update2.bin"
+        },
+        {
+          "app_offset": 565051,
+          "text": "Zuart_user.bin"
+        },
+        {
+          "app_offset": 565105,
+          "text": "Zusb_hid_ota.bin"
+        },
+        {
+          "app_offset": 606336,
+          "text": "sdram_powerup_ok"
+        }
+      ],
+      "source_path": "firmware/smk37pro/SMK-37_Pro_014.fwsc"
+    },
+    {
+      "product": "SMK-37 Pro_015",
+      "package_sha256": "f7f1831cd7c9ad8b4831b6e71ea0bdbcdff9ae4c4077276b3c965511bf4d4fff",
+      "application_sha256": "36fe8299667d06d4e2c195ea0b125b8e3400a4dc010b45d6989354dd4e172055",
+      "application_bytes": 617012,
+      "offset_basis": "Byte offset within decoded app.bin; not a physical address",
+      "evidence": "Static candidates only; runtime enumeration and code references unverified",
+      "usb_device_candidates": [
+        {
+          "app_offset": 359251,
+          "usb_bcd": "0200",
+          "device_class": 0,
+          "device_subclass": 0,
+          "device_protocol": 0,
+          "ep0_packet_bytes": 64,
+          "vid": "4353",
+          "pid": "4B4D",
+          "device_bcd": "0100",
+          "manufacturer_string_index": 1,
+          "product_string_index": 2,
+          "serial_string_index": 3,
+          "configurations": 1
+        }
+      ],
+      "diagnostic_strings": [
+        {
+          "app_offset": 357243,
+          "text": "sdram"
+        },
+        {
+          "app_offset": 358203,
+          "text": "midi_route"
+        },
+        {
+          "app_offset": 358783,
+          "text": "SMK-37 Pro_015"
+        },
+        {
+          "app_offset": 359880,
+          "text": "SMK-37 Pro_015"
+        },
+        {
+          "app_offset": 383595,
+          "text": "usb_update_mode"
+        },
+        {
+          "app_offset": 568599,
+          "text": "Zusb_update2.bin"
+        },
+        {
+          "app_offset": 568635,
+          "text": "Zuart_user.bin"
+        },
+        {
+          "app_offset": 568689,
+          "text": "Zusb_hid_ota.bin"
+        },
+        {
+          "app_offset": 608800,
+          "text": "sdram_powerup_ok"
+        }
+      ],
+      "source_path": "firmware/smk37pro/SMK-37_Pro_015.fwsc"
+    },
+    {
+      "product": "SMK-37 Pro_016",
+      "package_sha256": "2d98ce72530e71d617384963423820536f094501299e2cfec0a8d3c3fb6bcfb0",
+      "application_sha256": "0f64fbf6ffc454eea686d78cf89f35e593229765bdcf166f10a8bd714abcb09a",
+      "application_bytes": 619704,
+      "offset_basis": "Byte offset within decoded app.bin; not a physical address",
+      "evidence": "Static candidates only; runtime enumeration and code references unverified",
+      "usb_device_candidates": [
+        {
+          "app_offset": 361811,
+          "usb_bcd": "0200",
+          "device_class": 0,
+          "device_subclass": 0,
+          "device_protocol": 0,
+          "ep0_packet_bytes": 64,
+          "vid": "4353",
+          "pid": "344B",
+          "device_bcd": "0100",
+          "manufacturer_string_index": 0,
+          "product_string_index": 2,
+          "serial_string_index": 3,
+          "configurations": 1
+        }
+      ],
+      "diagnostic_strings": [
+        {
+          "app_offset": 359775,
+          "text": "sdram"
+        },
+        {
+          "app_offset": 360737,
+          "text": "midi_route"
+        },
+        {
+          "app_offset": 361343,
+          "text": "SMK-37 Pro_016"
+        },
+        {
+          "app_offset": 362444,
+          "text": "SMK-37 Pro_016"
+        },
+        {
+          "app_offset": 385834,
+          "text": "USB Rec-"
+        },
+        {
+          "app_offset": 386225,
+          "text": "usb_update_mode"
+        },
+        {
+          "app_offset": 571215,
+          "text": "Zusb_update2.bin"
+        },
+        {
+          "app_offset": 571251,
+          "text": "Zuart_user.bin"
+        },
+        {
+          "app_offset": 571305,
+          "text": "Zusb_hid_ota.bin"
+        },
+        {
+          "app_offset": 611488,
+          "text": "sdram_powerup_ok"
+        }
+      ],
+      "source_path": "firmware/smk37pro/SMK-37_Pro_016.fwsc"
+    },
+    {
+      "product": "STARRYKEY-37 PLAY_01",
+      "package_sha256": "3ef5d835e88324a925593e1e6959106e16abeabbabf824263803bb236b09224b",
+      "application_sha256": "cbf99e74acaab19321b620cba2ff1c0e9f9513b754125a9a20cd056c8b150239",
+      "application_bytes": 617108,
+      "offset_basis": "Byte offset within decoded app.bin; not a physical address",
+      "evidence": "Static candidates only; runtime enumeration and code references unverified",
+      "usb_device_candidates": [
+        {
+          "app_offset": 359235,
+          "usb_bcd": "0200",
+          "device_class": 0,
+          "device_subclass": 0,
+          "device_protocol": 0,
+          "ep0_packet_bytes": 64,
+          "vid": "4353",
+          "pid": "4B4D",
+          "device_bcd": "0100",
+          "manufacturer_string_index": 1,
+          "product_string_index": 2,
+          "serial_string_index": 3,
+          "configurations": 1
+        }
+      ],
+      "diagnostic_strings": [
+        {
+          "app_offset": 357243,
+          "text": "sdram"
+        },
+        {
+          "app_offset": 358203,
+          "text": "midi_route"
+        },
+        {
+          "app_offset": 383675,
+          "text": "usb_update_mode"
+        },
+        {
+          "app_offset": 568679,
+          "text": "Zusb_update2.bin"
+        },
+        {
+          "app_offset": 568715,
+          "text": "Zuart_user.bin"
+        },
+        {
+          "app_offset": 568769,
+          "text": "Zusb_hid_ota.bin"
+        },
+        {
+          "app_offset": 608896,
+          "text": "sdram_powerup_ok"
+        }
+      ],
+      "source_path": "firmware/starrykey37play/STARRYKEY-37_PLAY_015.fwsc"
+    },
+    {
+      "product": "STARRYKEY-37 PLAY_016",
+      "package_sha256": "3cd57cdd90ee60501c549b9dde53503ef468122e2f34dc110876eefdaf9be3b3",
+      "application_sha256": "d7bb4eef362899e0435e6c5bcecdcf27a94e9ccf0d5a2cc913ff1ccfd1764ae2",
+      "application_bytes": 619832,
+      "offset_basis": "Byte offset within decoded app.bin; not a physical address",
+      "evidence": "Static candidates only; runtime enumeration and code references unverified",
+      "usb_device_candidates": [
+        {
+          "app_offset": 361795,
+          "usb_bcd": "0200",
+          "device_class": 0,
+          "device_subclass": 0,
+          "device_protocol": 0,
+          "ep0_packet_bytes": 64,
+          "vid": "4353",
+          "pid": "344B",
+          "device_bcd": "0100",
+          "manufacturer_string_index": 0,
+          "product_string_index": 2,
+          "serial_string_index": 3,
+          "configurations": 1
+        }
+      ],
+      "diagnostic_strings": [
+        {
+          "app_offset": 359775,
+          "text": "sdram"
+        },
+        {
+          "app_offset": 360737,
+          "text": "midi_route"
+        },
+        {
+          "app_offset": 385946,
+          "text": "USB Rec-"
+        },
+        {
+          "app_offset": 386337,
+          "text": "usb_update_mode"
+        },
+        {
+          "app_offset": 571327,
+          "text": "Zusb_update2.bin"
+        },
+        {
+          "app_offset": 571363,
+          "text": "Zuart_user.bin"
+        },
+        {
+          "app_offset": 571417,
+          "text": "Zusb_hid_ota.bin"
+        },
+        {
+          "app_offset": 611616,
+          "text": "sdram_powerup_ok"
+        }
+      ],
+      "source_path": "firmware/starrykey37play/STARRYKEY-37_PLAY_016.fwsc"
+    }
+  ]
+}

@@ -80,6 +80,9 @@ static void reset(void)
     memset(&settings, 0, sizeof settings);
     memset(&ui, 0, sizeof ui);
     memset(&favorites, 0, sizeof favorites);
+    font_set(0);
+    settings_hold = HOLD_DEF;
+    monitor_mode = 0;
     panel = PANEL_DEFAULT;
     host_tracks_init();
     fm1_ms = 0;
@@ -127,7 +130,16 @@ int main(void)
         bad += check("failed editor preference retries through the existing persistence path",
                       !persist_pending && persist_saved.palette == palette_to_stored(0));
         const uint8_t bold[] = {1, 1};
-        bad += check("the retired font weight is refused without a write", ed_ui_set(bold, sizeof bold) == 2);
+        before = erases;
+        bad += check("Salt bold font saves once with the tagged display settings",
+                      ed_ui_set(bold, sizeof bold) == 0 && font_bold == 1 && erases == before + 1 &&
+                      (persist_saved.bold & ~31u) == SALT_DISPLAY_TAG);
+        bad += check("repeating the bold preference does not erase",
+                      ed_ui_set(bold, sizeof bold) == 0 && erases == before + 1);
+        font_set(0);
+        p = persist_saved;
+        bad += check("reloading the saved Salt display settings restores bold",
+                      settings_import(&p, sizeof p) == 1 && font_bold == 1);
     }
     reset();
     settings.palette = 3;

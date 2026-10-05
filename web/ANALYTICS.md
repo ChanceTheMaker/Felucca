@@ -4,7 +4,7 @@ The Salt installer and Studio use GA4 measurement ID `G-JVF09MZEGD`.
 Only `chancethemaker.github.io/Felucca/` sends analytics. Local previews,
 other forks, and upstream sites do not. The Google script loads automatically
 with analytics storage denied, sending cookieless measurements. The preferences
-section offers Without cookies, Allow analytics cookies, and Turn analytics off.
+modal, opened from the hamburger menu, offers Without cookies, Allow analytics cookies, and Turn analytics off.
 Existing declines remain full opt-outs. All choices leave every feature available.
 Preferences persist in local storage and can be changed at any time.
 

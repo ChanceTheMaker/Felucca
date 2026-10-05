@@ -1,22 +1,74 @@
-# Felucca Salt
+# Felucca [Salt]
 
-Felucca Salt by Chance Roth (@ChanceTheMaker), based on Felucca by Leo Kuroshita
+Felucca [Salt] by Chance Roth (@ChanceTheMaker), based on Felucca by Leo Kuroshita
 and Hügelton Instruments. Current Salt release: **0.9-salt13**.
 
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
 [![Sponsor](https://img.shields.io/badge/Sponsor-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/hugelton)
 
-**TL;DR:** connect your FM-1 to a computer by USB, open the
-[web installer](https://chancethemaker.github.io/Felucca/) in Chrome or Edge, and press Install.
-No extra hardware is needed. Beta: use at your own risk; M-VAVE's own updater takes you back
-to the official firmware.
+**[Open Studio](https://chancethemaker.github.io/Felucca/webapp/editor/)** ·
+**[Install Felucca [Salt] Beta](https://chancethemaker.github.io/Felucca/webapp/installer/)**
 
-Multi-engine synthesizer firmware for the M-VAVE FM-1.
+A multi-engine synthesizer for the M-VAVE FM-1 and a hardware-inspired browser
+Studio. Select **Browser** in the Studio to start playing without an FM-1 or a
+firmware installation. Select **FM-1** to edit your connected instrument.
+
+Current device firmware is **0.9-salt13 beta**. Website updates do not require
+reflashing the device. Experimental Bluetooth builds are not included in this release.
+
+![Felucca Salt Studio in Stage Red, with browser audio and oscilloscope](web/screenshots/stage.jpg)
+
+## Install on an FM-1
+
+Connect the FM-1 directly to your computer with a USB data cable, open the
+[installer](https://chancethemaker.github.io/Felucca/webapp/installer/) in Chrome
+or Edge, and select **Install Felucca [Salt] Beta**. Close other MIDI apps and
+do not unplug the cable while writing. Normal installation needs no extra hardware.
+
+Although tested on device, this firmware is a beta. The author accepts no
+responsibility if your FM-1 is damaged or misbehaves because of this custom
+firmware. Use it at your own risk. A failed installation can leave the device
+unable to boot; recovery may require an
+[FM-1 Transporter](https://github.com/kurogedelic/FM-1-transporter).
+Returning to official firmware requires M-VAVE's M-UPGRADE updater and official
+FM-1 firmware from [M-VAVE downloads](https://www.m-vave.com/download).
+
+## Studio highlights
+
+- **FM-1 / Browser switch:** Browser starts audio on selection; FM-1 mode provides
+  the connected device editor. Switching back stops browser audio.
+- **Browser synth:** nine engines, 54 factory presets, built-in samples, expressive
+  controls, chords, sustain, and independent browser volume.
+- **Live oscilloscope:** a full-width waveform of the browser's actual audio output.
+- **Twelve themes:** Stage Red, Matrix, Vintage DX, Model D, Chocolate, Vaporwave,
+  and more, with light/dark modes and a dedicated high-contrast theme.
+- **Hardware styling:** wood accents where appropriate, molded surfaces, screws,
+  speaker grilles, and locally hosted display fonts.
+- **Custom layout:** choose knobs or sliders for each Sound card, drag cards into
+  your preferred order, and select full width from the upper-right menu.
+- **Docked keyboard:** mouse, touch, and computer-key playing; octave controls,
+  sustain, and a collapsible tray. Starts with the FM-1's 27-key F3–G5 range and
+  adds shaded keys outside that range when space permits.
+
+Browser mode currently plays **one sound**. Sequencing, track mixing, sample
+uploads, and projects are not connected to browser playback yet. Use **Save to
+file** to keep sound edits. The full device workflow remains available in FM-1
+mode. See [browser engine details and build instructions](web/audio/README.md).
+
+## Salt firmware additions
+
+- TRS MIDI input alongside USB, with sustain, pitch bend, mod wheel, and MIDI reset handling.
+- Internal, USB, or TRS clock and MIDI Start/Stop/Continue, including keremimo's contribution.
+- Twenty screen palettes, including eight light palettes and light/dark high contrast.
+- Regular/bold text, track colors, and clearer playback, recording, and MIDI status colors.
+- Persistent preset favorites with All/Favorites browsing and no repeated entries in short lists.
+- MIDI event or note/chord monitor, including pedal-sustained notes.
+- Compatible Studio controls for device display settings, clock source, and favorite presets.
 
 ![FM-1 controls with Felucca](docs/panel.jpg)
 
-## Features
+## Core firmware features
 
 - **Nine engines** (below), each with its own factory presets
 - **Four tracks:** three synth parts, each with its own engine and sound, plus a GM drum track;
@@ -138,11 +190,14 @@ IN is enabled by default (`FELUCCA_UART=1`).
 If Felucca is useful to you, [sponsoring on GitHub](https://github.com/sponsors/hugelton) or a donation
 on [itch.io](https://hugelton.itch.io/felucca) helps keep its development going.
 
-Pull requests are welcome, and so are ideas and requests: post them in
-[Discussions](https://github.com/hugelton/Felucca/discussions) or on X ([@kurogedelic](https://x.com/kurogedelic)).
+For Salt or Studio issues and contributions, use
+[ChanceTheMaker/Felucca](https://github.com/ChanceTheMaker/Felucca).
+Original Felucca development and discussions are at
+[hugelton/Felucca](https://github.com/hugelton/Felucca).
 
 ## Credits
 
+- Felucca [Salt] and Studio enhancements: Chance Roth ([@ChanceTheMaker](https://github.com/ChanceTheMaker))
 - Felucca by Leo Kuroshita ([@kurogedelic](https://github.com/kurogedelic)), [Hügelton Instruments](https://hugelton.com)
 - Font: [Terminus](https://terminus-font.sourceforge.net/) by Dimitar Toshkov Zhekov, [SIL OFL 1.1](assets/fonts/Terminus-LICENSE.txt)
 - Samples: [Versilian Studios](https://versilian-studios.com/) [VSCO-2 Community Edition](https://github.com/sgossner/VSCO-2-CE) and [VCSL](https://github.com/sgossner/VCSL), CC0 1.0 ([attribution](assets/samples-cc0/ATTRIBUTION.txt))
@@ -163,12 +218,12 @@ Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments
 
 ### Browser keyboard
 
-The keyboard at the bottom of every editor tab plays the connected FM-1 through
-Web MIDI. Click or touch keys (including chords), or enable **Computer keys** and
+The keyboard at the bottom of the Studio plays the connected FM-1 through Web MIDI
+in FM-1 mode, or the local synth in Browser mode. Click or touch keys (including chords), or enable **Computer keys** and
 use `A W S E D F T G Y H U J K O L P ;`. It has octave, MIDI channel and velocity
 controls, a sustain toggle and **Stop all notes**. Channels 1–3 play parts 1–3;
-drums normally use channel 10. Sound comes from the FM-1 audio output, not the
-browser. Mock mode previews the controls without sound. No firmware update is
+drums normally use channel 10. In FM-1 mode, sound comes from the FM-1 audio output;
+in Browser mode it comes from your computer. Mock mode previews the controls without sound. No firmware update is
 needed for the keyboard.
 
 Notes are released on key/pointer release, pointer cancellation, focus loss,
@@ -187,3 +242,15 @@ shared with the FM-1. Factory sounds and used user slots can be bookmarked;
 computer-library patches must first be saved to a device user slot. Panel-side
 changes and slot replacements/deletions update while this view is open. Older
 firmware keeps the existing editor without unsupported controls.
+
+### Optional analytics
+
+The published Salt installer and Studio offer Google Analytics with a remembered
+**Allow analytics / Decline** choice under **Analytics preferences** at the bottom
+of the page. Declining leaves every feature available. Google tracking loads only
+after consent, and is disabled on localhost and other forks.
+
+Measurements include visits, download clicks, installation attempts and outcomes,
+and browser audio starts. A completed recovery write is reported separately from
+an installation with a verified reboot. No MIDI notes, audio, preset names, or
+device identifiers are sent by our custom events. See [analytics details](web/ANALYTICS.md).

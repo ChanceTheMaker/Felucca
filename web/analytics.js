@@ -43,7 +43,7 @@
   const panel = document.createElement('details');
   panel.className = 'analytics-choice';
   panel.open = !consent;
-  const ja = document.documentElement.lang === 'ja';
+  const ja = (navigator.language || 'en').toLowerCase().startsWith('ja');
   panel.innerHTML = ja
     ? '<summary>アクセス解析の設定</summary><p>Google Analytics の Cookie を使って訪問数、ダウンロードのクリック、インストール結果を計測してもよろしいですか？ MIDI ノート、音声、プリセット名は送信しません。拒否してもすべての機能を使えます。</p><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google のプライバシーポリシー</a> <button type="button" data-choice="granted">許可</button> <button type="button" data-choice="denied">拒否</button>'
     : '<summary>Analytics preferences</summary><p>Allow Google Analytics cookies to measure visits, download clicks, and installation outcomes? We do not send MIDI notes, audio, or preset names. All features work if you decline. You can change this choice here anytime.</p><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google privacy policy</a> <button type="button" data-choice="granted">Allow analytics</button> <button type="button" data-choice="denied">Decline</button>';

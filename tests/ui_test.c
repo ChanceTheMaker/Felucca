@@ -3544,6 +3544,41 @@ static int test_idle_glow(void)
     return bad;
 }
 
+/* #37: QNT SEQ on the SCL page: the keys as SNAP, the sequence snapped as it plays, saved with the project */
+static int test_seq_quant(void)
+{
+    int bad = 0, ok;
+    track_t *t = &trk[0];
+    char val[16];
+    const char *unit = 0;
+    ui_power_on();
+    song.sel = 0;
+    open_family(FAM_SCL);
+    frame();
+    ok = cur_page()->id[2] == P_QUANT && t->p[P_QUANT] == 0;
+    turn(EN_K3, 10);
+    param_format(&TP[P_QUANT], t->p[P_QUANT], val, &unit);
+    bad += check("SCL KNOB 3 QNT: OFF SNAP WHITE SEQ, SEQ last (default OFF)", ok && t->p[P_QUANT] == 3 &&
+                 str_eq(val, "SEQ"));
+    t->p[P_SCALE] = 1;
+    t->p[P_ROOT] = 0;
+    ok = kb_map(t, 8) == 60u && kb_map(t, 7) == 60u;   /* C#4 key -> C4, as SNAP */
+    t->step[0] = (step_t){.note = {61, 66}, .n = 2, .time = ST_NOTE};
+    t->seq_active = 1;
+    seq_start();
+    events_block(CTL);
+    ok &= t->seq_n == 2u && t->seq_notes[0] == 60u && t->seq_notes[1] == 65u && t->step[0].note[0] == 61u &&
+          t->step[0].note[1] == 66u;
+    transport_req = 2;
+    events_block(CTL);
+    bad += check("QNT SEQ: the keys snap as SNAP; C#4 F#4 of a step play C4 F4 in C major, the step keeps C#4 F#4", ok);
+    project_save(1);
+    t->p[P_QUANT] = 0;
+    project_load(1);
+    bad += check("QNT SEQ saved and loaded with the project", trk[0].p[P_QUANT] == 3);
+    return bad;
+}
+
 int main(void)
 {
     setvbuf(stdout, NULL, _IONBF, 0);
@@ -3578,6 +3613,7 @@ int main(void)
     bad += test_bughunt_ui2();
     bad += test_piano_roll();
     bad += test_play_leds();
+    bad += test_seq_quant();
     bad += test_idle_glow();
     bad += test_fm6_charts();
 #if FELUCCA_FM4

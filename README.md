@@ -21,6 +21,50 @@ Salt14 includes keremimo's TRS MIDI receive-buffer fix: note-off messages are
 processed from the bytes actually received, avoiding stuck notes caused by a
 hardware byte-count mismatch. Install the new firmware to receive this fix.
 
+### Upstream 1.0 and the next Salt release
+
+[Felucca 1.0](https://github.com/hugelton/Felucca/tree/v1.0) is being integrated
+into Salt in separate feature PRs. **The published installer still provides
+0.9-salt14**; the additions below are not a description of the currently shipped
+Salt firmware or browser synth.
+
+Upstream 1.0 brings thirteen engines, including six-operator **FM6**, **PHYS**,
+**NOISE**, **SLICE**, and **DRUM**. Each of the four tracks can use a synth engine;
+MIDI channels 1–4 address tracks 1–4. It also adds pattern chaining (SONG),
+per-step chance, motion recording, chord keys, a four-slot modulation matrix,
+performance quick layers, and USB stereo audio recording. Its web tools add
+FM6 patch editing, sample recording and trimming, full backup/restore, and a
+return-to-official-V15 workflow.
+
+The 1.0 integration preserves Salt's TRS receive-buffer fix and restores its
+display and MIDI monitor options. Firmware candidates still need hardware
+validation before replacing the published release. The browser engine and
+editor require their own updates; a website update alone does not upgrade a
+connected FM-1.
+
+### FM-1 controls: 1.0 preview
+
+The [illustrated control guide](https://chancethemaker.github.io/Felucca/webapp/installer/#fm1-guide)
+groups the controls by function and highlights them on a vector drawing. Its
+explanations are available in all eight website languages. It documents
+**Felucca 1.0**; some shortcuts are not available in Salt14.
+
+| Control | Felucca 1.0 behavior |
+| --- | --- |
+| MASTER / SELECT | Master volume / tempo (BPM) |
+| PRESETS / ALGORITHM | Sound / track T1–T4 |
+| KNOB 1–4 | Edit the four columns of the current page |
+| FX / SCL / ENV / LFO / EDIT / GLO | Effects, scale and chords, envelope, modulation, engine, mixer/global pages |
+| HOME / SAVE / ARP / SEQ | Home, save/load, arpeggiator, sequencer |
+| PLAY / REC | Start/stop all tracks / arm the selected track on any page |
+| Hold FX / GLO / SCL / EDIT | Performance, mixer, scale/chord, and engine quick layers |
+| Hold SAVE / HOME / SEQ | Undo/redo, menu, and SONG pattern chaining |
+| OCT− / OCT+ | Octave down/up; press both to reset. In dialogs and menus: back/confirm |
+
+The 27 touch keys span F3–G5 before octave shifting. See the
+[upstream controls reference](https://github.com/hugelton/Felucca/tree/v1.0#controls)
+for the full 1.0 workflow. The released Salt14 feature descriptions follow below.
+
 ![Felucca Salt Studio in Stage Red, with browser audio and oscilloscope](web/screenshots/stage.jpg)
 
 ## Install on an FM-1

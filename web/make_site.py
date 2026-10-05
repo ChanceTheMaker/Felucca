@@ -64,6 +64,7 @@ def main(pkg, version, out):
     shutil.copytree(HERE / "audio", ed / "audio", dirs_exist_ok=True)
     shutil.copytree(HERE / "screenshots", inst / "screenshots", dirs_exist_ok=True)
     shutil.copy(HERE / "studio-preview.js", inst / "studio-preview.js")
+    shutil.copy(HERE / "panel-guide.js", inst / "panel-guide.js")
     for target in (inst, ed):
         for asset in ("skin.css", "interface.css", "skin.js", "fonts.css", "analytics.js", "i18n.js", "locales.js"):
             shutil.copy(HERE / asset, target / asset)

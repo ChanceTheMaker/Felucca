@@ -8,6 +8,7 @@
 <head>
 <meta charset="utf-8">
 <script defer src="analytics.js"></script>
+<script defer src="site-nav.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Felucca [Salt] Studio</title>
 <style>
@@ -177,10 +178,11 @@
 <script src="skin.js"></script>
 </head>
 <body class="editor-page">
-<main>
+<main id="studio">
   <div class="masthead"><div class="brand-row">
     <div><div class="eyebrow"><span data-i18n="site.fm_1_sound_laboratory">FM-1 / Sound laboratory</span></div><h1>Felucca <em>[Salt]</em></h1><p class="tagline"><span data-i18n="site.synthesizer_sequencer_performance_editor">SYNTHESIZER • SEQUENCER • PERFORMANCE EDITOR</span></p></div>
-    <div class="brand-links"><a class="installer-button" href="../installer/" data-t="installer"></a><button class="lang" id="lang" type="button"></button></div>
+    <nav class="site-nav" aria-label="Main navigation" data-i18n-aria-label="nav.label"><a href="../installer/#install" data-nav="install" data-i18n="nav.install">Install</a><a href="../installer/#fm1-guide" data-nav="manual" data-i18n="nav.manual">Manual</a><a href="#studio" data-nav="studio" data-i18n="nav.studio" aria-current="page">Studio</a><a href="../installer/#themes" data-nav="themes" data-i18n="nav.themes">Themes</a><a href="../installer/#features" data-nav="features" data-i18n="nav.features">Features</a></nav>
+    <div class="brand-links"><button class="lang" id="lang" type="button"></button></div>
   </div>
   <div class="appearance" data-appearance aria-label="Website appearance" data-i18n-aria-label="site.website_appearance"></div>
   </div>

@@ -428,9 +428,7 @@
   "installer.backup": "Guardando copia completa ",
   "installer.stockError": "No se puede validar el firmware oficial: ",
   "guide.title": "Conoce tu FM-1",
-  "guide.version": "Vista previa de controles 1.0",
   "guide.intro": "Elige un grupo para resaltar los controles y descubrir sus funciones.",
-  "guide.note": "Basado en Felucca 1.0. El firmware Salt14 publicado aún no incluye todos estos controles.",
   "guide.illustration": "Ilustración del panel de control del FM-1",
   "guide.groups": "Grupos de controles",
   "guide.knobs": "Mandos",
@@ -469,5 +467,11 @@
   "guide.menu": "Abre el menú",
   "guide.song": "Abre SONG para encadenar patrones A–D",
   "guide.holdHint": "Mantén pulsado el botón indicado para acceder a estos atajos.",
-  "guide.pagesHint": "Pulsa de nuevo un botón de página para pasar a la siguiente."
+  "guide.pagesHint": "Pulsa de nuevo un botón de página para pasar a la siguiente.",
+  "nav.label": "Navegación principal",
+  "nav.install": "Instalar",
+  "nav.manual": "Manual",
+  "nav.studio": "Studio",
+  "nav.themes": "Temas",
+  "nav.features": "Funciones"
 }

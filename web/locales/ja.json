@@ -428,9 +428,7 @@
   "installer.backup": "全体バックアップ保存中 ",
   "installer.stockError": "公式ファイルを確認できません: ",
   "guide.title": "FM-1の操作ガイド",
-  "guide.version": "1.0操作プレビュー",
   "guide.intro": "グループを選ぶと、対応する操作部とその機能が表示されます。",
-  "guide.note": "Felucca 1.0に基づくガイドです。公開中のSalt14には、まだ一部の操作が含まれていません。",
   "guide.illustration": "FM-1操作パネルのイラスト",
   "guide.groups": "操作グループ",
   "guide.knobs": "ノブ",
@@ -469,5 +467,11 @@
   "guide.menu": "メニューを開く",
   "guide.song": "SONGでパターンA〜Dを連結",
   "guide.holdHint": "対応するボタンを長押しすると使えます。",
-  "guide.pagesHint": "同じボタンをもう一度押すと次のページに進みます。"
+  "guide.pagesHint": "同じボタンをもう一度押すと次のページに進みます。",
+  "nav.label": "メインナビゲーション",
+  "nav.install": "インストール",
+  "nav.manual": "ガイド",
+  "nav.studio": "Studio",
+  "nav.themes": "テーマ",
+  "nav.features": "機能"
 }

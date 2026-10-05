@@ -7,7 +7,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Felucca [Salt] Editor</title>
+<title>Felucca [Salt] Studio</title>
 <style>
   /* Fukiai: Hügelton Instruments' icon font (MIT, FUKIAI-LICENSE.txt). Icons are text in .ic spans;
      they stay hidden until the face has loaded (html.fk), so a missing font never shows boxes. */
@@ -169,7 +169,7 @@
 <body class="editor-page">
 <main>
   <div class="masthead"><div class="brand-row">
-    <div><div class="eyebrow">FM-1 / Sound laboratory</div><h1>Felucca <em>[Salt]</em></h1><p class="tagline">SYNTHESIZER • SEQUENCER • PERFORMANCE EDITOR</p></div>
+    <div><div class="eyebrow">FM-1 / Sound laboratory</div><h1>Felucca <em>[Salt]</em> Studio</h1><p class="tagline">SYNTHESIZER • SEQUENCER • PERFORMANCE EDITOR</p></div>
     <div class="brand-links"><a href="../installer/" data-t="installer"></a><button class="lang" id="lang"></button></div>
   </div>
   <div class="appearance" data-appearance aria-label="Website appearance"></div>
@@ -340,7 +340,7 @@
     <div class="piano-scroll"><div class="piano" id="play-keys" role="group" aria-labelledby="play-title"></div></div>
     <p id="play-help"></p>
   </section>
-  <footer>Felucca [Salt] by Chance Roth (<a href="https://github.com/ChanceTheMaker" target="_blank" rel="noopener">@ChanceTheMaker</a>).<br>
+  <footer>Felucca [Salt] Studio by Chance Roth (<a href="https://github.com/ChanceTheMaker" target="_blank" rel="noopener">@ChanceTheMaker</a>).<br>
     Based on Felucca by Leo Kuroshita (@kurogedelic), <a href="https://hugelton.com" target="_blank" rel="noopener">Hügelton Instruments</a>. GPL-3.0.<br>
     <span data-t="foot"></span> M-VAVE and FM-1 are trademarks of their respective owners.<br>
     <a href="FUKIAI-LICENSE.txt" data-t="iconsCredit"></a></footer>
@@ -3791,6 +3791,40 @@ async function switchAudioMode(browser) {
 }
 $('mode-fm1').onclick = () => switchAudioMode(false);
 $('mode-browser').onclick = () => switchAudioMode(true);
+// A one-time, anchored introduction to the two sound sources.
+const modeTip = document.createElement('aside');
+modeTip.className = 'mode-tip'; modeTip.hidden = true;
+modeTip.setAttribute('role', 'status');
+modeTip.innerHTML = '<span>Connect to your FM-1 or play right in the browser!</span><button type="button" aria-label="Dismiss sound source tip">×</button>';
+document.body.append(modeTip);
+const tipKey = 'felucca.web.soundSourceTipDismissed';
+function dismissModeTip() {
+  modeTip.hidden = true;
+  try { localStorage.setItem(tipKey, '1'); } catch (_) { /* storage unavailable */ }
+}
+function positionModeTip() {
+  if (modeTip.hidden) return;
+  const anchor = $('audio-mode').getBoundingClientRect();
+  modeTip.style.visibility = anchor.bottom <= 0 || anchor.top >= innerHeight ? 'hidden' : 'visible';
+  const width = Math.min(330, innerWidth - 24);
+  modeTip.style.width = width + 'px';
+  const beside = anchor.right + 14 + width <= innerWidth - 12;
+  modeTip.classList.toggle('below', !beside);
+  const left = beside ? anchor.right + 14 : Math.max(12, Math.min(anchor.left, innerWidth - width - 12));
+  modeTip.style.left = left + 'px';
+  modeTip.style.top = (beside ? anchor.top + anchor.height / 2 - modeTip.offsetHeight / 2 : anchor.bottom + 14) + 'px';
+  modeTip.style.setProperty('--tip-arrow-x', Math.max(18, Math.min(width - 18, anchor.left + anchor.width / 2 - left)) + 'px');
+}
+modeTip.querySelector('button').onclick = dismissModeTip;
+$('audio-mode').addEventListener('click', dismissModeTip);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') dismissModeTip(); });
+window.addEventListener('resize', positionModeTip);
+window.addEventListener('scroll', positionModeTip, {passive:true});
+setTimeout(() => {
+  let dismissed = false;
+  try { dismissed = localStorage.getItem(tipKey) === '1'; } catch (_) { /* storage unavailable */ }
+  if (!dismissed) { modeTip.hidden = false; positionModeTip(); }
+}, 700);
 applyLang();
 showTab(tab);
 libInit();

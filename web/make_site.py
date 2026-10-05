@@ -69,9 +69,9 @@ def main(pkg, version, out):
         if (HERE / f).exists():
             shutil.copy(HERE / f, ed / f)
     (out / "index.html").write_text(
-        '<!doctype html><meta charset="utf-8"><title>Felucca [Salt]</title>'
+        '<!doctype html><meta charset="utf-8"><title>Felucca [Salt] Studio</title>'
         '<meta http-equiv="refresh" content="0; url=webapp/installer/">'
-        '<a href="webapp/installer/">Felucca [Salt] installer</a>\n', encoding="utf-8")
+        '<a href="webapp/installer/">Felucca [Salt] Studio — FM-1 installer</a>\n', encoding="utf-8")
     print(f"site: {out}: webapp/installer ({len(html)} B), webapp/editor, firmware/{name} ({len(raw)} B, {product})")
 
 

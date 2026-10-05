@@ -60,8 +60,9 @@ def main(pkg, version, out):
     shutil.copy(pkg, fw / name)
     shutil.copy(HERE / "editor.html", ed / "index.html")
     for target in (inst, ed):
-        for asset in ("skin.css", "interface.css", "skin.js"):
+        for asset in ("skin.css", "interface.css", "skin.js", "fonts.css"):
             shutil.copy(HERE / asset, target / asset)
+        shutil.copytree(HERE / "fonts", target / "fonts", dirs_exist_ok=True)
     for f in ("fukiai.ttf", "FUKIAI-LICENSE.txt"):
         if (HERE / f).exists():
             shutil.copy(HERE / f, ed / f)

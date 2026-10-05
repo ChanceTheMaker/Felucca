@@ -67,9 +67,17 @@ try {
   assert.equal(savedOrder[2], 'groups:ENV:ENV', 'Drag handle reorders a card');
   await envStyle.selectOption('default');
   await page.getByLabel('LFO control style', {exact:true}).selectOption('sliders');
-  for (const skin of ['stage', 'matrix', 'dx', 'chocolate', 'vapor', 'midnight', 'space', 'bauhaus', 'ocean', 'arcade', 'hicon']) {
+  for (const skin of ['stage', 'matrix', 'dx', 'modeld', 'chocolate', 'vapor', 'midnight', 'space', 'bauhaus', 'ocean', 'arcade', 'hicon']) {
     await preference('Website theme', skin);
     assert.equal(await page.locator('html').getAttribute('data-skin'), skin);
+    await page.evaluate(async () => {
+      const title = document.querySelector('.brand-row h1'), style = getComputedStyle(title);
+      await document.fonts.load(`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`, title.textContent);
+      if (document.documentElement.dataset.skin !== 'hicon') {
+        const family = style.fontFamily.split(',')[0].replace(/["']/g, '').trim();
+        if (![...document.fonts].some(f => f.family.replace(/["']/g, '') === family && f.status === 'loaded')) throw new Error(`Display font not loaded: ${family}`);
+      }
+    });
     assert.equal(await atk.inputValue(), edited, 'Appearance preserves patch');
     await noOverflow();
     await page.screenshot({ path: `build/screenshots/${skin}.png`, fullPage: true });
@@ -79,6 +87,10 @@ try {
       assert.equal(await atk.inputValue(), edited, 'Mode preserves patch');
       await page.screenshot({ path: `build/screenshots/${skin}-${mode}.png`, fullPage: true });
     }
+    await page.setViewportSize({width:390,height:844});
+    await noOverflow();
+    await page.screenshot({path:`build/screenshots/${skin}-title-mobile.png`});
+    await page.setViewportSize({width:1440,height:1100});
   }
   await preference('Sound controls', 'sliders');
   await atk.focus(); await atk.press('ArrowDown');
@@ -156,5 +168,5 @@ try {
   assert.equal(await page.getByLabel('Display mode', { exact: true }).inputValue(), 'light');
   assert.equal(await page.locator('html').getAttribute('data-contrast'), 'normal');
   assert.deepEqual(errors, [], 'No browser script errors');
-  console.log('Website skins: eleven themes, light/dark modes, persistence, shared installer preferences, knob drag/keyboard/reset, sliders, all tabs at desktop/mobile widths passed.');
+  console.log('Website skins: twelve themes, light/dark modes, persistence, shared installer preferences, knob drag/keyboard/reset, sliders, all tabs at desktop/mobile widths passed.');
 } finally { await browser.close(); }

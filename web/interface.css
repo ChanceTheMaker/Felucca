@@ -532,6 +532,7 @@ footer a { text-underline-offset:3px; }
 }
 
 /* Compact nameplate; no bottom rule or ornamental perforation row. */
+:root[data-skin] main { margin-top:0; }
 :root[data-skin] .masthead { padding-top:12px; padding-bottom:12px; margin-bottom:14px; border-bottom:0; box-shadow:inset 0 1px 3px #0003; }
 :root[data-skin] .brand-row { min-height:0; }
 :root[data-skin] .brand-row h1 { margin:2px 0; line-height:1.15; }

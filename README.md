@@ -1,143 +1,92 @@
-# Felucca [Salt]
-
-Felucca [Salt] by Chance Roth (@ChanceTheMaker), based on Felucca by Leo Kuroshita
-and Hügelton Instruments. Current Salt release: **0.9-salt14**.
-
+# Felucca
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
 [![Sponsor](https://img.shields.io/badge/Sponsor-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/hugelton)
 
-**[Open Studio](https://chancethemaker.github.io/Felucca/webapp/editor/)** ·
-**[Install Felucca [Salt] Beta](https://chancethemaker.github.io/Felucca/webapp/installer/)**
+![Felucca 1.0](docs/felucca-1.0.png)
 
-A multi-engine synthesizer for the M-VAVE FM-1 and a hardware-inspired browser
-Studio. Select **Browser** in the Studio to start playing without an FM-1 or a
-firmware installation. Select **FM-1** to edit your connected instrument.
+**TL;DR:** Felucca 1.0 — Big New Features, field testing. Connect your FM-1 to a computer by USB,
+open the [web installer](https://hugelton.github.io/Felucca/) in Chrome or Edge, and press Install;
+no extra hardware is needed. Installing is at your own risk: M-VAVE's updater or the installer's
+**Return to official V15** takes you back.
 
-Current device firmware is **0.9-salt14 beta**. Website updates do not require
-reflashing the device. Experimental Bluetooth builds are not included in this release.
+Multi-engine synthesizer firmware for the M-VAVE FM-1. Please report what you find in
+[Issues](https://github.com/hugelton/Felucca/issues).
 
-Salt14 includes keremimo's TRS MIDI receive-buffer fix: note-off messages are
-processed from the bytes actually received, avoiding stuck notes caused by a
-hardware byte-count mismatch. Install the new firmware to receive this fix.
+- Install: [web installer](https://hugelton.github.io/Felucca/) (Chrome or Edge, USB), or `tools/fm1_install.py` from a terminal
+- Editor: [web editor](https://hugelton.github.io/Felucca/webapp/editor/)
+- Build: [BUILDING.md](BUILDING.md)
 
-![Felucca Salt Studio in Stage Red, with browser audio and oscilloscope](web/screenshots/stage.jpg)
+## Features
 
-## Install on an FM-1
+- **Thirteen engines** (below), each with its own factory presets
+- **Four tracks**, one synth part each with its own engine and sound (drums are the DRUM engine or
+  the SAMPLE engine's GM kit); 8 voices shared between them. ALGORITHM selects the track on every page
+- **Sequencer:** 64 steps per track with chords, ties, accent, slide and per-step chance; a piano
+  roll of the steps; a drum grid (white keys = steps, black keys = lanes); motion recording of knob
+  moves; live loop recording with overdub; divisions from 1/32 to 4 bars; loading a sound never
+  touches your patterns
+- **Songs:** chain patterns A–D
+- **Chord keys:** one finger plays an in-key chord (triads or sevenths of the scale, or fixed chord
+  shapes), with voicings; on the keys, MIDI in, recording and the arpeggiator
+- **Arpeggiator** with REPEAT and a beat LED, 16 scales with a white-key mode, glide,
+  MONO / LEGATO / UNISON
+- **Modulation matrix:** 4 slots per track, MIDI controllers as sources
+- **Effects:** distortion and the SLICER per track; chorus, delay and reverb sends (the reverb as
+  ROOM or SPRING); master limiter
+- **FX layer:** hold FX for repeat, reverse, filter sweeps, tape stop, freeze and a harmonizer
+  (OCT UP / OCT DN with shimmer), and mutes on the black keys
+- **Quick layers:** hold FX, GLO, SCL or EDIT for shortcuts on the keys and knobs; one-step undo
+  (SAVE held); REC on every page; OCT+ confirms, OCT- goes back
+- **Presets:** factory presets, 32 user preset slots and 4 projects, named on the device;
+  projects from every earlier version load
+- **Screen:** flat UI with Inter Tight and Fukiai icons, 8 palettes including grayscale and high contrast
+- **USB:** class-compliant MIDI in and out, and a 44.1 kHz stereo audio input ("Felucca") that
+  records the master output on the computer, no driver needed
+- **MIDI:** USB and TRS MIDI in; channels 1–4 play tracks 1–4 (other channels the selected track),
+  and the keys send on the track's channel; pitch bend, sustain, panic; clock from internal, USB or TRS
+- **Web:** editor for every parameter (with a 6-operator FM patch editor), step grid, mixer,
+  preset library, sample upload and recording with trim; full backup and restore; return to the
+  official firmware
 
-Connect the FM-1 directly to your computer with a USB data cable, open the
-[installer](https://chancethemaker.github.io/Felucca/webapp/installer/) in Chrome
-or Edge, and select **Install Felucca [Salt] Beta**. Close other MIDI apps and
-do not unplug the cable while writing. Normal installation needs no extra hardware.
+## Controls
 
-Although tested on device, this firmware is a beta. The author accepts no
-responsibility if your FM-1 is damaged or misbehaves because of this custom
-firmware. Use it at your own risk. A failed installation can leave the device
-unable to boot; recovery may require an
-[FM-1 Transporter](https://github.com/kurogedelic/FM-1-transporter).
-Returning to official firmware requires M-VAVE's M-UPGRADE updater and official
-FM-1 firmware from [M-VAVE downloads](https://www.m-vave.com/download).
+![FM-1 controls with Felucca 1.0](docs/panel.jpg)
 
-## Studio highlights
-
-- **FM-1 / Browser switch:** Browser starts audio on selection; FM-1 mode provides
-  the connected device editor. Switching back stops browser audio.
-- **Browser synth:** nine engines, 54 factory presets, built-in samples, expressive
-  controls, chords, sustain, and independent browser volume.
-- **Live oscilloscope:** a full-width waveform of the browser's actual audio output.
-- **Twelve themes:** Stage Red, Matrix, Vintage DX, Model D, Chocolate, Vaporwave,
-  and more, with light/dark modes and a dedicated high-contrast theme.
-- **Hardware styling:** wood accents where appropriate, molded surfaces, screws,
-  speaker grilles, and locally hosted display fonts.
-- **Custom layout:** choose knobs or sliders for each Sound card, drag cards into
-  your preferred order, and select full width from the upper-right menu.
-- **Docked keyboard:** mouse, touch, and computer-key playing; octave controls,
-  sustain, and a collapsible tray. Starts with the FM-1's 27-key F3–G5 range and
-  adds shaded keys outside that range when space permits.
-
-Browser mode currently plays **one sound**. Sequencing, track mixing, sample
-uploads, and projects are not connected to browser playback yet. Use **Save to
-file** to keep sound edits. The full device workflow remains available in FM-1
-mode. See [browser engine details and build instructions](web/audio/README.md).
-
-## Salt firmware additions
-
-- TRS MIDI input alongside USB, with sustain, pitch bend, mod wheel, and MIDI reset handling.
-- Internal, USB, or TRS clock and MIDI Start/Stop/Continue, including keremimo's contribution.
-- Twenty screen palettes, including eight light palettes and light/dark high contrast.
-- Regular/bold text, track colors, and clearer playback, recording, and MIDI status colors.
-- Persistent preset favorites with All/Favorites browsing and no repeated entries in short lists.
-- MIDI event or note/chord monitor, including pedal-sustained notes.
-- Compatible Studio controls for device display settings, clock source, and favorite presets.
-
-![FM-1 controls with Felucca](docs/panel.jpg)
-
-## Core firmware features
-
-- **Nine engines** (below), each with its own factory presets
-- **Four tracks:** three synth parts, each with its own engine and sound, plus a GM drum track;
-  8 voices shared between the parts. ALGORITHM selects the track on every page
-- **Sequencer:** 64 steps per track with chords, ties, accent and slide; live loop recording
-  with overdub and held notes; each track loops on its own length
-- **Arpeggiator**, scales and quantize, glide, MONO / LEGATO / UNISON voice modes
-- **Effects:** distortion and the SLICER per track; chorus, delay and reverb sends; master limiter
-- **Presets:** factory presets with their own patterns, 32 user preset slots, 4 project slots
-- **Web editor:** every parameter of every track, step grid, track mixer, preset library, sample upload
-- **USB:** class-compliant MIDI in and out (channels 1–3 for the parts, 10 for drums);
-  updates over the same USB cable
-- **TRS MIDI input:** shares USB's track routing and supports pitch bend, mod-wheel vibrato, sustain and MIDI panic; [controls and limits](docs/MIDI-EXPRESSION.txt)
-- **MIDI status:** GLO > SYSTEM knob 1 switches the first column between USB status and TRS status/activity; both inputs remain active
+- **SELECT** sets the BPM, **MASTER** the volume, **ALGORITHM** picks the track (T1–T4) and
+  **PRESETS** its sound. **KNOB 1–4** edit the four columns of the page
+- FX, SCL, ENV, LFO, EDIT, GLO, SAVE, ARP and SEQ open their pages; press again for the next page.
+  HOME returns home
+- **Held:** FX, GLO, SCL and EDIT open their quick layers; SAVE is undo, HOME the menu, SEQ the song
+- PLAY starts and stops all four tracks; REC arms the selected track, on every page
+- OCT− / OCT+ shift the octave (both: reset). On action pages, in dialogs and the menu, OCT+ does it
+  and OCT− goes back
+- Save a sound: stop, tap SAVE, pick a slot with KNOB 1, then OCT+ and OCT+ again (name it with the keys)
 
 ## Engines
 
-- **ANALOG**: virtual analog; two oscillators (saw, square, triangle, sine, PWM), noise, drive, resonant low-pass filter
-- **DIGITAL**: 4-operator FM, 8 algorithms, feedback
+In the order the device lists them:
+
+- **ANALOG**: virtual analog; two oscillators, noise, drive, resonant low-pass filter
+- **FM6**: classic 6-operator FM (Dexed-based): 32 algorithms, a full patch per track edited in the
+  web editor, macros on the device, an algorithm chart on screen
 - **PHASE**: phase distortion (ported from CrispyZebra)
 - **LOFI**: chiptune; pulse, triangle, saw, noise and a 4-bit wave RAM, stepped envelope, sweep, arpeggio
-- **SAMPLE**: multisampled instruments and 3 user sample slots
+- **SAMPLE**: multisampled instruments, a GM percussion set and 3 user sample slots
 - **VOICE**: formant oscillator, sung vowels
-- **TRIO**: 3 oscillators with ring modulation and sync, multimode filter (LP / BP / HP / notch)
+- **TRIO**: 3 oscillators with ring modulation and sync, multimode filter
 - **WHEEL**: tonewheel-style organ; drawbar registrations, percussion, key click, drive, rotary speaker
 - **GRAIN**: granular textures from the built-in samples or a user slot
+- **PHYS**: physical models: modal resonators, strings, struck membranes, sympathetic strings
+- **NOISE**: noise from analog to digital: colours, crackle, shift-register and metallic tones
+- **SLICE**: a drum break or your own sample cut into slices, one per key; set the slices by hand
+  on the SLICES page
+- **DRUM**: an 8-lane kit of Felucca's own drum voices on the General MIDI key map
 
-**SLICER** (FX page, every track including drums): a tempo-synced 16-step gate or stutter, with 16 patterns.
+The DIGITAL engine of 0.9 has been replaced by FM6: projects and presets with DIGITAL sounds load
+as FM6 sounds converted from them.
 
-- Install: [web installer](https://chancethemaker.github.io/Felucca/) (Chrome or Edge, USB), or `tools/fm1_install.py` from a terminal
-- Editor: [web editor](https://chancethemaker.github.io/Felucca/webapp/editor/)
-- Build: [BUILDING.md](BUILDING.md)
-
-## Screen colors
-
-Hold HOME and choose COLOR. Turn knob 1 or press OCT+ to preview a theme;
-leave the menu to save it. The original five palettes are joined by VIOLET,
-PINK, ICE, WARM, two-color OCEAN (cyan/amber) and DUSK (violet/gold), HI-CON,
-and light-background LIGHT, PAPER, SKY, MINT, LILAC, ROSE, and SAND themes.
-L-HICON adds a white background with black values, dark labels and inactive
-controls, and stronger separators for high contrast in light mode.
-
-The FONT row directly below COLOR selects REGULAR or BOLD Terminus. Turn
-knob 1 left/right or press OCT+ to switch, with an immediate preview; exit
-the menu to save. Both weights use the same character spacing. Existing
-settings migrate with REGULAR selected and retain panel calibration.
-
-LOWCUT reduces deep bass in the final stereo output (two high-pass stages,
-approximately 110 Hz each, 12 dB/octave combined roll-off), intended for the
-small built-in speaker. Leave it OFF to retain full bass in the output.
-
-MIDI MON below FONT selects OFF, EVENTS, or NOTES. A single line appears at
-the lower-right inside the HOME waveform area. EVENTS shows incoming USB/TRS
-messages; clock is summarized without hiding each note/controller immediately.
-NOTES shows the selected track's held or pedal-sustained notes, including
-onboard keys, MIDI, sequencer, and arp playback. Up to four pitches are shown,
-with +N for additional pitches. Notes stay visible until released; MIDI sustain
-keeps released keys visible until pedal-up. The mode defaults to OFF and saves
-when leaving the menu.
-
-Track numbers and the selected track's footer use blue, orange, violet, and
-green for tracks 1 through 4. Play and TRS receive activity are green;
-recording is red, armed tracks and low battery are amber, and USB connection
-is blue. Labels, shapes, and the selected-track underline remain available
-alongside color. Light themes use darker accents for readability.
+**SLICER** (FX page, every track): a tempo-synced 16-step gate or stutter, with 16 patterns.
 
 ## Scale keyboard
 
@@ -153,31 +102,10 @@ Mixolydian (MIX), major pentatonic (PEN), minor pentatonic (MPEN), harmonic mino
 minor blues (BLUES), whole tone (WHOLE), half-whole diminished (DIMHW), and
 whole-half diminished (DIMWH). Scales with other than seven notes continue across
 the white keys without repeating notes; their roots need not fall on every C key.
-The drum track, GM sample kit and incoming MIDI retain their existing note mapping.
+Drum kits and incoming MIDI keep their own note mapping.
 
-## Favorite presets
-
-On SAVE > PRESETS, knob 3 (FAV) marks the current sound: clockwise ON,
-counterclockwise OFF. Stars identify favorites in the browser. Knob 4 (LIST)
-selects ALL to the left or FAV to the right. PRESETS and knob 1 browse that
-list; the PRESETS knob also follows the filter on HOME and TRACKS.
-
-Favorites and the filter are saved automatically. They refer to factory
-engine/preset pairs or user slots, without copying sounds. Overwriting or
-renaming a user slot keeps its star; erasing it removes the star. Favorites
-do not save sound edits: use SAVE > USER to store an edited sound first.
-With an empty favorites list, the current sound stays loaded; select LIST
-ALL to find sounds to add. The single drum kit is not part of this browser.
-
-## MIDI clock and transport
-
-In **GLO > GLOBAL > CLK**, select **INT**, **USB**, or **TRS**. USB and TRS follow
-MIDI Clock (24 pulses per quarter note) and Start, Stop, and Continue from the
-selected input; the other input can still play notes and expressive controls.
-Start resets the patterns to step 1, while Continue resumes their current steps.
-The sequencer stops and releases its notes if clock disappears for 500 ms. The
-displayed BPM, arpeggiator, delay, and SLICER follow the measured tempo. TRS MIDI
-IN is enabled by default (`FELUCCA_UART=1`).
+Press **SCL** again for the **CHORD** page: CHRD picks the chord keys (OFF, the scale's triads or
+sevenths, or a fixed shape) and VOIC the voicing.
 
 ## Layout
 
@@ -185,78 +113,41 @@ IN is enabled by default (`FELUCCA_UART=1`).
 | --- | --- |
 | `firmware/` | firmware sources: `src/` app, `hal/` hardware layer, `loader/` update loader |
 | `tools/` | build script, generators, package maker, installer and sample uploader |
-| `assets/` | icon atlas, font, CC0 instrument samples |
+| `assets/` | UI font, icon names, CC0 instrument samples |
 | `web/` | web installer and editor sources |
 | `tests/` | tests that run on the build machine |
+| `LICENSES/` | licence texts of the bundled font, icons, ported DSP and SDK files |
 
 ## Support
 
 If Felucca is useful to you, [sponsoring on GitHub](https://github.com/sponsors/hugelton) or a donation
 on [itch.io](https://hugelton.itch.io/felucca) helps keep its development going.
 
-For Salt or Studio issues and contributions, use
-[ChanceTheMaker/Felucca](https://github.com/ChanceTheMaker/Felucca).
-Original Felucca development and discussions are at
-[hugelton/Felucca](https://github.com/hugelton/Felucca).
+Pull requests are welcome, and so are ideas and requests: post them in
+[Discussions](https://github.com/hugelton/Felucca/discussions) or on X ([@kurogedelic](https://x.com/kurogedelic)).
 
 ## Credits
 
-- Felucca [Salt] and Studio enhancements: Chance Roth ([@ChanceTheMaker](https://github.com/ChanceTheMaker))
-- Felucca by Leo Kuroshita ([@kurogedelic](https://github.com/kurogedelic)), [Hügelton Instruments](https://hugelton.com)
-- Font: [Terminus](https://terminus-font.sourceforge.net/) by Dimitar Toshkov Zhekov, [SIL OFL 1.1](assets/fonts/Terminus-LICENSE.txt)
+- **[Hügelton Instruments](https://hugelton.com)** (Leo Kuroshita, [@kurogedelic](https://github.com/kurogedelic)):
+  Felucca itself; the PHASE engine's waveforms (a C port of the oscillator of
+  [CrispyZebra](https://github.com/hugelton/CrispyZebra), GPL-3.0); the DRUM voices; the Hügelton Sample
+  Pack (the drum samples, GPL-3.0-only, not CC0); the [Fukiai](https://github.com/hugelton/Fukiai) icon
+  font ([MIT](LICENSES/MIT-Fukiai.txt))
+- Font: [Inter Tight](https://github.com/rsms/inter-tight) by The Inter Project Authors, [SIL OFL 1.1](LICENSES/OFL-InterTight.txt)
 - Samples: [Versilian Studios](https://versilian-studios.com/) [VSCO-2 Community Edition](https://github.com/sgossner/VSCO-2-CE) and [VCSL](https://github.com/sgossner/VCSL), CC0 1.0 ([attribution](assets/samples-cc0/ATTRIBUTION.txt))
-- PHASE engine: oscillator ported from [CrispyZebra](https://github.com/hugelton/CrispyZebra) by Leo Kuroshita (GPL-3.0)
 - VOICE engine: after [klattsch](https://github.com/tgies/klattsch) by Tony Gies (MIT); formant data from Klatt (1980) and Hillenbrand et al. (1995)
-- Web editor icons: Fukiai by [Hügelton Instruments](https://hugelton.com), [MIT](web/FUKIAI-LICENSE.txt)
-- Package format and boot files: [JieLi AC79 SDK](https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK) (Apache-2.0, not included)
+- PHYS engine: models ported from [DaisySP](https://github.com/electro-smith/DaisySP) by Electrosmith and Emilie Gillet ([MIT](LICENSES/MIT-DaisySP.txt)) and from Emilie Gillet's [eurorack](https://github.com/pichenettes/eurorack) code ([MIT](LICENSES/MIT-Rings.txt))
+- FM6 engine: msfa from [Dexed](https://github.com/asb2m10/dexed) by Google Inc. and Pascal Gauthier ([Apache-2.0](LICENSES/Apache-2.0-msfa.txt))
+- Package format and boot files: [JieLi AC79 SDK](https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK) ([Apache-2.0](LICENSES/Apache-2.0.txt); three of its files are in every package, none in this tree)
+- Contributions: [keremimo](https://github.com/keremimo) (white-key scales, #2), [ChanceTheMaker](https://github.com/ChanceTheMaker)
+  (TRS MIDI, bend, sustain and clock, palettes, favourites, editor display settings: #8, #10, #11, #12),
+  [andreahaku](https://github.com/andreahaku) (sample recording and trim, #29; SLICE manual slices and tests, #27, #22)
 
 ## Licence
 
-Code: [GPL-3.0-only](LICENSE). Third-party material: [LICENSING.md](LICENSING.md).
+Free software: [GPL-3.0-only](LICENSE), the Hügelton Sample Pack included. The bundled font and the
+ported DSP keep their own licences ([LICENSES/](LICENSES/)); details in [LICENSING.md](LICENSING.md).
 
 M-VAVE and FM-1 are trademarks of their respective owners. Felucca is not affiliated with or endorsed by them.
 
 Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments
-
-## Web editor
-
-### Browser keyboard
-
-The keyboard at the bottom of the Studio plays the connected FM-1 through Web MIDI
-in FM-1 mode, or the local synth in Browser mode. Click or touch keys (including chords), or enable **Computer keys** and
-use `A W S E D F T G Y H U J K O L P ;`. It has octave, MIDI channel and velocity
-controls, a sustain toggle and **Stop all notes**. Channels 1–3 play parts 1–3;
-drums normally use channel 10. In FM-1 mode, sound comes from the FM-1 audio output;
-in Browser mode it comes from your computer. Mock mode previews the controls without sound. No firmware update is
-needed for the keyboard.
-
-Notes are released on key/pointer release, pointer cancellation, focus loss,
-page hiding, channel/octave changes and disconnect. Typing in text fields does
-not play notes. MIDI cleanup is best effort if the device is physically unplugged.
-Run `node web/test_keyboard.mjs` for the keyboard's MIDI behavior checks.
-
-### Device preferences
-
-With compatible firmware, Settings > Device display selects the FM-1 screen
-palette, font weight, and MIDI monitor mode. Only supported controls appear.
-Changes apply immediately and save on the device.
-
-Library > Device presets provides favorite stars and an All/Favorites filter
-shared with the FM-1. Factory sounds and used user slots can be bookmarked;
-computer-library patches must first be saved to a device user slot. Panel-side
-changes and slot replacements/deletions update while this view is open. Older
-firmware keeps the existing editor without unsupported controls.
-
-### Optional analytics
-
-The published Salt installer and Studio send cookieless Google Analytics
-measurements by default. **Analytics preferences** in the hamburger menu opens a modal that
-offers **Without cookies**, **Allow analytics cookies**, and **Turn analytics off**.
-Previous declines remain full opt-outs. Every choice leaves all features available;
-localhost and other forks are excluded. Cookieless pings support aggregate
-measurement and eligible modeling, rather than full visitor/session tracking.
-
-Measurements include visits, download clicks, installation attempts and outcomes,
-and browser audio starts. A completed recovery write is reported separately from
-an installation with a verified reboot. No MIDI notes, audio, preset names, or
-device identifiers are sent by our custom events. See [analytics details](web/ANALYTICS.md).

@@ -25,8 +25,8 @@
 .studio-preview[data-side=above]::before { bottom:-7px; border-bottom:1px solid var(--accent); border-right:1px solid var(--accent); }
 .studio-preview img { display:block; position:relative; width:100%; height:auto; border-radius:9px; }
 .studio-preview > div { padding:8px 4px 2px; font:600 12px/1.4 var(--ui-font); }
-.installer-page .studio-gallery-link { display:flex; flex-direction:row; flex-wrap:wrap; gap:4px 12px; align-items:baseline; justify-content:center; box-sizing:border-box; width:100%; text-align:center; }
-.studio-gallery-subtitle { max-width:100%; white-space:normal; overflow-wrap:anywhere; font-size:0.8em; font-weight:normal; text-transform:none; letter-spacing:normal; }
+.installer-page .studio-gallery-link { display:flex; flex-direction:row; flex-wrap:wrap; gap:4px 12px; align-items:baseline; justify-content:center; box-sizing:border-box; width:100%; text-align:center; font-size:16px; line-height:1.5; }
+.studio-gallery-subtitle { max-width:100%; white-space:normal; overflow-wrap:anywhere; font-size:1em; font-weight:500; text-transform:none; letter-spacing:normal; }
 .browser-audio #tabs,
 .browser-audio #trackbar, .browser-audio #factlib,
 .browser-audio #play-channel, .browser-audio label:has(#play-channel) { display:none!important; }

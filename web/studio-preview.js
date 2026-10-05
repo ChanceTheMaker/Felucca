@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Theme-matched, non-interactive preview for Studio links on the installer.
 (() => {
+  const I18N = window.FeluccaI18n;
   const names = {stage:'Stage Red', matrix:'Matrix', dx:'Vintage DX7', modeld:'Model D Walnut',
     chocolate:'Chocolate Factory', vapor:'Vaporwave', midnight:'Midnight Studio', space:'Space Mission',
     bauhaus:'Bauhaus', ocean:'Ocean Lab', arcade:'Arcade ’84', hicon:'High Contrast'};
@@ -32,8 +33,8 @@
     const skin = Object.hasOwn(names, root.dataset.skin) ? root.dataset.skin : 'stage';
     const mode = root.dataset.mode === 'light' ? 'light' : 'dark';
     picture.src = `screenshots/previews/${skin}-${mode}.jpg`;
-    picture.alt = `Felucca [Salt] Studio in ${names[skin]}, ${mode} mode`;
-    caption.textContent = `${names[skin]} · ${mode === 'light' ? 'Light' : 'Dark'} · Studio preview`;
+    picture.alt = I18N.t('ui.previewAlt',{theme:names[skin],mode:I18N.t('ui.'+mode)});
+    caption.textContent = I18N.t('ui.previewAlt',{theme:names[skin],mode:I18N.t('ui.'+mode)});
     position();
   }
   function hide() {
@@ -72,5 +73,6 @@
     if (rect.bottom < 0 || rect.top > innerHeight) hide();
     else position();
   }, {passive:true});
+  I18N.onChange(refresh);
   new MutationObserver(refresh).observe(document.documentElement, {attributes:true, attributeFilter:['data-skin', 'data-mode']});
 })();

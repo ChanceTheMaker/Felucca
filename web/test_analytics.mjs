@@ -12,7 +12,7 @@ function setup(host = 'chancethemaker.github.io', saved = null, blocked = false)
     navigator: {language: 'en'},
     location: {hostname: host, pathname: '/Felucca/webapp/installer/', origin: 'https://' + host, href: 'https://' + host + '/Felucca/webapp/installer/?secret=private'},
     localStorage: {getItem: k => {if (blocked) throw Error('blocked'); return storage.get(k);}, setItem: (k, v) => {if (blocked) throw Error('blocked'); storage.set(k, v);}},
-    document: {readyState:'loading', referrer: 'https://example.org/private?q=secret', documentElement: {lang: 'en'},
+    document: {readyState:'loading', referrer: 'https://example.org/private?q=secret', documentElement: {lang: 'en', dataset:{skin:'space'}},
       createElement: name => name === 'dialog' ? panel : name === 'section' ? banner : {}, head: {append: s => scripts.push(s)},
       body: {append: (...elements) => mounted.push(...elements)},
       querySelector: () => null, addEventListener: (k, fn) => {listeners[k] = fn;}},
@@ -41,6 +41,11 @@ fresh.choose('granted');
 assert.equal(fresh.scripts.length, 1);
 assert.equal(Object.prototype.toString.call(fresh.context.dataLayer[0]), '[object Arguments]', 'Google tag commands use the documented arguments-object queue');
 const config = fresh.context.dataLayer.find(x => x[0] === 'config')[2];
+assert.equal(config.theme, 'space', 'Page views include the current theme');
+fresh.context.document.documentElement.dataset.skin = 'matrix';
+fresh.listeners['felucca:theme-change']();
+assert.equal(fresh.context.dataLayer.at(-1)[1], 'theme_changed');
+assert.equal(fresh.context.dataLayer.at(-1)[2].theme, 'matrix');
 assert.ok(!config.page_location.includes('?'));
 assert.equal(config.page_referrer, 'https://example.org');
 fresh.context.FeluccaAnalytics.track('install_failed', {stage: 'write', error_code: 'lost', midi: 'private'});
@@ -50,6 +55,7 @@ assert.equal(fresh.context.dataLayer.at(-1)[1], 'install_failed');
 fresh.choose('denied');
 const count = fresh.context.dataLayer.length;
 fresh.context.FeluccaAnalytics.track('install_attempt');
+fresh.listeners['felucca:theme-change']();
 assert.equal(fresh.context.dataLayer.length, count);
 assert.equal(fresh.context['ga-disable-G-JVF09MZEGD'], true);
 fresh.choose('granted');

@@ -3,13 +3,13 @@ export class BrowserSynth {
   async start() {
     if (this.context) { await this.context.resume(); return; }
     const Context = window.AudioContext || window.webkitAudioContext;
-    if (!Context) throw new Error('This browser does not support Web Audio.');
+    if (!Context) throw new Error(window.FeluccaI18n.t('ui.noWebAudio'));
     const context = new Context({sampleRate: 44100, latencyHint: 'interactive'});
     this.context = context;
     try {
       await context.resume();
       const response = await fetch(new URL('engine.wasm', import.meta.url));
-      if (!response.ok) throw new Error('Browser sound engine is unavailable.');
+      if (!response.ok) throw new Error(window.FeluccaI18n.t('ui.engineUnavailable'));
       const module = await WebAssembly.compile(await response.arrayBuffer());
       const meta = new WebAssembly.Instance(module).exports;
       const bytes = new Uint8Array(meta.memory.buffer);
@@ -28,7 +28,7 @@ export class BrowserSynth {
       this.gain.connect(this.analyser);
       this.node.onprocessorerror = () => {
         this.gain.gain.value = 0;
-        document.getElementById('audio-status').textContent = 'Audio stopped. Reload to restart.';
+        window.FeluccaI18n.text(document.getElementById('audio-status'), 'ui.audioFailed');
       };
     } catch (error) {
       await context.close(); this.context = null; throw error;

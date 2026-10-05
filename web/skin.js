@@ -2,14 +2,21 @@
 // Website appearance only: never writes device preferences or MIDI.
 (() => {
   const root = document.documentElement;
+  const I18N = window.FeluccaI18n;
   const themes = [['stage', 'Stage Red'], ['matrix', 'Matrix'], ['dx', 'Vintage DX7'], ['modeld', 'Model D Walnut'],
     ['chocolate', 'Chocolate Factory'], ['vapor', 'Vaporwave'], ['midnight', 'Midnight Studio'],
     ['space', 'Space Mission'], ['bauhaus', 'Bauhaus'], ['ocean', 'Ocean Lab'], ['arcade', 'Arcade \u201984'], ['hicon', 'High Contrast']];
   const read = (key, fallback) => { try { return localStorage.getItem(key) || fallback; } catch { return fallback; } };
   const save = (key, value) => { try { localStorage.setItem(key, value); } catch { /* private browsing */ } };
+  const requested = new URLSearchParams(location.search);
+  if (themes.some(([id]) => id === requested.get('theme'))) {
+    save('felucca.web.skin', requested.get('theme'));
+    if (['light','dark'].includes(requested.get('mode'))) save('felucca.web.mode', requested.get('mode'));
+  }
   root.dataset.skin = themes.some(([id]) => id === read('felucca.web.skin')) ? read('felucca.web.skin') : 'stage';
+  if (themes.some(([id]) => id === requested.get('theme'))) { root.dataset.skin = requested.get('theme'); }
   root.dataset.defaultControls = read('felucca.web.controls') === 'sliders' ? 'sliders' : 'knobs';
-  root.dataset.mode = read('felucca.web.mode') === 'light' ? 'light' : 'dark';
+  root.dataset.mode = themes.some(([id]) => id === requested.get('theme')) && ['light','dark'].includes(requested.get('mode')) ? requested.get('mode') : read('felucca.web.mode') === 'light' ? 'light' : 'dark';
   root.dataset.contrast = root.dataset.skin === 'hicon' ? 'high' : 'normal';
   root.dataset.fullWidth = read('felucca.web.fullWidth') === 'true' ? 'true' : 'false';
   function sync(input) {
@@ -69,19 +76,21 @@
     for (const [index, card] of [...container.children].entries()) {
       card.dataset.cardKey ||= `${container.id}:fallback:${index}`;
       applyCard(card);
-      const name = card.querySelector('h2')?.textContent.replace(/[\uEA00-\uEB09]/g, '').trim() || 'Section';
+      const name = card.querySelector('h2')?.textContent.replace(/[\uEA00-\uEB09]/g, '').trim() || I18N.t('ui.section');
       const toolbar = document.createElement('div'); toolbar.className = 'card-tools';
       const select = document.createElement('select'); select.className = 'card-style';
-      select.setAttribute('aria-label', `${name} control style`);
-      for (const [value, label] of [['default', 'Default'], ['knobs', 'Knobs'], ['sliders', 'Sliders']]) select.add(new Option(label, value));
+      select.setAttribute('aria-label', I18N.t('ui.controlStyle',{name}));
+      select.dataset.i18nAriaLabel = 'ui.controlStyle'; select.dataset.i18nValues = JSON.stringify({name});
+      for (const value of ['default','knobs','sliders']) { const option = new Option(I18N.t('ui.'+value), value); option.dataset.i18n = 'ui.'+value; select.add(option); }
       select.value = ['knobs', 'sliders'].includes(cards[card.dataset.cardKey]) ? cards[card.dataset.cardKey] : 'default';
       select.addEventListener('change', () => {
         cards[card.dataset.cardKey] = select.value; save('felucca.web.cards', JSON.stringify(cards)); applyCard(card);
       });
       if (sortable) {
         const handle = document.createElement('button'); handle.type = 'button'; handle.className = 'card-grip';
-        handle.textContent = '\u283f'; handle.setAttribute('aria-label', `Move ${name}`);
-        handle.title = 'Drag to rearrange. Arrow keys move one position; Home/End move first/last.';
+        handle.textContent = '\u283f'; handle.setAttribute('aria-label', I18N.t('ui.moveCard',{name}));
+        handle.dataset.i18nAriaLabel = 'ui.moveCard'; handle.dataset.i18nValues = JSON.stringify({name});
+        handle.dataset.i18nTitle = 'ui.dragHelp'; handle.title = I18N.t('ui.dragHelp');
         let drag = null;
         const finish = (commit = false) => {
           if (!drag) return;
@@ -92,7 +101,7 @@
           if (commit && state.active && state.target && state.target !== card && state.target.isConnected) {
             const list = [...container.children];
             container.insertBefore(card, list.indexOf(card) < list.indexOf(state.target) ? state.target.nextSibling : state.target);
-            saveOrder(); announce.textContent = `${name} moved to position ${[...container.children].indexOf(card) + 1}.`;
+            saveOrder(); announce.textContent = I18N.t('ui.movedCard',{name,position:[...container.children].indexOf(card)+1});
           }
           if (card.hasPointerCapture(state.id)) card.releasePointerCapture(state.id);
           document.removeEventListener('keydown', escape);
@@ -150,7 +159,7 @@
           e.preventDefault();
           if (to < 0 || to >= list.length || to === from) return;
           container.insertBefore(card, to > from ? list[to].nextSibling : list[to]); handle.focus(); saveOrder();
-          announce.textContent = `${name} moved to position ${to + 1}.`;
+          announce.textContent = I18N.t('ui.movedCard',{name,position:to+1});
         });
         toolbar.append(handle);
       }
@@ -162,38 +171,23 @@
       container.append(...[...container.children].sort((a,b) => (ranks.get(a.dataset.cardKey) ?? 999) - (ranks.get(b.dataset.cardKey) ?? 999)));
     }
   }
-  function setLanguageFlag(button, language) {
-    const english = language !== 'ja';
-    button.setAttribute('aria-label', english ? 'English — switch to Japanese' : '日本語 — Switch to English');
-    button.title = english ? 'English — switch to Japanese' : '日本語 — Switch to English';
-    let flag = '<rect width="60" height="40" fill="#fff"/><circle cx="30" cy="20" r="12" fill="#bc002d"/>';
-    if (english) {
-      flag = '<rect width="60" height="40" fill="#fff"/>';
-      for (let row = 0; row < 7; row++) flag += `<rect y="${row * 80 / 13}" width="60" height="${40 / 13}" fill="#b22234"/>`;
-      flag += '<rect width="26" height="21.54" fill="#3c3b6e"/>';
-      for (let row = 0; row < 9; row++) for (let col = 0; col < (row % 2 ? 5 : 6); col++) {
-        flag += `<circle cx="${2.2 + col * 4.3 + (row % 2 ? 2.15 : 0)}" cy="${1.5 + row * 2.3}" r=".7" fill="#fff"/>`;
-      }
-    }
-    button.innerHTML = `<svg viewBox="0 0 60 40" aria-hidden="true" focusable="false">${flag}</svg>`;
-  }
-  window.FeluccaSkin = { enhance, sync, decorate, setLanguageFlag };
+  window.FeluccaSkin = { enhance, sync, decorate };
   document.addEventListener('DOMContentLoaded', () => {
     const host = document.querySelector('[data-appearance]');
     if (!host) return;
-    host.innerHTML = `<label><span>Website theme</span><select id="web-skin" aria-label="Website theme">${themes.map(([id, name]) => `<option value="${id}">${name}</option>`).join('')}</select></label>` +
-      (document.body.classList.contains('editor-page') ? '<label><span>Sound controls</span><select id="web-controls" aria-label="Sound controls"><option value="knobs">Knobs</option><option value="sliders">Sliders</option></select></label>' : '') +
-      '<label><span>Display mode</span><select id="web-mode" aria-label="Display mode"><option value="dark">Dark</option><option value="light">Light</option></select></label>' +
-      '<label class="width-toggle"><span>Full width</span><input id="web-width" type="checkbox" aria-label="Full width"></label>';
+    host.innerHTML = `<label><span data-i18n="ui.websiteTheme"></span><select id="web-skin" data-i18n-aria-label="ui.websiteTheme">${themes.map(([id, name]) => `<option value="${id}">${name}</option>`).join('')}</select></label>` +
+      (document.body.classList.contains('editor-page') ? '<label><span data-i18n="ui.soundControls"></span><select id="web-controls" data-i18n-aria-label="ui.soundControls"><option value="knobs" data-i18n="ui.knobs"></option><option value="sliders" data-i18n="ui.sliders"></option></select></label>' : '') +
+      '<label><span data-i18n="ui.displayMode"></span><select id="web-mode" data-i18n-aria-label="ui.displayMode"><option value="dark" data-i18n="ui.dark"></option><option value="light" data-i18n="ui.light"></option></select></label>' +
+      '<label class="width-toggle"><span data-i18n="ui.fullWidth"></span><input id="web-width" type="checkbox" data-i18n-aria-label="ui.fullWidth"></label>';
     const menu = document.createElement('details'); menu.className = 'settings-menu';
-    const trigger = document.createElement('summary'); trigger.textContent = '☰'; trigger.setAttribute('aria-label','Website settings');
+    const trigger = document.createElement('summary'); trigger.textContent = '☰'; trigger.dataset.i18nAriaLabel = 'ui.websiteSettings';
     menu.append(trigger); document.querySelector('.brand-links').append(menu); menu.append(host);
     document.addEventListener('pointerdown', e => { if (!menu.contains(e.target)) menu.open = false; });
     menu.addEventListener('keydown', e => { if (e.key === 'Escape') { menu.open = false; trigger.focus(); } });
     const width = document.getElementById('web-width'); width.checked = root.dataset.fullWidth === 'true';
     width.addEventListener('change', () => { root.dataset.fullWidth = String(width.checked); save('felucca.web.fullWidth', String(width.checked)); });
     const skin = document.getElementById('web-skin'); skin.value = root.dataset.skin;
-    skin.addEventListener('change', () => { root.dataset.skin = skin.value; root.dataset.contrast = skin.value === 'hicon' ? 'high' : 'normal'; save('felucca.web.skin', skin.value); });
+    skin.addEventListener('change', () => { root.dataset.skin = skin.value; root.dataset.contrast = skin.value === 'hicon' ? 'high' : 'normal'; save('felucca.web.skin', skin.value); document.dispatchEvent(new Event('felucca:theme-change')); });
     const mode = document.getElementById('web-mode'); mode.value = root.dataset.mode;
     mode.addEventListener('change', () => { root.dataset.mode = mode.value; save('felucca.web.mode', mode.value); });
     const controls = document.getElementById('web-controls');
@@ -209,16 +203,18 @@
         // Release held notes/sustain before hiding the performance controls.
         if (collapsed) document.getElementById('play-stop')?.click();
         keyboard.classList.toggle('collapsed', collapsed);
-        tray.textContent = collapsed ? '▴ Show keyboard' : '▾';
-        tray.setAttribute('aria-label', collapsed ? 'Show keyboard' : 'Minimize keyboard');
-        tray.title = collapsed ? 'Show keyboard' : 'Minimize keyboard';
+        tray.textContent = collapsed ? '\u25b4 ' + I18N.t('ui.showKeyboard') : '\u25be';
+        tray.setAttribute('aria-label', I18N.t(collapsed ? 'ui.showKeyboard' : 'ui.minimizeKeyboard'));
+        tray.title = I18N.t(collapsed ? 'ui.showKeyboard' : 'ui.minimizeKeyboard');
         tray.setAttribute('aria-expanded', String(!collapsed));
         save('felucca.web.keyboardCollapsed', String(collapsed));
       };
       tray.addEventListener('click', () => setCollapsed(!keyboard.classList.contains('collapsed')));
+      I18N.onChange(() => { const collapsed = keyboard.classList.contains('collapsed'); tray.textContent = collapsed ? '\u25b4 ' + I18N.t('ui.showKeyboard') : '\u25be'; tray.title = I18N.t(collapsed ? 'ui.showKeyboard' : 'ui.minimizeKeyboard'); tray.setAttribute('aria-label', tray.title); });
       keyboard.querySelector('.play-controls').append(tray); setCollapsed(read('felucca.web.keyboardCollapsed') === 'true');
       const measure = () => root.style.setProperty('--keyboard-height', `${Math.ceil(keyboard.getBoundingClientRect().height)}px`);
       new ResizeObserver(measure).observe(keyboard); measure();
     }
+    I18N.apply();
   });
 })();

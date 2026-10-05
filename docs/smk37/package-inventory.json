@@ -1,0 +1,1229 @@
+{
+  "source_repository": "https://github.com/jonathaslacerda/smk-37-pro-docs",
+  "source_revision": "ab85d7340163ba9e171dc9396e31c034829bbc02",
+  "checked_date": "2026-10-05",
+  "packages": [
+    {
+      "file": "MKE-P37_013.fwsc",
+      "product": "MKE-P37_013",
+      "chip": "AC791N",
+      "bytes": 701140,
+      "sha256": "8af884a8989bfbf33d46adc2ac5f913e1b672be1d253a6b64b25fc60be69bf73",
+      "logical_sha256": "fb7150c4b3c785fe50a12572f01c93c34695a5451814a687afeec35878d7434e",
+      "marker_blocks": 20,
+      "header_directory_crc_valid": true,
+      "compatibility": "unverified",
+      "entries": [
+        {
+          "name": "flash.bin",
+          "type": 0,
+          "index": 0,
+          "offset": 1024,
+          "bytes": 638976,
+          "sha256": "ee8e5f498d8710d5b5f66486c1d725d3e43ffae4d71f5fa8a0a4e8c49579f678",
+          "stored_crc16": 54530,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "info.log",
+          "type": 2,
+          "index": 1,
+          "offset": 640000,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stored_crc16": 0,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "USR",
+          "type": 50,
+          "index": 2,
+          "offset": 640000,
+          "bytes": 37382,
+          "sha256": "ef8b49ff5d47edfb846eea318aa092d3f0e90fd0b9314cbccb50dba47e986142",
+          "stored_crc16": 4031,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "isd_config.ini",
+          "type": 52,
+          "index": 3,
+          "offset": 677408,
+          "bytes": 3427,
+          "sha256": "52615f2e03e72b3d8eea125e25ec6ad81d5b5c9bc2895360586e834d42e74ce6",
+          "stored_crc16": 27163,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "ota.bin",
+          "type": 100,
+          "index": 4,
+          "offset": 680864,
+          "bytes": 19969,
+          "sha256": "ef1f2db89b011fa53e71df363f0122de0ea896618c53fb53e8da676322004541",
+          "stored_crc16": 41417,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "script.ver",
+          "type": 251,
+          "index": 5,
+          "offset": 700864,
+          "bytes": 27,
+          "sha256": "a66d70469c32d6824c5400d4588318005ea2e2fc4ada3cb638025d7acb4b4242",
+          "stored_crc16": 43703,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "blimit.bin",
+          "type": 161,
+          "index": 6,
+          "offset": 700896,
+          "bytes": 144,
+          "sha256": "25a785ddf4ea0fd8f99a6cb1275983d1a931483dd6ccffdec502500e161ee5d4",
+          "stored_crc16": 2360,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "tail.bin",
+          "type": 255,
+          "index": 7,
+          "offset": 701056,
+          "bytes": 64,
+          "sha256": "79d4bbc325be8b2f49492a9e8bf712e3cfe4e7c55e874dced1445ed65616843b",
+          "stored_crc16": 35126,
+          "raw_crc_matches": true
+        }
+      ],
+      "source_path": "firmware/mkep37/MKE-P37_013.fwsc"
+    },
+    {
+      "file": "MKE-P37_015.fwsc",
+      "product": "MKE-P37_015",
+      "chip": "AC791N",
+      "bytes": 701140,
+      "sha256": "280ee7aae59a17c38bc2e854802c7d08f076e51afff13eb5315ad3748476491f",
+      "logical_sha256": "414ffbd15fa948a7accf004e21cd43a7596061e9920af21f705b80f29cf4306e",
+      "marker_blocks": 20,
+      "header_directory_crc_valid": true,
+      "compatibility": "unverified",
+      "entries": [
+        {
+          "name": "flash.bin",
+          "type": 0,
+          "index": 0,
+          "offset": 1024,
+          "bytes": 638976,
+          "sha256": "71561622bd3ceeb48518ad3cc42f46b943861721db6e24fc8fb52a4b8d684331",
+          "stored_crc16": 24969,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "info.log",
+          "type": 2,
+          "index": 1,
+          "offset": 640000,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stored_crc16": 0,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "USR",
+          "type": 50,
+          "index": 2,
+          "offset": 640000,
+          "bytes": 37382,
+          "sha256": "ef8b49ff5d47edfb846eea318aa092d3f0e90fd0b9314cbccb50dba47e986142",
+          "stored_crc16": 4031,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "isd_config.ini",
+          "type": 52,
+          "index": 3,
+          "offset": 677408,
+          "bytes": 3427,
+          "sha256": "52615f2e03e72b3d8eea125e25ec6ad81d5b5c9bc2895360586e834d42e74ce6",
+          "stored_crc16": 27163,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "ota.bin",
+          "type": 100,
+          "index": 4,
+          "offset": 680864,
+          "bytes": 19969,
+          "sha256": "ef1f2db89b011fa53e71df363f0122de0ea896618c53fb53e8da676322004541",
+          "stored_crc16": 41417,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "script.ver",
+          "type": 251,
+          "index": 5,
+          "offset": 700864,
+          "bytes": 27,
+          "sha256": "a66d70469c32d6824c5400d4588318005ea2e2fc4ada3cb638025d7acb4b4242",
+          "stored_crc16": 43703,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "blimit.bin",
+          "type": 161,
+          "index": 6,
+          "offset": 700896,
+          "bytes": 144,
+          "sha256": "4e751a36f7be6d345513737dde961c42c5886c04484a3ce390f15971ce057076",
+          "stored_crc16": 16239,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "tail.bin",
+          "type": 255,
+          "index": 7,
+          "offset": 701056,
+          "bytes": 64,
+          "sha256": "79d4bbc325be8b2f49492a9e8bf712e3cfe4e7c55e874dced1445ed65616843b",
+          "stored_crc16": 35126,
+          "raw_crc_matches": true
+        }
+      ],
+      "source_path": "firmware/mkep37/MKE-P37_015.fwsc"
+    },
+    {
+      "file": "MKE-P37_016.fwsc",
+      "product": "MKE-P37_016",
+      "chip": "AC791N",
+      "bytes": 705252,
+      "sha256": "4306ae5b765ab9afb790edf6d02fa75e872897dbd319049e3956ddd283a51429",
+      "logical_sha256": "2194dd0fddaa5771faedad406eaf42512e49a5469b4b089d2d350f734e5950bd",
+      "marker_blocks": 36,
+      "header_directory_crc_valid": true,
+      "compatibility": "unverified",
+      "entries": [
+        {
+          "name": "flash.bin",
+          "type": 0,
+          "index": 0,
+          "offset": 1024,
+          "bytes": 643072,
+          "sha256": "9b7abdf7d53c4112c49b5ebc95ddc3f607ea2c1e32c33fea17f576c7f6e436d8",
+          "stored_crc16": 59615,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "info.log",
+          "type": 2,
+          "index": 1,
+          "offset": 644096,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stored_crc16": 0,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "USR",
+          "type": 50,
+          "index": 2,
+          "offset": 644096,
+          "bytes": 37382,
+          "sha256": "f20d90d83e4f7fcc1894f8bb2628fe60d7525d7fec8fafec875c0896edb8affa",
+          "stored_crc16": 10096,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "isd_config.ini",
+          "type": 52,
+          "index": 3,
+          "offset": 681504,
+          "bytes": 3427,
+          "sha256": "282af73d9ef73606122665650a19203ac25003b916460f57337abcda12071700",
+          "stored_crc16": 27163,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "ota.bin",
+          "type": 100,
+          "index": 4,
+          "offset": 684960,
+          "bytes": 19969,
+          "sha256": "ef1f2db89b011fa53e71df363f0122de0ea896618c53fb53e8da676322004541",
+          "stored_crc16": 41417,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "script.ver",
+          "type": 251,
+          "index": 5,
+          "offset": 704960,
+          "bytes": 27,
+          "sha256": "e1c8bfdc8916f17205c1d4a26b873580af723c3c62f74a6a55b99d6baf695e74",
+          "stored_crc16": 43703,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "blimit.bin",
+          "type": 161,
+          "index": 6,
+          "offset": 704992,
+          "bytes": 144,
+          "sha256": "a28cecf1a4b67d71227bd92b494f65b2d4d8051c3f2bbdc5ca3ca9a9a7fc205a",
+          "stored_crc16": 34442,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "tail.bin",
+          "type": 255,
+          "index": 7,
+          "offset": 705152,
+          "bytes": 64,
+          "sha256": "79d4bbc325be8b2f49492a9e8bf712e3cfe4e7c55e874dced1445ed65616843b",
+          "stored_crc16": 35126,
+          "raw_crc_matches": true
+        }
+      ],
+      "source_path": "firmware/mkep37/MKE-P37_016.fwsc"
+    },
+    {
+      "file": "SMK-37_Elite_015.fwsc",
+      "product": "SMK-37 Elite_015",
+      "chip": "AC791N",
+      "bytes": 701140,
+      "sha256": "6cb061bda6fc4a285a1a1014e4fc30782278fa62bdc3add75d14b29d4d76253e",
+      "logical_sha256": "d576dafdc5d9d23ff62df06d8f7645c7db6bd5870c4a586f82125f713e3153bf",
+      "marker_blocks": 20,
+      "header_directory_crc_valid": true,
+      "compatibility": "unverified",
+      "entries": [
+        {
+          "name": "flash.bin",
+          "type": 0,
+          "index": 0,
+          "offset": 1024,
+          "bytes": 638976,
+          "sha256": "3462cccaa1c8e7a26fdbb1257edc384c2f72bac4eef3d04723fc87c98730037a",
+          "stored_crc16": 56228,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "info.log",
+          "type": 2,
+          "index": 1,
+          "offset": 640000,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stored_crc16": 0,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "USR",
+          "type": 50,
+          "index": 2,
+          "offset": 640000,
+          "bytes": 37382,
+          "sha256": "ef8b49ff5d47edfb846eea318aa092d3f0e90fd0b9314cbccb50dba47e986142",
+          "stored_crc16": 4031,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "isd_config.ini",
+          "type": 52,
+          "index": 3,
+          "offset": 677408,
+          "bytes": 3427,
+          "sha256": "52615f2e03e72b3d8eea125e25ec6ad81d5b5c9bc2895360586e834d42e74ce6",
+          "stored_crc16": 27163,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "ota.bin",
+          "type": 100,
+          "index": 4,
+          "offset": 680864,
+          "bytes": 19969,
+          "sha256": "ef1f2db89b011fa53e71df363f0122de0ea896618c53fb53e8da676322004541",
+          "stored_crc16": 41417,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "script.ver",
+          "type": 251,
+          "index": 5,
+          "offset": 700864,
+          "bytes": 27,
+          "sha256": "a66d70469c32d6824c5400d4588318005ea2e2fc4ada3cb638025d7acb4b4242",
+          "stored_crc16": 43703,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "blimit.bin",
+          "type": 161,
+          "index": 6,
+          "offset": 700896,
+          "bytes": 144,
+          "sha256": "f286b01041b95f1c3dc2b31b5b613f585c8c89000c2d4b00f9468b5ef7469f7c",
+          "stored_crc16": 19749,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "tail.bin",
+          "type": 255,
+          "index": 7,
+          "offset": 701056,
+          "bytes": 64,
+          "sha256": "79d4bbc325be8b2f49492a9e8bf712e3cfe4e7c55e874dced1445ed65616843b",
+          "stored_crc16": 35126,
+          "raw_crc_matches": true
+        }
+      ],
+      "source_path": "firmware/smk37elite/SMK-37_Elite_015.fwsc"
+    },
+    {
+      "file": "SMK-37_Elite_016.fwsc",
+      "product": "SMK-37 Elite_016",
+      "chip": "AC791N",
+      "bytes": 705236,
+      "sha256": "b2ee38abfef3ae922e4eecdb8a551e14345300ae6f270265feacd33b6ef99cb6",
+      "logical_sha256": "b30b5fd520004b3fac0e6c55d5a393ffa0900f6f54b1b05c7bf23dbb10e52b79",
+      "marker_blocks": 20,
+      "header_directory_crc_valid": true,
+      "compatibility": "unverified",
+      "entries": [
+        {
+          "name": "flash.bin",
+          "type": 0,
+          "index": 0,
+          "offset": 1024,
+          "bytes": 643072,
+          "sha256": "4993563ddf7067c70e8ff6a17a80c6d1bf96d8142204bfd63e486c0392347501",
+          "stored_crc16": 48637,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "info.log",
+          "type": 2,
+          "index": 1,
+          "offset": 644096,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stored_crc16": 0,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "USR",
+          "type": 50,
+          "index": 2,
+          "offset": 644096,
+          "bytes": 37382,
+          "sha256": "f20d90d83e4f7fcc1894f8bb2628fe60d7525d7fec8fafec875c0896edb8affa",
+          "stored_crc16": 10096,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "isd_config.ini",
+          "type": 52,
+          "index": 3,
+          "offset": 681504,
+          "bytes": 3427,
+          "sha256": "282af73d9ef73606122665650a19203ac25003b916460f57337abcda12071700",
+          "stored_crc16": 27163,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "ota.bin",
+          "type": 100,
+          "index": 4,
+          "offset": 684960,
+          "bytes": 19969,
+          "sha256": "ef1f2db89b011fa53e71df363f0122de0ea896618c53fb53e8da676322004541",
+          "stored_crc16": 41417,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "script.ver",
+          "type": 251,
+          "index": 5,
+          "offset": 704960,
+          "bytes": 27,
+          "sha256": "e1c8bfdc8916f17205c1d4a26b873580af723c3c62f74a6a55b99d6baf695e74",
+          "stored_crc16": 43703,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "blimit.bin",
+          "type": 161,
+          "index": 6,
+          "offset": 704992,
+          "bytes": 144,
+          "sha256": "7af435404b9a318fdc303649dfa21ce1af0023f49e4914a074eef49aac6d719a",
+          "stored_crc16": 11764,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "tail.bin",
+          "type": 255,
+          "index": 7,
+          "offset": 705152,
+          "bytes": 64,
+          "sha256": "79d4bbc325be8b2f49492a9e8bf712e3cfe4e7c55e874dced1445ed65616843b",
+          "stored_crc16": 35126,
+          "raw_crc_matches": true
+        }
+      ],
+      "source_path": "firmware/smk37elite/SMK-37_Elite_016.fwsc"
+    },
+    {
+      "file": "SMK-37_Pro_011.fwsc",
+      "product": "SMK-37 Pro_011",
+      "chip": "AC791N",
+      "bytes": 697044,
+      "sha256": "9b55251b42f433f71fba7cd09c68dca2b28f773e40dc4c2d6d985c84ec4aaf2a",
+      "logical_sha256": "bc5f97503057425fad90c29ddabddd31b8adaef93164a2cd7f801c1843480608",
+      "marker_blocks": 20,
+      "header_directory_crc_valid": true,
+      "compatibility": "unverified",
+      "entries": [
+        {
+          "name": "flash.bin",
+          "type": 0,
+          "index": 0,
+          "offset": 1024,
+          "bytes": 634880,
+          "sha256": "bbbd5f2eadb5157789678bd1d8030b8ed64deadfca9f9d79f701d674b9b9e823",
+          "stored_crc16": 58903,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "info.log",
+          "type": 2,
+          "index": 1,
+          "offset": 635904,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stored_crc16": 0,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "USR",
+          "type": 50,
+          "index": 2,
+          "offset": 635904,
+          "bytes": 37382,
+          "sha256": "7132c8602a89ef79ea54137ed12debe4d1af95a5cccf824e138f92a823730e28",
+          "stored_crc16": 4031,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "isd_config.ini",
+          "type": 52,
+          "index": 3,
+          "offset": 673312,
+          "bytes": 3427,
+          "sha256": "a70e027b0887b970aee7dbecd72e157dfc19a94382aca1ee736f036b84dd9f44",
+          "stored_crc16": 27163,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "ota.bin",
+          "type": 100,
+          "index": 4,
+          "offset": 676768,
+          "bytes": 19969,
+          "sha256": "ef1f2db89b011fa53e71df363f0122de0ea896618c53fb53e8da676322004541",
+          "stored_crc16": 41417,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "script.ver",
+          "type": 251,
+          "index": 5,
+          "offset": 696768,
+          "bytes": 27,
+          "sha256": "9829454d59b4aabc3822ac34ab7b0b6b90103de6e66e62154fa680fe5e284870",
+          "stored_crc16": 43703,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "blimit.bin",
+          "type": 161,
+          "index": 6,
+          "offset": 696800,
+          "bytes": 144,
+          "sha256": "6a9431e4bedb07c0801ee4434d673a0cf097af0d2fc6bca4fdc09f47fe330716",
+          "stored_crc16": 14710,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "tail.bin",
+          "type": 255,
+          "index": 7,
+          "offset": 696960,
+          "bytes": 64,
+          "sha256": "79d4bbc325be8b2f49492a9e8bf712e3cfe4e7c55e874dced1445ed65616843b",
+          "stored_crc16": 35126,
+          "raw_crc_matches": true
+        }
+      ],
+      "source_path": "firmware/smk37pro/SMK-37_Pro_011.fwsc"
+    },
+    {
+      "file": "SMK-37_Pro_012.fwsc",
+      "product": "SMK-37 Pro_012",
+      "chip": "AC791N",
+      "bytes": 701140,
+      "sha256": "c6a9187e706aeae921447ec88e29fecbc618e3f1fc3de54c743c78e41781580a",
+      "logical_sha256": "23e65eb292ad8b3039085f3fa27ee738b5fa7d56ac02611c2908f6136858af9a",
+      "marker_blocks": 20,
+      "header_directory_crc_valid": true,
+      "compatibility": "unverified",
+      "entries": [
+        {
+          "name": "flash.bin",
+          "type": 0,
+          "index": 0,
+          "offset": 1024,
+          "bytes": 638976,
+          "sha256": "f36327e48e012845d69f661441a70beefc1eafad4acd02321de99345392e169a",
+          "stored_crc16": 8577,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "info.log",
+          "type": 2,
+          "index": 1,
+          "offset": 640000,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stored_crc16": 0,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "USR",
+          "type": 50,
+          "index": 2,
+          "offset": 640000,
+          "bytes": 37382,
+          "sha256": "ef8b49ff5d47edfb846eea318aa092d3f0e90fd0b9314cbccb50dba47e986142",
+          "stored_crc16": 4031,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "isd_config.ini",
+          "type": 52,
+          "index": 3,
+          "offset": 677408,
+          "bytes": 3427,
+          "sha256": "52615f2e03e72b3d8eea125e25ec6ad81d5b5c9bc2895360586e834d42e74ce6",
+          "stored_crc16": 27163,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "ota.bin",
+          "type": 100,
+          "index": 4,
+          "offset": 680864,
+          "bytes": 19969,
+          "sha256": "ef1f2db89b011fa53e71df363f0122de0ea896618c53fb53e8da676322004541",
+          "stored_crc16": 41417,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "script.ver",
+          "type": 251,
+          "index": 5,
+          "offset": 700864,
+          "bytes": 27,
+          "sha256": "a66d70469c32d6824c5400d4588318005ea2e2fc4ada3cb638025d7acb4b4242",
+          "stored_crc16": 43703,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "blimit.bin",
+          "type": 161,
+          "index": 6,
+          "offset": 700896,
+          "bytes": 144,
+          "sha256": "5a885dee132404ee951c959b58dc32b3f0bc31603f18bfa6709734e1e11ac1c8",
+          "stored_crc16": 16338,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "tail.bin",
+          "type": 255,
+          "index": 7,
+          "offset": 701056,
+          "bytes": 64,
+          "sha256": "79d4bbc325be8b2f49492a9e8bf712e3cfe4e7c55e874dced1445ed65616843b",
+          "stored_crc16": 35126,
+          "raw_crc_matches": true
+        }
+      ],
+      "source_path": "firmware/smk37pro/SMK-37_Pro_012.fwsc"
+    },
+    {
+      "file": "SMK-37_Pro_013.fwsc",
+      "product": "SMK-37 Pro_013",
+      "chip": "AC791N",
+      "bytes": 701140,
+      "sha256": "4ebcb993fbaf834456c3f1391684aa29b26beb7f63d1960c283741be4cb16c40",
+      "logical_sha256": "5bb0054205fff813bd08c58364e3e019ab9039fefc1a47777e7c3c5f733ca044",
+      "marker_blocks": 20,
+      "header_directory_crc_valid": true,
+      "compatibility": "unverified",
+      "entries": [
+        {
+          "name": "flash.bin",
+          "type": 0,
+          "index": 0,
+          "offset": 1024,
+          "bytes": 638976,
+          "sha256": "74d7913ba8d60855d2717515d5991f2c7a71526e93039c4f5394e79a142ad626",
+          "stored_crc16": 7142,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "info.log",
+          "type": 2,
+          "index": 1,
+          "offset": 640000,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stored_crc16": 0,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "USR",
+          "type": 50,
+          "index": 2,
+          "offset": 640000,
+          "bytes": 37382,
+          "sha256": "ef8b49ff5d47edfb846eea318aa092d3f0e90fd0b9314cbccb50dba47e986142",
+          "stored_crc16": 4031,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "isd_config.ini",
+          "type": 52,
+          "index": 3,
+          "offset": 677408,
+          "bytes": 3427,
+          "sha256": "52615f2e03e72b3d8eea125e25ec6ad81d5b5c9bc2895360586e834d42e74ce6",
+          "stored_crc16": 27163,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "ota.bin",
+          "type": 100,
+          "index": 4,
+          "offset": 680864,
+          "bytes": 19969,
+          "sha256": "ef1f2db89b011fa53e71df363f0122de0ea896618c53fb53e8da676322004541",
+          "stored_crc16": 41417,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "script.ver",
+          "type": 251,
+          "index": 5,
+          "offset": 700864,
+          "bytes": 27,
+          "sha256": "a66d70469c32d6824c5400d4588318005ea2e2fc4ada3cb638025d7acb4b4242",
+          "stored_crc16": 43703,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "blimit.bin",
+          "type": 161,
+          "index": 6,
+          "offset": 700896,
+          "bytes": 144,
+          "sha256": "96b86b48623d2550df51960e732484429ce9d442ca843f203b80364b0a488705",
+          "stored_crc16": 51394,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "tail.bin",
+          "type": 255,
+          "index": 7,
+          "offset": 701056,
+          "bytes": 64,
+          "sha256": "79d4bbc325be8b2f49492a9e8bf712e3cfe4e7c55e874dced1445ed65616843b",
+          "stored_crc16": 35126,
+          "raw_crc_matches": true
+        }
+      ],
+      "source_path": "firmware/smk37pro/SMK-37_Pro_013.fwsc"
+    },
+    {
+      "file": "SMK-37_Pro_014.fwsc",
+      "product": "SMK-37 Pro_014",
+      "chip": "AC791N",
+      "bytes": 697044,
+      "sha256": "a8306f6a2bf88fdf3cfc1fad536c29d61f4599a8cff72a36d535e7d980d02f6b",
+      "logical_sha256": "93445be0d8e1759ac8a728da3a537887aad1100910b25d3e9d1be35f5faaf32d",
+      "marker_blocks": 20,
+      "header_directory_crc_valid": true,
+      "compatibility": "unverified",
+      "entries": [
+        {
+          "name": "flash.bin",
+          "type": 0,
+          "index": 0,
+          "offset": 1024,
+          "bytes": 634880,
+          "sha256": "55e5b14a4c902afaf1ca9bb7a8129c5fd1d918a6cc427696dba4f03d80d02888",
+          "stored_crc16": 45011,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "info.log",
+          "type": 2,
+          "index": 1,
+          "offset": 635904,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stored_crc16": 0,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "USR",
+          "type": 50,
+          "index": 2,
+          "offset": 635904,
+          "bytes": 37382,
+          "sha256": "7132c8602a89ef79ea54137ed12debe4d1af95a5cccf824e138f92a823730e28",
+          "stored_crc16": 4031,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "isd_config.ini",
+          "type": 52,
+          "index": 3,
+          "offset": 673312,
+          "bytes": 3427,
+          "sha256": "a70e027b0887b970aee7dbecd72e157dfc19a94382aca1ee736f036b84dd9f44",
+          "stored_crc16": 27163,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "ota.bin",
+          "type": 100,
+          "index": 4,
+          "offset": 676768,
+          "bytes": 19969,
+          "sha256": "ef1f2db89b011fa53e71df363f0122de0ea896618c53fb53e8da676322004541",
+          "stored_crc16": 41417,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "script.ver",
+          "type": 251,
+          "index": 5,
+          "offset": 696768,
+          "bytes": 27,
+          "sha256": "9829454d59b4aabc3822ac34ab7b0b6b90103de6e66e62154fa680fe5e284870",
+          "stored_crc16": 43703,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "blimit.bin",
+          "type": 161,
+          "index": 6,
+          "offset": 696800,
+          "bytes": 144,
+          "sha256": "abade638fca49b2dc61ed9bca1c232dcf347419f5380688031ef0556ba97bc72",
+          "stored_crc16": 51133,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "tail.bin",
+          "type": 255,
+          "index": 7,
+          "offset": 696960,
+          "bytes": 64,
+          "sha256": "79d4bbc325be8b2f49492a9e8bf712e3cfe4e7c55e874dced1445ed65616843b",
+          "stored_crc16": 35126,
+          "raw_crc_matches": true
+        }
+      ],
+      "source_path": "firmware/smk37pro/SMK-37_Pro_014.fwsc"
+    },
+    {
+      "file": "SMK-37_Pro_015.fwsc",
+      "product": "SMK-37 Pro_015",
+      "chip": "AC791N",
+      "bytes": 701140,
+      "sha256": "f7f1831cd7c9ad8b4831b6e71ea0bdbcdff9ae4c4077276b3c965511bf4d4fff",
+      "logical_sha256": "141f8b1780b18c0cddc4bdcfbe13690029804a5b0021f92869ec756c2f2d3ad9",
+      "marker_blocks": 20,
+      "header_directory_crc_valid": true,
+      "compatibility": "unverified",
+      "entries": [
+        {
+          "name": "flash.bin",
+          "type": 0,
+          "index": 0,
+          "offset": 1024,
+          "bytes": 638976,
+          "sha256": "f77e9ab3cee79113be78f3efacffb03c6cb9b87b78263010e16e81c472df0f9a",
+          "stored_crc16": 21736,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "info.log",
+          "type": 2,
+          "index": 1,
+          "offset": 640000,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stored_crc16": 0,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "USR",
+          "type": 50,
+          "index": 2,
+          "offset": 640000,
+          "bytes": 37382,
+          "sha256": "ef8b49ff5d47edfb846eea318aa092d3f0e90fd0b9314cbccb50dba47e986142",
+          "stored_crc16": 4031,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "isd_config.ini",
+          "type": 52,
+          "index": 3,
+          "offset": 677408,
+          "bytes": 3427,
+          "sha256": "52615f2e03e72b3d8eea125e25ec6ad81d5b5c9bc2895360586e834d42e74ce6",
+          "stored_crc16": 27163,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "ota.bin",
+          "type": 100,
+          "index": 4,
+          "offset": 680864,
+          "bytes": 19969,
+          "sha256": "ef1f2db89b011fa53e71df363f0122de0ea896618c53fb53e8da676322004541",
+          "stored_crc16": 41417,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "script.ver",
+          "type": 251,
+          "index": 5,
+          "offset": 700864,
+          "bytes": 27,
+          "sha256": "a66d70469c32d6824c5400d4588318005ea2e2fc4ada3cb638025d7acb4b4242",
+          "stored_crc16": 43703,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "blimit.bin",
+          "type": 161,
+          "index": 6,
+          "offset": 700896,
+          "bytes": 144,
+          "sha256": "63b5609144952ce4d9d4ad648a735f18cf409a5a8aa00a6b0e22aab94a85a511",
+          "stored_crc16": 30306,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "tail.bin",
+          "type": 255,
+          "index": 7,
+          "offset": 701056,
+          "bytes": 64,
+          "sha256": "79d4bbc325be8b2f49492a9e8bf712e3cfe4e7c55e874dced1445ed65616843b",
+          "stored_crc16": 35126,
+          "raw_crc_matches": true
+        }
+      ],
+      "source_path": "firmware/smk37pro/SMK-37_Pro_015.fwsc"
+    },
+    {
+      "file": "SMK-37_Pro_016.fwsc",
+      "product": "SMK-37 Pro_016",
+      "chip": "AC791N",
+      "bytes": 705252,
+      "sha256": "2d98ce72530e71d617384963423820536f094501299e2cfec0a8d3c3fb6bcfb0",
+      "logical_sha256": "edc9c5c02b59119a66d780cb8c832c174df4dd891684f86c8c6da4c575a6c090",
+      "marker_blocks": 36,
+      "header_directory_crc_valid": true,
+      "compatibility": "unverified",
+      "entries": [
+        {
+          "name": "flash.bin",
+          "type": 0,
+          "index": 0,
+          "offset": 1024,
+          "bytes": 643072,
+          "sha256": "5fa98871641617e08495086b57b4cf3257d31c60906dfb109d0453df59bb1540",
+          "stored_crc16": 4007,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "info.log",
+          "type": 2,
+          "index": 1,
+          "offset": 644096,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stored_crc16": 0,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "USR",
+          "type": 50,
+          "index": 2,
+          "offset": 644096,
+          "bytes": 37382,
+          "sha256": "f20d90d83e4f7fcc1894f8bb2628fe60d7525d7fec8fafec875c0896edb8affa",
+          "stored_crc16": 10096,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "isd_config.ini",
+          "type": 52,
+          "index": 3,
+          "offset": 681504,
+          "bytes": 3427,
+          "sha256": "282af73d9ef73606122665650a19203ac25003b916460f57337abcda12071700",
+          "stored_crc16": 27163,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "ota.bin",
+          "type": 100,
+          "index": 4,
+          "offset": 684960,
+          "bytes": 19969,
+          "sha256": "ef1f2db89b011fa53e71df363f0122de0ea896618c53fb53e8da676322004541",
+          "stored_crc16": 41417,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "script.ver",
+          "type": 251,
+          "index": 5,
+          "offset": 704960,
+          "bytes": 27,
+          "sha256": "e1c8bfdc8916f17205c1d4a26b873580af723c3c62f74a6a55b99d6baf695e74",
+          "stored_crc16": 43703,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "blimit.bin",
+          "type": 161,
+          "index": 6,
+          "offset": 704992,
+          "bytes": 144,
+          "sha256": "d67446942f7d25c44f698e766ee6a7d1f5073f40a8229d343673abd8788405d6",
+          "stored_crc16": 55130,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "tail.bin",
+          "type": 255,
+          "index": 7,
+          "offset": 705152,
+          "bytes": 64,
+          "sha256": "79d4bbc325be8b2f49492a9e8bf712e3cfe4e7c55e874dced1445ed65616843b",
+          "stored_crc16": 35126,
+          "raw_crc_matches": true
+        }
+      ],
+      "source_path": "firmware/smk37pro/SMK-37_Pro_016.fwsc"
+    },
+    {
+      "file": "STARRYKEY-37_PLAY_015.fwsc",
+      "product": "STARRYKEY-37 PLAY_01",
+      "chip": "AC791N",
+      "bytes": 701140,
+      "sha256": "3ef5d835e88324a925593e1e6959106e16abeabbabf824263803bb236b09224b",
+      "logical_sha256": "e7ff2a776bc707d64f406acdd6ec5975b6037a5bc68d00848ce342031780100d",
+      "marker_blocks": 20,
+      "header_directory_crc_valid": true,
+      "compatibility": "unverified",
+      "entries": [
+        {
+          "name": "flash.bin",
+          "type": 0,
+          "index": 0,
+          "offset": 1024,
+          "bytes": 638976,
+          "sha256": "75baa17c068638d178f9af534f8f8ad7f8e950788bf4082ce8b32df275ed5157",
+          "stored_crc16": 10342,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "info.log",
+          "type": 2,
+          "index": 1,
+          "offset": 640000,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stored_crc16": 0,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "USR",
+          "type": 50,
+          "index": 2,
+          "offset": 640000,
+          "bytes": 37382,
+          "sha256": "ef8b49ff5d47edfb846eea318aa092d3f0e90fd0b9314cbccb50dba47e986142",
+          "stored_crc16": 4031,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "isd_config.ini",
+          "type": 52,
+          "index": 3,
+          "offset": 677408,
+          "bytes": 3427,
+          "sha256": "52615f2e03e72b3d8eea125e25ec6ad81d5b5c9bc2895360586e834d42e74ce6",
+          "stored_crc16": 27163,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "ota.bin",
+          "type": 100,
+          "index": 4,
+          "offset": 680864,
+          "bytes": 19969,
+          "sha256": "ef1f2db89b011fa53e71df363f0122de0ea896618c53fb53e8da676322004541",
+          "stored_crc16": 41417,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "script.ver",
+          "type": 251,
+          "index": 5,
+          "offset": 700864,
+          "bytes": 27,
+          "sha256": "a66d70469c32d6824c5400d4588318005ea2e2fc4ada3cb638025d7acb4b4242",
+          "stored_crc16": 43703,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "blimit.bin",
+          "type": 161,
+          "index": 6,
+          "offset": 700896,
+          "bytes": 144,
+          "sha256": "a3fc5556ca818b7d9cba97f301dd7b8368c340e3ecae59a12e5990cae46034dc",
+          "stored_crc16": 44715,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "tail.bin",
+          "type": 255,
+          "index": 7,
+          "offset": 701056,
+          "bytes": 64,
+          "sha256": "79d4bbc325be8b2f49492a9e8bf712e3cfe4e7c55e874dced1445ed65616843b",
+          "stored_crc16": 35126,
+          "raw_crc_matches": true
+        }
+      ],
+      "source_path": "firmware/starrykey37play/STARRYKEY-37_PLAY_015.fwsc"
+    },
+    {
+      "file": "STARRYKEY-37_PLAY_016.fwsc",
+      "product": "STARRYKEY-37 PLAY_016",
+      "chip": "AC791N",
+      "bytes": 705252,
+      "sha256": "3cd57cdd90ee60501c549b9dde53503ef468122e2f34dc110876eefdaf9be3b3",
+      "logical_sha256": "5f7fa8d2792e71351c3063583128b53fcca83b79c2d663ecd66281741cd7f38f",
+      "marker_blocks": 36,
+      "header_directory_crc_valid": true,
+      "compatibility": "unverified",
+      "entries": [
+        {
+          "name": "flash.bin",
+          "type": 0,
+          "index": 0,
+          "offset": 1024,
+          "bytes": 643072,
+          "sha256": "30f43ac77707efdac9a03958735061996f5b3a3455a5c820fd532508f076e8ba",
+          "stored_crc16": 52495,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "info.log",
+          "type": 2,
+          "index": 1,
+          "offset": 644096,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stored_crc16": 0,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "USR",
+          "type": 50,
+          "index": 2,
+          "offset": 644096,
+          "bytes": 37382,
+          "sha256": "f20d90d83e4f7fcc1894f8bb2628fe60d7525d7fec8fafec875c0896edb8affa",
+          "stored_crc16": 10096,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "isd_config.ini",
+          "type": 52,
+          "index": 3,
+          "offset": 681504,
+          "bytes": 3427,
+          "sha256": "282af73d9ef73606122665650a19203ac25003b916460f57337abcda12071700",
+          "stored_crc16": 27163,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "ota.bin",
+          "type": 100,
+          "index": 4,
+          "offset": 684960,
+          "bytes": 19969,
+          "sha256": "ef1f2db89b011fa53e71df363f0122de0ea896618c53fb53e8da676322004541",
+          "stored_crc16": 41417,
+          "raw_crc_matches": true
+        },
+        {
+          "name": "script.ver",
+          "type": 251,
+          "index": 5,
+          "offset": 704960,
+          "bytes": 27,
+          "sha256": "e1c8bfdc8916f17205c1d4a26b873580af723c3c62f74a6a55b99d6baf695e74",
+          "stored_crc16": 43703,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "blimit.bin",
+          "type": 161,
+          "index": 6,
+          "offset": 704992,
+          "bytes": 144,
+          "sha256": "71c20b2bd219e9a3d1c64f251b01429898b6bbc9e5cd5a3b1e00482baf302808",
+          "stored_crc16": 51435,
+          "raw_crc_matches": false
+        },
+        {
+          "name": "tail.bin",
+          "type": 255,
+          "index": 7,
+          "offset": 705152,
+          "bytes": 64,
+          "sha256": "79d4bbc325be8b2f49492a9e8bf712e3cfe4e7c55e874dced1445ed65616843b",
+          "stored_crc16": 35126,
+          "raw_crc_matches": true
+        }
+      ],
+      "source_path": "firmware/starrykey37play/STARRYKEY-37_PLAY_016.fwsc"
+    }
+  ]
+}

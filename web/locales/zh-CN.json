@@ -343,6 +343,8 @@
   "site.oct": "Oct−",
   "site.octx": "Oct+",
   "ui.modeTipConnect": "连接 FM-1",
-  "ui.modeTipOr": "或",
-  "ui.modeTipPlay": "演奏浏览器内置的 {engine}。"
+  "ui.modeTipOr": "或选择",
+  "ui.modeTipPlay": "演奏浏览器内置的 {engine}。",
+  "ui.themeThumbnail": "Studio 的 {theme} 主题",
+  "ui.clickToPlay": "点击演奏"
 }

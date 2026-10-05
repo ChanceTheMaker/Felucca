@@ -112,7 +112,7 @@ Website features can be merged and published independently while retaining the
 known published firmware package. Candidate firmware has a separate version,
 matching source archive, SHA-256 checksums, credits and license files. Hardware
 validation comes before promoting it to the default installer. The current
-round keeps Salt14 published while `1.0-salt1rc1` is validated. Experimental
+round keeps Salt14 published while `1.0.1-salt1rc1` is validated. Experimental
 Bluetooth code is excluded from both the candidate and the published build.
 
 ## Practical commands

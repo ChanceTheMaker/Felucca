@@ -3,6 +3,14 @@
 Last reviewed: **2026-10-05**. Update this record when importing or offering a
 feature; follow [UPSTREAM_WORKFLOW.md](UPSTREAM_WORKFLOW.md).
 
+Separate fork review: [Sloop comparison and switching](SLOOP_REVIEW.md), pinned
+at Sloop 2.2 `f2b44c219b8a4ac00bc06dca756cdae8a259dd1a`. Source inspection found
+substantial groovebox changes, overlapping autosave/FM6 storage and conflicting
+command 33 meanings. `docs/sloop-review` documents options and queues a staged
+installer/backup approach; no Sloop code is imported, built, flashed or published.
+Hardware round trips and Sloop backup support remain unresolved. No upstream
+contribution is submitted or authorized.
+
 Installer follow-up on `feat/rc1-installer-retry`: failed discovery, denied MIDI
 permission, interrupted updates and stopped resumes show Try Again below the
 output. Retrying requests MIDI access and rediscovers the device, hides stale

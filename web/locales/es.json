@@ -397,5 +397,6 @@
   "nav.features": "Funciones",
   "nav.backToTop": "Volver arriba",
   "installer.progress": "Progreso de la instalación",
-  "installer.editStudio": "Editar en Studio"
+  "installer.editStudio": "Editar en Studio",
+  "installer.retry": "Volver a intentar"
 }

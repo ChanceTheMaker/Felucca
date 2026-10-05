@@ -397,5 +397,6 @@
   "nav.features": "功能",
   "nav.backToTop": "返回顶部",
   "installer.progress": "安装进度",
-  "installer.editStudio": "在 Studio 中编辑"
+  "installer.editStudio": "在 Studio 中编辑",
+  "installer.retry": "重试"
 }

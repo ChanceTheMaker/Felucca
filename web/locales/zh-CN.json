@@ -427,7 +427,7 @@
   "installer.stockUnsupported": "此 Felucca 版本不支持完整备份。请先安装当前版本。",
   "installer.backup": "正在保存完整备份 ",
   "installer.stockError": "无法验证官方固件：",
-  "guide.title": "认识你的 FM-1",
+  "guide.title": "认识你的定制 FM-1 全新控件...",
   "guide.intro": "选择一组控件，查看其位置和功能。",
   "guide.illustration": "FM-1 控制面板示意图",
   "guide.groups": "控件分组",
@@ -473,5 +473,6 @@
   "nav.manual": "手册",
   "nav.studio": "Studio",
   "nav.themes": "主题",
-  "nav.features": "功能"
+  "nav.features": "功能",
+  "nav.backToTop": "返回顶部"
 }

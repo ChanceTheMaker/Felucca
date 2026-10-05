@@ -427,7 +427,7 @@
   "installer.stockUnsupported": "Diese Felucca-Version unterstützt keine vollständigen Backups. Zuerst die aktuelle Version installieren.",
   "installer.backup": "Vollständiges Backup wird gespeichert ",
   "installer.stockError": "Offizielle Firmware kann nicht geprüft werden: ",
-  "guide.title": "Dein FM-1 im Überblick",
+  "guide.title": "Entdecke die neuen Bedienelemente deines angepassten FM-1...",
   "guide.intro": "Wähle eine Gruppe, um die Bedienelemente und ihre Funktionen kennenzulernen.",
   "guide.illustration": "Illustration des FM-1-Bedienfelds",
   "guide.groups": "Bediengruppen",
@@ -473,5 +473,6 @@
   "nav.manual": "Handbuch",
   "nav.studio": "Studio",
   "nav.themes": "Designs",
-  "nav.features": "Funktionen"
+  "nav.features": "Funktionen",
+  "nav.backToTop": "Nach oben"
 }

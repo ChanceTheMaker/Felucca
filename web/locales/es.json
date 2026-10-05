@@ -427,7 +427,7 @@
   "installer.stockUnsupported": "Esta versión de Felucca no admite copias completas. Instala primero la versión actual.",
   "installer.backup": "Guardando copia completa ",
   "installer.stockError": "No se puede validar el firmware oficial: ",
-  "guide.title": "Conoce tu FM-1",
+  "guide.title": "Conoce los nuevos controles de tu FM-1 personalizado...",
   "guide.intro": "Elige un grupo para resaltar los controles y descubrir sus funciones.",
   "guide.illustration": "Ilustración del panel de control del FM-1",
   "guide.groups": "Grupos de controles",
@@ -473,5 +473,6 @@
   "nav.manual": "Manual",
   "nav.studio": "Studio",
   "nav.themes": "Temas",
-  "nav.features": "Funciones"
+  "nav.features": "Funciones",
+  "nav.backToTop": "Volver arriba"
 }

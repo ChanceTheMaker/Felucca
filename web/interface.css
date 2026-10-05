@@ -1,5 +1,9 @@
 /* SPDX-License-Identifier: GPL-3.0-only
    Interface finish: layout and typography, independent of the skin palette. */
+html:has(.installer-page) { scroll-behavior:smooth; }
+@media (prefers-reduced-motion:reduce) {
+  html:has(.installer-page) { scroll-behavior:auto; }
+}
 .analytics-choice { margin:auto; width:min(520px,calc(100vw - 32px)); max-height:calc(100dvh - 32px); box-sizing:border-box; overflow:auto; padding:24px; border:1px solid var(--accent); border-radius:16px; font:14px/1.6 var(--ui-font); color:var(--fg); background:var(--panel); box-shadow:0 24px 80px #0009; }
 .analytics-choice::backdrop { background:#0009; backdrop-filter:blur(4px); }
 .analytics-banner { position:fixed; z-index:10000; inset:auto 16px 16px; max-width:960px; margin-inline:auto; box-sizing:border-box; padding:20px; border:1px solid var(--accent); border-radius:16px; color:var(--fg); background:var(--panel); font:14px/1.6 var(--ui-font); box-shadow:0 8px 40px #0006; max-height:calc(100dvh - 32px); overflow:auto; }

@@ -17,6 +17,8 @@ and visible keyboard focus. This is a separate feature PR in the same UI round.
 The hero Studio preview is 320px wide and stays outside the entire action row,
 including wrapped buttons. Its image contracts to fit short windows. The
 full-width Studio button keeps its original preview size.
+Installer section links and Install Progress now animate their scrolling, like
+Back to Top. Reduced-motion preferences retain immediate navigation.
 
 ## Baseline and release state
 

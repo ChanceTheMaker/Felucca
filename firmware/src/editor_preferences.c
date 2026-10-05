@@ -1,12 +1,11 @@
-/* SPDX-License-Identifier: GPL-3.0-only */
-/* Optional device preferences, advertised in INFO. No preset format changes. */
+/* SPDX-License-Identifier: GPL-3.0-only
+ * Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments */
+/* Optional device preferences, advertised in INFO. No preset format changes. The font weight
+ * (ED_UI_FONT) is gone: one weight; UI_SET of it answers rc 2 (not supported), UI_STATE 127. */
 enum { ED_UI_PALETTE = 1, ED_UI_FONT = 2, ED_UI_MONITOR = 4, ED_UI_FAVORITES = 8 };
 static uint32_t ed_ui_caps(void)
 {
     uint32_t caps = ED_UI_PALETTE;
-#ifdef FELUCCA_FONT_PREF
-    caps |= ED_UI_FONT;
-#endif
 #ifdef FELUCCA_MONITOR
     caps |= ED_UI_MONITOR;
 #endif
@@ -24,11 +23,7 @@ static void ed_ui_state(void)
     uint32_t sig = 0;
     ed_b(ed_ui_caps());
     ed_b(settings.palette);
-#ifdef FELUCCA_FONT_PREF
-    ed_b(settings.bold);
-#else
-    ed_b(127);
-#endif
+    ed_b(127);                                         /* font: not supported */
 #ifdef FELUCCA_MONITOR
     ed_b(settings.monitor);
 #else
@@ -46,16 +41,16 @@ static void ed_ui_state(void)
     ed_u28(up_gen);
 }
 /* Writes use the same flash path as the panel. rc 3 means applied in RAM,
- * but not saved (absent flash or a failed write); repeated unchanged writes
+ * but not saved (absent flash or a failed write); rc 4 means queued until STOP.
+ * Repeated unchanged writes
  * do not wear flash. */
 static uint32_t ed_ui_save(void)
 {
     settings_save();
 #if FELUCCA_FLASH
-    if (!flash_ok || persist_saved.palette != settings.palette) return 3;
-#ifdef FELUCCA_FONT_PREF
-    if (persist_saved.bold != settings.bold) return 3;
-#endif
+    if (!flash_ok || persist_pending == 2u) return 3;
+    if (persist_pending == 1u) return 4;
+    if (palette_from_stored(persist_saved.palette) != settings.palette) return 3;
 #ifdef FELUCCA_MONITOR
     if (persist_saved.monitor != settings.monitor) return 3;
 #endif
@@ -75,10 +70,6 @@ static uint32_t ed_ui_set(const uint8_t *a, uint32_t n)
     switch (a[0]) {
     case 0:
         settings.palette = a[1]; palette_set(a[1]); break;
-#ifdef FELUCCA_FONT_PREF
-    case 1:
-        settings.bold = a[1]; font_bold = a[1]; break;
-#endif
 #ifdef FELUCCA_MONITOR
     case 2:
         fm1_irq_off();
@@ -100,10 +91,12 @@ static int ed_ui_handle(uint32_t cmd, const uint8_t *a, uint32_t n)
     case ED_UI_STATE:
         ed_ui_state(); return 1;
     case ED_UI_SET:
-        ed_b(ed_ui_set(a, n)); ed_ui_state(); return 1;
+        ed_b(ed_ui_set(a, n));
+        ed_b(n ? a[0] : 127u); ed_b(n > 1u ? a[1] : 127u);
+        ed_ui_state(); return 1;
     case ED_UI_PALETTES:
         ed_b(NPALETTES);
-        for (uint32_t i = 0; i < NPALETTES; i++) ed_str(PALETTES[i].name, 12);
+        for (uint32_t i = 0; i < NPALETTES; i++) ed_str(UI_PALETTES[i].name, 12);
         return 1;
     case ED_FAV_GET:
 #ifdef FELUCCA_FAVORITES

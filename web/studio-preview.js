@@ -32,12 +32,27 @@
   let anchor = null, timer, previousDescription = null;
   function position() {
     if (!anchor) return;
-    const rect = anchor.getBoundingClientRect(), box = bubble.getBoundingClientRect();
+    const rect = anchor.getBoundingClientRect();
+    const hero = anchor.closest('.hero-actions');
+    picture.style.maxHeight = '';
+    let box = bubble.getBoundingClientRect();
+    // Keep the hero preview outside the entire button row, including wrapped buttons.
+    const bounds = hero ? hero.getBoundingClientRect() : rect;
+    const spaceBelow = innerHeight - bounds.bottom - 18;
+    const spaceAbove = bounds.top - 18;
+    const below = hero
+      ? spaceBelow >= box.height || (spaceAbove < box.height && spaceBelow >= spaceAbove)
+      : rect.bottom + box.height + 12 <= innerHeight || rect.top < box.height + 12;
+    if (hero) {
+      const space = Math.max(0, below ? spaceBelow : spaceAbove);
+      const chrome = box.height - picture.getBoundingClientRect().height;
+      picture.style.maxHeight = Math.max(0, space - chrome) + 'px';
+      box = bubble.getBoundingClientRect();
+    }
     const left = Math.max(12, Math.min(rect.left + rect.width / 2 - box.width / 2, innerWidth - box.width - 12));
-    const below = rect.bottom + box.height + 12 <= innerHeight || rect.top < box.height + 12;
-    const top = below ? rect.bottom + 10 : rect.top - box.height - 10;
+    const top = below ? bounds.bottom + 10 : bounds.top - box.height - 10;
     bubble.style.left = left + 'px';
-    bubble.style.top = Math.max(8, Math.min(top, innerHeight - box.height - 8)) + 'px';
+    bubble.style.top = (hero ? top : Math.max(8, Math.min(top, innerHeight - box.height - 8))) + 'px';
     bubble.dataset.side = below ? 'below' : 'above';
     bubble.style.setProperty('--preview-arrow', Math.max(20, Math.min(rect.left + rect.width / 2 - left, box.width - 20)) + 'px');
   }
@@ -70,6 +85,7 @@
       previousDescription = link.getAttribute('aria-describedby');
       link.setAttribute('aria-describedby', [previousDescription, caption.id].filter(Boolean).join(' '));
     }
+    bubble.classList.toggle('studio-preview-hero', !!link.closest('.hero-actions'));
     bubble.hidden = false; refresh();
   }
   const later = () => { clearTimeout(timer); timer = setTimeout(hide, 160); };

@@ -61,6 +61,7 @@ def main(pkg, version, out):
     (inst / "index.html").write_text(html, encoding="utf-8")
     shutil.copy(pkg, fw / name)
     shutil.copy(HERE / "editor.html", ed / "index.html")
+    shutil.copy(HERE / "fm1backup.js", ed / "fm1backup.js")
     shutil.copytree(HERE / "audio", ed / "audio", dirs_exist_ok=True)
     shutil.copytree(HERE / "screenshots", inst / "screenshots", dirs_exist_ok=True)
     shutil.copy(HERE / "studio-preview.js", inst / "studio-preview.js")

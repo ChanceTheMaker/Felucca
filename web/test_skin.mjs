@@ -17,6 +17,9 @@ const openMenu = async () => { if (!(await page.locator('.settings-menu').getAtt
 const preference = async (label,value) => { await openMenu(); await page.getByLabel(label,{exact:true}).selectOption(value); };
 try {
   await page.goto(editor);
+  const consent = page.locator('.analytics-banner [data-choice=denied]');
+  if (await consent.isVisible()) await consent.click();
+  await page.keyboard.press('Escape');
   await page.getByRole('button', { name: 'Connect', exact: true }).click();
   await page.waitForFunction(() => document.querySelector('#status').textContent === 'Connected');
   assert.equal(await page.locator('#play-octave').inputValue(), '3', 'Launch starts on F3');
@@ -70,12 +73,18 @@ try {
   for (const skin of ['stage', 'matrix', 'dx', 'modeld', 'chocolate', 'vapor', 'midnight', 'space', 'bauhaus', 'ocean', 'arcade', 'hicon']) {
     await preference('Website theme', skin);
     assert.equal(await page.locator('html').getAttribute('data-skin'), skin);
+    await page.waitForFunction(() => {
+      const root = document.documentElement;
+      if (root.dataset.skin === 'hicon') return true;
+      const expected = getComputedStyle(root).getPropertyValue('--wordmark').trim().replace(/["']/g, '');
+      return expected && getComputedStyle(document.querySelector('.brand-row h1')).fontFamily.includes(expected);
+    });
     await page.evaluate(async () => {
       const title = document.querySelector('.brand-row h1'), style = getComputedStyle(title);
       await document.fonts.load(`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`, title.textContent);
       if (document.documentElement.dataset.skin !== 'hicon') {
         const family = style.fontFamily.split(',')[0].replace(/["']/g, '').trim();
-        if (![...document.fonts].some(f => f.family.replace(/["']/g, '') === family && f.status === 'loaded')) throw new Error(`Display font not loaded: ${family}`);
+        if (![...document.fonts].some(f => f.family.replace(/["']/g, '') === family && f.status === 'loaded')) throw new Error(`Display font not loaded for ${document.documentElement.dataset.skin}: ${family}`);
       }
     });
     assert.equal(await atk.inputValue(), edited, 'Appearance preserves patch');
@@ -126,7 +135,7 @@ try {
     } else assert.equal(extraCount, 0, 'Phone retains the 27 hardware keys');
     const dock = await page.locator('.play-keyboard').boundingBox();
     assert(Math.abs(dock.y + dock.height - 950) <= 1, 'Keyboard anchored to viewport bottom');
-    for (const name of ['Sound', 'Sequencer', 'Tracks', 'Library', 'Samples', 'Projects', 'Settings']) {
+    for (const name of ['Sound', '6-OP FM', 'Sequencer', 'Tracks', 'Library', 'Samples', 'Projects', 'Settings']) {
       await page.getByRole('tab', { name, exact: true }).click();
       await noOverflow();
       if (name === 'Tracks') assert.equal(await page.locator('.strip input.fader').count(), 4, 'Mixer retains faders');
@@ -169,4 +178,10 @@ try {
   assert.equal(await page.locator('html').getAttribute('data-contrast'), 'normal');
   assert.deepEqual(errors, [], 'No browser script errors');
   console.log('Website skins: twelve themes, light/dark modes, persistence, shared installer preferences, knob drag/keyboard/reset, sliders, all tabs at desktop/mobile widths passed.');
+} catch(error) {
+  await page.screenshot({path:'build/screenshots/skin-failure.png'});
+  console.error(await page.evaluate(() => ({skin:document.documentElement.dataset.skin,
+    titleFont:getComputedStyle(document.querySelector('.brand-row h1')).fontFamily,
+    wordmark:getComputedStyle(document.documentElement).getPropertyValue('--wordmark')})));
+  throw error;
 } finally { await browser.close(); }

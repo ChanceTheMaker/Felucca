@@ -1,20 +1,56 @@
-# Felucca
+# Felucca [Salt]
+
+Felucca [Salt] by Chance Roth (@ChanceTheMaker), based on Felucca by Leo Kuroshita
+and Hügelton Instruments. This branch is the **1.0-salt1rc1 release candidate**,
+based on upstream v1.0 (`727f272`). **Hardware validation is pending.**
+The [published installer](https://chancethemaker.github.io/Felucca/webapp/installer/)
+continues to provide **0.9-salt14** until that validation is complete.
+
+Salt adds the content-driven TRS MIDI receive-ring fix, 21 screen palettes,
+regular/bold text, an Events/Notes MIDI monitor, and the themed browser Studio.
+Experimental Bluetooth changes are excluded.
+
+Development follows the [upstream workflow](docs/UPSTREAM_WORKFLOW.md): receive
+updates in focused PRs, keep Salt differences explicit, and prepare selected
+contributions on clean upstream branches. See [upstream status](docs/UPSTREAM_STATUS.md)
+for the reviewed revision, retained features, and contribution ledger.
+
+## Studio and website
+
+Select **Browser** to play the Felucca Synth built into the browser, or **FM-1**
+to edit a connected instrument. The candidate's browser engine includes all
+13 selectable 1.0 engines and 69 factory presets, plus imported FM6 sounds.
+It plays one sound; device sequencing, track mixing, projects and sample uploads
+are not connected to browser playback. See [browser engine details](web/audio/README.md).
+
+The website retains twelve themes, light/dark modes, the live oscilloscope,
+customizable controls, a docked keyboard, and eight interface languages. Its
+installer includes the animated product illustration, interactive FM-1 controls
+guide, compact navigation, theme gallery, and an installer-only back-to-top button.
+The guide describes the 1.0 controls listed below.
+
+The editor follows upstream's protocol: **SONG is command 33; preferences and
+favorites are commands 34–38**. Capability detection supports upstream 1.0 and
+Salt's display extensions. The unshipped experimental Salt command-33 layout
+is intentionally not supported.
+
+Candidate validation and the remaining device checks are recorded in
+[the integration report](docs/SALT-1.0-CANDIDATE.md).
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
 [![Sponsor](https://img.shields.io/badge/Sponsor-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/hugelton)
 
 ![Felucca 1.0](docs/felucca-1.0.png)
 
-**TL;DR:** Felucca 1.0 — Big New Features, field testing. Connect your FM-1 to a computer by USB,
-open the [web installer](https://hugelton.github.io/Felucca/) in Chrome or Edge, and press Install;
-no extra hardware is needed. Installing is at your own risk: M-VAVE's updater or the installer's
-**Return to official V15** takes you back.
+Multi-engine synthesizer firmware for the M-VAVE FM-1. Use Chrome or Edge with a
+USB data cable for installation. The candidate installer adds backup-first
+**Return to official V15**, using an official package you supply; vendor firmware
+is not distributed here. Please report Salt issues in
+[the fork's issue tracker](https://github.com/ChanceTheMaker/Felucca/issues).
 
-Multi-engine synthesizer firmware for the M-VAVE FM-1. Please report what you find in
-[Issues](https://github.com/hugelton/Felucca/issues).
-
-- Install: [web installer](https://hugelton.github.io/Felucca/) (Chrome or Edge, USB), or `tools/fm1_install.py` from a terminal
-- Editor: [web editor](https://hugelton.github.io/Felucca/webapp/editor/)
+- Published Salt14 installer: [web installer](https://chancethemaker.github.io/Felucca/webapp/installer/)
+- Published Studio: [web editor](https://chancethemaker.github.io/Felucca/webapp/editor/)
+- Candidate installer: build this branch's site with `web/make_site.py`; see the integration report
 - Build: [BUILDING.md](BUILDING.md)
 
 ## Features
@@ -40,7 +76,8 @@ Multi-engine synthesizer firmware for the M-VAVE FM-1. Please report what you fi
   (SAVE held); REC on every page; OCT+ confirms, OCT- goes back
 - **Presets:** factory presets, 32 user preset slots and 4 projects, named on the device;
   projects from every earlier version load
-- **Screen:** flat UI with Inter Tight and Fukiai icons, 8 palettes including grayscale and high contrast
+- **Screen:** flat UI with Inter Tight and Fukiai icons, 21 palettes including grayscale and high contrast,
+  regular/bold text, and the Salt MIDI monitor
 - **USB:** class-compliant MIDI in and out, and a 44.1 kHz stereo audio input ("Felucca") that
   records the master output on the computer, no driver needed
 - **MIDI:** USB and TRS MIDI in; channels 1–4 play tracks 1–4 (other channels the selected track),
@@ -142,6 +179,8 @@ Pull requests are welcome, and so are ideas and requests: post them in
 - Contributions: [keremimo](https://github.com/keremimo) (white-key scales, #2), [ChanceTheMaker](https://github.com/ChanceTheMaker)
   (TRS MIDI, bend, sustain and clock, palettes, favourites, editor display settings: #8, #10, #11, #12),
   [andreahaku](https://github.com/andreahaku) (sample recording and trim, #29; SLICE manual slices and tests, #27, #22)
+- Salt fork and browser Studio: Chance Roth ([@ChanceTheMaker](https://github.com/ChanceTheMaker));
+  content-driven TRS receive-buffer fix: [keremimo](https://github.com/keremimo)
 
 ## Licence
 

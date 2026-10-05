@@ -27,6 +27,19 @@ run() { echo "== $1"; shift; "$@" || fail=1; }
 
 [ -f build/felucca.fwsc ] || { echo "run ./build.sh first"; exit 1; }
 
+$CC -o "$OUT/favorites_test" tests/favorites_test.c
+run "favorites: factory/user browsing and lifecycle" "$OUT/favorites_test"
+$CC -o "$OUT/settings_test" tests/settings_test.c
+run "settings: favorites persistence and older-format migration" "$OUT/settings_test"
+$CC -Wno-missing-field-initializers -Ibuild/gen -o "$OUT/monitor_test" tests/monitor_test.c
+run "MIDI monitor: latest triggers and events" "$OUT/monitor_test" "$OUT/monitor.ppm"
+
+$CC -Wno-missing-field-initializers -Ibuild/gen -o "$OUT/theme_test" tests/theme_test.c -lm
+run "themes: text blending and menu fit" "$OUT/theme_test" "$OUT/themes.ppm"
+run "themes: bold font metrics and contrast" "$OUT/theme_test" "$OUT/themes-bold.ppm" bold
+$CC -Wno-missing-field-initializers -Ibuild/gen -o "$OUT/menu_test" tests/menu_test.c
+run "menu: font switching and save-on-exit" "$OUT/menu_test" "$OUT/fonts.ppm"
+
 $CC -o "$OUT/storage_test" tests/storage_test.c
 run "flash storage (A/B, torn writes)" "$OUT/storage_test"
 
@@ -35,6 +48,8 @@ run "user presets (UP_PUT parser, bank round trip, versions)" "$OUT/upreset_test
 
 $CC -o "$OUT/midi_uart_test" tests/midi_uart_test.c
 run "TRS MIDI parser" "$OUT/midi_uart_test"
+$CC -O2 -w -Ibuild/gen -Ifirmware/src -o "$OUT/midi_clock_test" tests/midi_clock_test.c -lm
+run "USB/TRS MIDI clock and transport" "$OUT/midi_clock_test"
 
 $CC -o "$OUT/ota_test" tests/ota_test.c
 run "M-UPGRADE entry" "$OUT/ota_test" build/felucca.fwsc
@@ -47,6 +62,8 @@ run "update loader: other app -> this build" "$OUT/ldr_test" "$OUT/old.fwsc" bui
 $CC -O2 -w -Ibuild/gen -Ifirmware/src -o "$OUT/hostsim" tests/hostsim.c -lm
 $CC -O2 -w -Ibuild/gen -Ifirmware/src -o "$OUT/scale_test" tests/scale_test.c -lm
 run "scales: white-key mapping and note lifecycle" "$OUT/scale_test"
+$CC -O2 -w -Ibuild/gen -Ifirmware/src -o "$OUT/midi_expression_test" tests/midi_expression_test.c -lm
+run "MIDI expression: pitch bend, mod wheel, panic, sustain (USB and TRS)" "$OUT/midi_expression_test"
 run "DSP render (ANALOG preset 0)" "$OUT/hostsim" 0 0 1 "$OUT/render.wav"
 mkdir -p build/tracks_demo
 run "TRACKS: 4-track pattern, live recording (lengths, swing), voice budget, engine switch, cost" env TRACKS=build/tracks_demo "$OUT/hostsim" 0 0 1 "$OUT/tracks.wav"
@@ -61,6 +78,11 @@ run "regression: golden renders, health, voices, CPU budget" "$OUT/regress" test
 
 run "regression: target cost of the render loops" python3 tests/target_budget.py \
     build/felucca.dis tests/target_budget.txt
+
+for features in 1 3 9 15; do
+    $CC -DFEATURES=$features -o "$OUT/editor_preferences_test" tests/editor_preferences_test.c
+    run "editor preferences: capability set $features" "$OUT/editor_preferences_test"
+done
 
 run "installer CLI (fm1_install.py) against a simulated FM-1" python3 tests/install_test.py
 

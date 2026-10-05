@@ -19,6 +19,7 @@ import re
 import shutil
 import sys
 from pathlib import Path
+from build_locales import build as build_locales
 
 HERE = Path(__file__).resolve().parent
 BLOCKS, BLK, KEEP = 20, 0x30, 0x2F
@@ -35,6 +36,7 @@ def product_of(raw):
 
 
 def main(pkg, version, out):
+    build_locales()
     pkg, out = Path(pkg), Path(out)
     raw = pkg.read_bytes()
     product = product_of(raw)
@@ -59,13 +61,20 @@ def main(pkg, version, out):
     (inst / "index.html").write_text(html, encoding="utf-8")
     shutil.copy(pkg, fw / name)
     shutil.copy(HERE / "editor.html", ed / "index.html")
+    shutil.copytree(HERE / "audio", ed / "audio", dirs_exist_ok=True)
+    shutil.copytree(HERE / "screenshots", inst / "screenshots", dirs_exist_ok=True)
+    shutil.copy(HERE / "studio-preview.js", inst / "studio-preview.js")
+    for target in (inst, ed):
+        for asset in ("skin.css", "interface.css", "skin.js", "fonts.css", "analytics.js", "i18n.js", "locales.js"):
+            shutil.copy(HERE / asset, target / asset)
+        shutil.copytree(HERE / "fonts", target / "fonts", dirs_exist_ok=True)
     for f in ("fukiai.ttf", "FUKIAI-LICENSE.txt"):
         if (HERE / f).exists():
             shutil.copy(HERE / f, ed / f)
     (out / "index.html").write_text(
-        '<!doctype html><meta charset="utf-8"><title>Felucca</title>'
+        '<!doctype html><meta charset="utf-8"><title>Felucca [Salt] Studio</title>'
         '<meta http-equiv="refresh" content="0; url=webapp/installer/">'
-        '<a href="webapp/installer/">Felucca installer</a>\n', encoding="utf-8")
+        '<a href="webapp/installer/">Felucca [Salt] Studio — FM-1 installer</a>\n', encoding="utf-8")
     print(f"site: {out}: webapp/installer ({len(html)} B), webapp/editor, firmware/{name} ({len(raw)} B, {product})")
 
 

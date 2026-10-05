@@ -34,6 +34,15 @@ static uint8_t kb_note[27], kb_trk[27];  /* per key: the note it started and on 
 static uint8_t last_note = 60;
 static volatile uint8_t transport_req;   /* 1 start, 2 stop (from the UI) */
 static volatile uint8_t panic_req;       /* bit per track: release every sounding note (preset / engine change) */
+/* The input ISR timestamps clock packets; this state is owned by the audio ISR.
+ * The external sample timeline is corrected at each MIDI pulse and interpolated
+ * between pulses, keeping 1/32 and triplet steps finer than the 24 PPQN grid. */
+static struct {
+    uint32_t pos, rendered, last_ms, start_ms, rem, interval_ms;
+    uint32_t pulse_samples, interp_q8;
+    uint32_t tempo_ms;
+    uint8_t mode, have_pulse, tempo_valid, tempo_n;
+} midi_clock;
 
 /* the drum track on the keys: 27 useful GM notes, lowest key first */
 static const uint8_t DRUM_KEYS[27] = {
@@ -303,19 +312,23 @@ static void rec_release(track_t *t, uint32_t note)
         t->step[t->rh_last] = t->rh_bak;            /* released early in it: not held into this step */
 }
 
+static int midi_note_held(const track_t *t, uint32_t note);
 static void input_on(track_t *t, uint32_t note, uint32_t vel)
 {
     last_note = (uint8_t)note;
     if (((song.rec >> trk_index(t)) & 1u) && song.playing)
         rec_note(t, note, vel);
-    if (t->p[P_AMODE] && !is_drum(t))
-        arp_add(t, note);
-    else
+    if (t->p[P_AMODE] && !is_drum(t)) {
+        if (!midi_note_held(t, note))             /* a local key can share a held MIDI note */
+            arp_add(t, note);
+    } else
         trk_note_on(t, note, vel);
 }
 
 static void input_off(track_t *t, uint32_t note)
 {
+    if (midi_note_held(t, note))
+        return;
     rec_release(t, note);
     arp_remove(t, note);                            /* both: the note may have started in the */
     trk_note_off(t, note);                          /* other mode (ARP switched while held) */
@@ -384,6 +397,93 @@ static void seq_stop(void)
         seq_release(&trk[i]);
         trk[i].rh_n = 0;                           /* a recorded note held over the stop: as far as it got */
     }
+}
+
+static __attribute__((noinline)) void midi_clock_transport(uint32_t status, uint32_t ms)
+{
+    if (status == 0xFAu) {                         /* Start: step zero */
+        midi_clock.pos = midi_clock.rendered = midi_clock.rem = 0;
+        midi_clock.have_pulse = midi_clock.tempo_valid = 0;
+        midi_clock.interval_ms = 0;
+        midi_clock.start_ms = ms;
+        seq_start();
+    } else if (status == 0xFBu) {                  /* Continue: preserve the step */
+        midi_clock.pos = midi_clock.rendered;
+        midi_clock.rem = 0;
+        midi_clock.have_pulse = midi_clock.tempo_valid = 0;
+        midi_clock.interval_ms = 0;
+        midi_clock.start_ms = ms;
+        song.playing = 1;
+    } else if (status == 0xFCu) {
+        seq_stop();
+    }
+}
+
+static __attribute__((noinline)) void midi_clock_pulse(uint32_t ms)
+{
+    uint32_t q;
+    if (!midi_clock.tempo_valid) {
+        midi_clock.tempo_valid = 1;
+        midi_clock.tempo_ms = ms;
+        midi_clock.tempo_n = 0;
+    } else if (++midi_clock.tempo_n == 6u) {
+        uint32_t dt = ms - midi_clock.tempo_ms;
+        midi_clock.tempo_ms = ms;
+        midi_clock.tempo_n = 0;
+        /* Six clocks are a quarter of a beat. Reject gaps and corrupt bursts. */
+        if (dt >= 62u && dt <= 375u) {
+            uint32_t old_beat = beat_samples(), new_beat = (uint32_t)FS * dt / 250u;
+            if (song.playing && new_beat != old_beat) {
+                uint32_t i, ratio = (new_beat << 12) / old_beat;
+                /* Preserve each track's fractional step phase when the master
+                 * changes tempo. The next pulse then lands on its new boundary. */
+                for (i = 0; i < NTRK; i++) {
+                    if (trk[i].seq_pos < (uint32_t)FS * 2u)
+                        trk[i].seq_pos = (uint32_t)(((uint64_t)trk[i].seq_pos * ratio + 2048u) >> 12);
+                    if (trk[i].seq_off)
+                        trk[i].seq_off = (uint32_t)(((uint64_t)trk[i].seq_off * ratio + 2048u) >> 12);
+                }
+            }
+            midi_beat_samples = new_beat;
+            song.g[G_BPM] = (int16_t)clamp((int32_t)((15000u + dt / 2u) / dt), 40, 240);
+        }
+    }
+    if (song.playing) {
+        if (midi_clock.have_pulse) {
+            uint32_t interval = ms - midi_clock.last_ms;
+            if (interval >= 8u && interval <= 80u)
+                midi_clock.interval_ms = interval;
+            q = beat_samples() + midi_clock.rem;
+            midi_clock.pos += q / 24u;
+            midi_clock.rem = q % 24u;
+        }
+        midi_clock.have_pulse = 1;
+    }
+    midi_clock.pulse_samples = beat_samples() / 24u;
+    if (!midi_clock.interval_ms)
+        midi_clock.interval_ms = beat_samples() * 1000u / ((uint32_t)FS * 24u);
+    midi_clock.interp_q8 = midi_clock.pulse_samples * 256u / midi_clock.interval_ms;
+    midi_clock.last_ms = ms;
+}
+
+static uint32_t midi_clock_advance(uint32_t now)
+{
+    uint32_t target, elapsed, offset, n;
+    if (!midi_clock.have_pulse)
+        return 0;
+    elapsed = now - midi_clock.last_ms;
+    /* Interpolate to the next pulse, never across it before it arrives. */
+    if (elapsed > midi_clock.interval_ms)
+        elapsed = midi_clock.interval_ms;
+    offset = elapsed * midi_clock.interp_q8 >> 8;
+    if (offset >= midi_clock.pulse_samples)
+        offset = midi_clock.pulse_samples - 1u;
+    target = midi_clock.pos + offset;
+    n = (int32_t)(target - midi_clock.rendered) > 0 ? target - midi_clock.rendered : 0u;
+    if (n > (uint32_t)FS / 8u)
+        n = (uint32_t)FS / 8u;
+    midi_clock.rendered += n;
+    return n;
 }
 
 /* play one step: TIE extends, REST releases, NOTE (re)triggers; a SLIDE on
@@ -478,28 +578,27 @@ static track_t *midi_track(uint32_t ch)
     return ch < NPART ? &trk[ch] : TSEL;
 }
 
-/* a channel that plays the selected track: its note-off goes to the track its note-on went to,
- * even when another track was selected in between (else that note would hang) */
-static uint8_t midi_sel_on[16][128];                  /* per channel and note: track + 1, 0 = none */
-static track_t *midi_route(uint32_t ch, uint32_t note, int on)
-{
-    track_t *t = midi_track(ch);
-    if (ch < NPART || (song.g[G_DRCH] && ch + 1u == (uint32_t)song.g[G_DRCH]))
-        return t;                                     /* a part's own channel, or the drum channel */
-    if (on)
-        midi_sel_on[ch & 15u][note & 127u] = (uint8_t)(song.sel + 1u);
-    else if (midi_sel_on[ch & 15u][note & 127u]) {
-        t = &trk[(midi_sel_on[ch & 15u][note & 127u] - 1u) % NTRK];
-        midi_sel_on[ch & 15u][note & 127u] = 0;
-    }
-    return t;
-}
+#include "midi_control.c"
 
 /* everything that happens between two rendered blocks */
 static void events_block(uint32_t n)
 {
-    uint32_t i, pr;
+    uint32_t i, pr, seq_n = n;
+    if (midi_clock.mode != (uint8_t)song.g[G_CLOCK]) {
+        midi_clock.mode = (uint8_t)song.g[G_CLOCK];
+        midi_clock.pos = midi_clock.rendered = midi_clock.rem = 0;
+        midi_clock.interval_ms = 0;
+        midi_clock.have_pulse = midi_clock.tempo_valid = midi_clock.tempo_n = 0;
+        midi_beat_samples = 0;
+        seq_stop();
+    }
     if (transport_req == 1u) {
+        if (song.g[G_CLOCK]) {
+            midi_clock.pos = midi_clock.rendered = midi_clock.rem = 0;
+            midi_clock.have_pulse = 0;
+            midi_clock.interval_ms = 0;
+            midi_clock.start_ms = fm1_ms;
+        }
         seq_start();
         transport_req = 0;
     } else if (transport_req == 2u) {
@@ -511,7 +610,9 @@ static void events_block(uint32_t n)
     for (i = 0; i < NTRK; i++) {
         track_t *t = &trk[i];
         if ((pr >> i) & 1u) {
+            midi_forget_track(i);
             trk_all_off(t);
+            t->bend_target = t->bend_q8 = t->wheel_target = t->wheel_q8 = 0;
             t->nheld = 0;
             t->arp_phys = 0;
             t->arp_note = 0;
@@ -535,14 +636,31 @@ static void events_block(uint32_t n)
     while (mi_r != mi_w) {                            /* USB-MIDI (and TRS) in */
         uint32_t pkt = midi_in_q[mi_r % MQ], st = (pkt >> 8) & 0xF0u, ch = (pkt >> 8) & 0x0Fu;
         uint32_t d1 = (pkt >> 16) & 0x7Fu, d2 = (pkt >> 24) & 0x7Fu;
+        uint32_t status = (pkt >> 8) & 0xFFu, src = midi_in_src[mi_r % MQ], ms = midi_in_ms[mi_r % MQ];
+        monitor_receive(pkt, src, ms);
         mi_r++;
-        if (st == 0x90u && d2)
-            input_on(midi_route(ch, d1, 1), d1, d2);
-        else if (st == 0x80u || st == 0x90u)
-            input_off(midi_route(ch, d1, 0), d1);
+        if (status >= 0xF8u) {
+            if (src == (uint32_t)song.g[G_CLOCK]) {
+                if (status == 0xF8u)
+                    midi_clock_pulse(ms);
+                else
+                    midi_clock_transport(status, ms);
+            }
+        } else {
+            midi_event(st, ch, d1, d2);
+        }
+    }
+    if (song.g[G_CLOCK] && song.playing) {
+        uint32_t last = midi_clock.have_pulse ? midi_clock.last_ms : midi_clock.start_ms;
+        if ((uint32_t)(fm1_ms - last) > 500u) {
+            seq_stop();                              /* lost clock: release sequencer notes */
+            midi_clock.tempo_valid = 0;
+        } else {
+            seq_n = midi_clock_advance(fm1_ms);
+        }
     }
     for (i = 0; i < NTRK; i++)
-        seq_tick(&trk[i], n);
+        seq_tick(&trk[i], seq_n);
     for (i = 0; i < NPART; i++)
         arp_tick(&trk[i], n);
     if (song.playing)

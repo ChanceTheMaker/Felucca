@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-only
  * Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments */
+#define FELUCCA_FONT_PREF 1
 /* Physical panel: which matrix button / encoder carries which printed label.
  * The default table can be overridden by HARDWARE CALIBRATION (hold OCT- and
  * OCT+ while powering on), which asks for each label in turn. The learned
@@ -58,19 +59,33 @@ static int32_t panel_enc(uint32_t role)
 }
 
 /* user settings that survive a reset */
-#define SETTINGS_MAGIC 0x53455433u              /* "SET3" */
-struct { uint32_t magic, palette, lowcut, zoom; } settings __attribute__((section(".noinit")));
+#define SETTINGS_MAGIC 0x53455435u              /* "SET5" */
+struct { uint32_t magic, palette, lowcut, zoom, bold, monitor; } settings __attribute__((section(".noinit")));
 
 static void settings_save(void);              /* project.c: flash copy (FELUCCA_FLASH) */
 
 static void settings_init(void)
 {
+    if (settings.magic == 0x53455433u) {
+        settings.magic = 0x53455434u;
+        settings.bold = 0;
+    }
+    if (settings.magic == 0x53455434u) {
+        settings.magic = SETTINGS_MAGIC;
+        settings.monitor = 0;
+    }
     if (settings.magic != SETTINGS_MAGIC || settings.palette >= NPALETTES) {
         settings.magic = SETTINGS_MAGIC;
         settings.palette = 4;                  /* MONO (default) */
         settings.lowcut = 0;
         settings.zoom = 0;                     /* large readout of the touched value: off */
+        settings.bold = 0;
+        settings.monitor = 0;
     }
     palette_set(settings.palette);
+    settings.bold = settings.bold == 1u;
+    font_bold = (uint8_t)settings.bold;
+    if (settings.monitor > 2u) settings.monitor = 0;
+    monitor_mode = (uint8_t)settings.monitor;
     fx_lowcut = (uint8_t)(settings.lowcut != 0);
 }

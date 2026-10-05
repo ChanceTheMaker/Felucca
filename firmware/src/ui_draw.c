@@ -5,6 +5,28 @@
 static void draw_menu(void);
 static uint32_t str_hash(uint32_t h, const char *s);
 
+/* Sample every UI frame, even away from SYSTEM. ON means the input is enabled,
+ * not that a cable is connected; RX holds for 250 ms after incoming bytes. */
+static uint32_t ui_trs_state;
+static void ui_midi_status_tick(void)
+{
+#if FELUCCA_UART
+    static uint32_t last_bytes, last_rx_ms;
+    static uint8_t active;
+    uint32_t bytes = um.bytes, now = fm1_ms;
+    if (bytes != last_bytes) {
+        last_bytes = bytes;
+        last_rx_ms = now;
+        active = 1;
+    }
+    if (active && (uint32_t)(now - last_rx_ms) >= 250u)
+        active = 0;
+    ui_trs_state = active ? 2u : 1u;
+#else
+    ui_trs_state = 0;
+#endif
+}
+
 /* --------------------------------------------------------- drawing --- */
 static int is_eng_name(const char *s)                 /* one of the ENGINES[]->name strings */
 {
@@ -57,12 +79,12 @@ static void draw_head(void)
     }
     if (song.playing) {                               /* > play, square stop */
         for (i = 0; i < 5u; i++)
-            cv_rect(4 + (int32_t)i * 2, 4 + (int32_t)i, 2, 10 - 2 * (int32_t)i, C_WHITE);
+            cv_rect(4 + (int32_t)i * 2, 4 + (int32_t)i, 2, 10 - 2 * (int32_t)i, C_PLAY);
     } else {
         cv_rect(4, 5, 8, 8, C_HI);
     }
     if (rec)                                          /* recording armed: white = this track, gray = another */
-        cv_rect(18, 6, 6, 6, rec == 2u ? C_WHITE : C_GRAY);
+        cv_rect(18, 6, 6, 6, rec == 2u ? C_REC : C_WARN);
     fmt_int(b, song.g[G_BPM]);
     x = 32;
     if (FELUCCA_ICONS) {                              /* metronome, then the BPM */
@@ -80,25 +102,26 @@ static void draw_head(void)
         cv_icon(156, 2, ICON_TAPE, C_GRAY);
         b[0] = (char)('1' + song.sel);
         b[1] = 0;
-        cv_text(170, 1, &FONT_S, b, C_HI);
+        cv_text(170, 1, &FONT_S, b, track_color(song.sel));
     } else {
         b[0] = 'T';
         b[1] = (char)('1' + song.sel);
         b[2] = 0;
-        cv_text(158, 1, &FONT_S, b, C_HI);
+        cv_text(158, 1, &FONT_S, b, track_color(song.sel));
     }
     {   /* battery, 3 bars; USB when a host is there */
         int32_t lvl = batt_shown(), k;
         int32_t bx = 236 - 19;                          /* right edge (the CPU figure is in the console) */
-        cv_rect(bx, 4, 17, 1, C_GRAY);
-        cv_rect(bx, 12, 17, 1, C_GRAY);
-        cv_rect(bx, 4, 1, 9, C_GRAY);
-        cv_rect(bx + 16, 4, 1, 9, C_GRAY);
-        cv_rect(bx + 17, 6, 2, 5, C_GRAY);
+        uint16_t bc = usb.config && !usb.suspended ? C_LINK : lvl <= 1 ? C_WARN : C_HI;
+        cv_rect(bx, 4, 17, 1, bc);
+        cv_rect(bx, 12, 17, 1, bc);
+        cv_rect(bx, 4, 1, 9, bc);
+        cv_rect(bx + 16, 4, 1, 9, bc);
+        cv_rect(bx + 17, 6, 2, 5, bc);
         for (k = 0; k < lvl; k++)
-            cv_rect(bx + 2 + k * 5, 6, 3, 5, lvl == 1 && batt_level() <= 1 ? C_WHITE : C_HI);
+            cv_rect(bx + 2 + k * 5, 6, 3, 5, bc);
         if (usb.config && !usb.suspended)
-            cv_text(bx - 28, 1, &FONT_S, "USB", C_DIM);
+            cv_text(bx - 28, 1, &FONT_S, "USB", C_LINK);
     }
     cv_blit(0, Y_HEAD);
 }
@@ -138,10 +161,14 @@ static void draw_column(uint32_t c, const char *label, const char *val, const ch
     str_cpy(key + str_len(key), u, 8);
     {
         uint32_t n = str_len(key);
-        key[n] = (char)('A' + (vc == C_WHITE) + (vc == C_DIM) * 2);
-        key[n + 1] = (char)(' ' + (ratio < 0 ? 0 : 1 + ratio / 20));
-        key[n + 2] = (char)(icon == ICON_NONE ? '~' : '!' + icon % 90u);   /* same label, other icon */
-        key[n + 3] = 0;
+        /* Encode every RGB565 bit: status colors can change with identical text. */
+        key[n] = (char)('A' + (vc & 15u));
+        key[n + 1] = (char)('A' + ((vc >> 4) & 15u));
+        key[n + 2] = (char)('A' + ((vc >> 8) & 15u));
+        key[n + 3] = (char)('A' + (vc >> 12));
+        key[n + 4] = (char)(' ' + (ratio < 0 ? 0 : 1 + ratio / 20));
+        key[n + 5] = (char)(icon == ICON_NONE ? '~' : '!' + icon % 90u);
+        key[n + 6] = 0;
     }
     if (c == ui.hot_col) {
         str_cpy(ui.focus_l, l, 8);
@@ -380,13 +407,18 @@ static void graph_browse(void)
 {
     uint32_t total, cur = preset_pos(&total), e, k;
     int32_t row;
-    if (!total)
+    if (!total) {
+        cv_text(40, 42, &FONT_S, "NO FAVORITES", C_HI);
+        cv_text(16, 64, &FONT_S, "LIST ALL TO ADD", C_GRAY);
         return;
-    for (row = -3; row <= 3; row++) {
-        int32_t y = 4 + (row + 3) * 17;
+    }
+    for (row = 0; row < 7; row++) {
+        uint32_t index = preset_visible(cur, total, (uint32_t)row);
+        int32_t y = 4 + row * 17;
         char tag[4], nm[13];
-        int sel = row == 0;
-        e = preset_at((cur + total * 4u + (uint32_t)row) % total, &k);
+        int sel = index == cur && cur < total;
+        if (index >= total) continue;
+        e = preset_at(index, &k);
         if (e == NENGINES) {                             /* user preset: "U07" and its name */
             up_slot_label(tag, k);
             up_name(k, nm);
@@ -398,6 +430,7 @@ static void graph_browse(void)
             cv_rect(4, y + 6, 3, 3, C_WHITE);
         cv_text(14, y, &FONT_S, tag, sel ? C_GRAY : C_DIM);
         cv_text(54, y, &FONT_S, nm, sel ? C_WHITE : C_GRAY);
+        if (favorite_has(e, k)) cv_text(220, y, &FONT_S, "*", C_HI);
     }
 }
 
@@ -513,12 +546,12 @@ static void draw_tracks(void)
             b[0] = (char)('1' + c);
             b[1] = 0;
             cv_begin(54, 16, C_BLACK);
-            cv_text(0, 0, &FONT_S, b, sel ? C_WHITE : C_GRAY);
+            cv_text(0, 0, &FONT_S, b, track_color(c));
             if (sel)
                 cv_rect(0, 15, 8, 1, C_WHITE);
             if (st == 1u || st == 2u) {
-                cv_rect(14, 5, 6, 6, st == 1u ? C_WHITE : C_AMB);
-                cv_text(24, 0, &FONT_S, st == 1u ? "REC" : "ARM", st == 1u ? C_WHITE : C_AMB);
+                cv_rect(14, 5, 6, 6, st == 1u ? C_REC : C_WARN);
+                cv_text(24, 0, &FONT_S, st == 1u ? "REC" : "ARM", st == 1u ? C_REC : C_WARN);
             } else if (st) {
                 cv_text(14, 0, &FONT_S, "MUTE", C_DIM);
             }
@@ -625,6 +658,8 @@ static void graph_scope(uint16_t c)
     }
 }
 
+#include "monitor_draw.c"
+
 static void draw_graph(void)
 {
     const page_t *pg = cur_page();
@@ -689,6 +724,7 @@ static void draw_graph(void)
     }
     top = !ui.home && !drum_note && (pg->graph == GR_BROWSE || pg->graph == GR_SLOTS || pg->graph == GR_USER);   /* these draw from the top */
     cv_oy = 0;
+    if (ui.home) draw_monitor();
     if (ui.hot_t && settings.zoom) {                 /* focus (menu ZOOM): the touched value, large and white */
         int32_t x;
         top = 1;
@@ -760,7 +796,7 @@ static void draw_foot(void)
             if (si >= (uint32_t)t->p[P_SLEN])
                 continue;
             if (step_on(st))
-                cv_rect(sx, 2, 1, 9, C_HI);
+                cv_rect(sx, 2, 1, 9, track_color(song.sel));
             else
                 cv_rect(sx, 10, 1, 1, C_DIM);
             if ((song.playing && si == t->seq_idx) || (song.seq_mode && si == ui.cursor))
@@ -773,7 +809,7 @@ static void draw_foot(void)
         x += 14;
     }
     fit(en, ename, &FONT_S, 90 - (x - 4));
-    x = cv_text(x, 20, &FONT_S, en, C_HI);
+    x = cv_text(x, 20, &FONT_S, en, track_color(song.sel));
     {
         char pf[16];
         int32_t room = 236 - text_w(&FONT_S, ti) - 10 - (x + 10);
@@ -828,13 +864,14 @@ static void draw_columns(void)
     if (cur_page()->graph == GR_BROWSE) {
         uint32_t total, cur = preset_pos(&total);
         char u[8];
-        fmt_int(val, (int32_t)cur + 1);
+        if (cur < total) fmt_int(val, (int32_t)cur + 1);
+        else str_cpy(val, "--", 8);
         str_cpy(u, "/", 8);
         fmt_int(u + 1, (int32_t)total);
         draw_column(0, "No.", val, u, VAL(0u), -1, ICON_NONE);
         draw_column(1, "ENG", ENGINES[TSEL->eng_req]->name, "", VAL(1u), -1, engine_icon(ENGINES[TSEL->eng_req]->name));
-        draw_column(2, "", "", "", C_HI, -1, ICON_AUTO);
-        draw_column(3, "", "", "", C_HI, -1, ICON_AUTO);
+        draw_column(2, "FAV", is_drum(TSEL) ? "--" : preset_favorite() ? "ON" : "OFF", "", VAL(2u), -1, ICON_NONE);
+        draw_column(3, "LIST", favorites.filter ? "FAV" : "ALL", "", VAL(3u), -1, ICON_NONE);
         return;
     }
     if (cur_page()->graph == GR_USER) {                  /* SLOT, then three GO buttons */
@@ -883,9 +920,11 @@ static void draw_columns(void)
             continue;
         }
         if (cur_page()->id[c] == G_MIDI && cur_page()->scope == SC_GLOBAL) {
-            str_cpy(val, !usb.up ? "OFF" : usb.config ? "MIDI" : usb.setups ? "ENUM" : usb.sof_seen ? "BUS" : "WAIT", 12);
-            unit = "USB";
-            draw_column(c, "USB", val, unit, C_HI, -1, ICON_AUTO);
+            if (ui.midi_view)
+                draw_column(c, "MIDI", "TRS", ui_trs_state == 2u ? "RX" : ui_trs_state ? "ON" : "OFF",
+                            ui_trs_state == 2u ? C_PLAY : VAL(c), -1, ICON_AUTO);
+            else
+                draw_column(c, "MIDI", "USB", !usb.up ? "OFF" : usb.config ? "ON" : "--", VAL(c), -1, ICON_AUTO);
             continue;
         }
         if (cur_page()->id[c] == G_INFO && cur_page()->scope == SC_GLOBAL) {
@@ -902,6 +941,7 @@ static void draw_columns(void)
 
 static void ui_draw(void)
 {
+    ui_midi_status_tick();
     ui.frame++;
     if (ui.menu) {
         draw_menu();

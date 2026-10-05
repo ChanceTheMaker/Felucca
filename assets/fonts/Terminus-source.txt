@@ -1,0 +1,6 @@
+Regular and bold Terminus bitmap fonts: Dimitar Toshkov Zhekov.
+License: Terminus-LICENSE.txt (SIL Open Font License 1.1).
+Upstream: https://terminus-font.sourceforge.net/
+Bold file: ter-u16b.bdf from Terminus 4.49.1.
+Archive mirror used: https://github.com/mikebeaton/terminus-font-4.49.1
+The BDF retains its original copyright and license notices.

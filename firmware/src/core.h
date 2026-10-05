@@ -82,6 +82,7 @@ typedef struct {
 typedef struct {                 /* per-voice control-rate modulation, computed in voice.c */
     uint32_t inc;                /* phase increment of the base pitch */
     int32_t pitch16;
+    int32_t midi_fine;           /* fractional MIDI pitch correction, Q12 ratio; 0 preserves preset sound */
     int32_t amp0, amp1;          /* Q15 ramp over the block */
     int32_t cutoff;              /* 0..127 << 8 */
     int32_t shape;               /* 0..127 << 8 */
@@ -149,6 +150,10 @@ typedef struct track {
     int32_t lfo_val;             /* Q15 */
     int32_t lfo_fade;            /* Q15 ramp after note-on */
     uint32_t lfo_rnd;
+    /* Live MIDI expression, never serialized into presets/projects. */
+    int32_t bend_target, bend_q8; /* semitones in Q8 */
+    int32_t wheel_target, wheel_q8;
+    uint32_t wheel_phase;        /* independent 5 Hz vibrato */
     /* keyboard / arp input: held notes in press order */
     uint8_t held[16];
     uint8_t nheld;
@@ -207,11 +212,12 @@ typedef struct {
 
 static track_t trk[NTRK];        /* the instrument: three parts and the drum track */
 static song_t song;
+static uint32_t midi_beat_samples;  /* measured external quarter note; 0 uses the panel BPM */
+static uint32_t beat_samples(void);  /* fx.c; also used by slicer.c, included before fx.c */
 #define TSEL (&trk[song.sel])    /* the selected track */
 #define TDRUM (&trk[TRK_DRUM])
 static int is_drum(const track_t *t) { return t == TDRUM; }
 #define RING_PUBLISH() __asm__ volatile("" ::: "memory")   /* slot store before the index update */
-static volatile uint32_t fm1_ms;  /* milliseconds since boot (TIMER4-based, TIMER5 ISR in main.c) */
 /* boot-loop guard (main.c): two boots in a row that die in the first 30 s -> UBOOT */
 #define BOOTGUARD_MAGIC 0x42475244u
 struct { uint32_t magic, failed, pending; } bootguard __attribute__((section(".noinit")));

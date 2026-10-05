@@ -28,6 +28,9 @@
   .small { color: var(--dim); font-size: 13px; }
   progress { width: 100%; height: 4px; margin-top: 16px; }
   pre { color: var(--dim); font-size: 12px; white-space: pre-wrap; margin-top: 16px; }
+  #install-progress { scroll-margin-top: 20px; }
+  #install-progress:focus { outline: none; }
+  #log { max-height: 20rem; overflow: auto; overflow-wrap: anywhere; }
   .features { margin: 28px 0; border-top: 1px solid var(--dim); padding-top: 20px; }
   .features h2 { font-size: 20px; margin: 0 0 12px; }
   .features ul { padding-left: 22px; margin: 0; }
@@ -249,9 +252,12 @@
     <p class="small" data-t="stockBackup"></p>
     <p class="small"><label><input id="stock-recovery" type="checkbox"> <span data-t="stockRecovery"></span></label></p>
   </details>
-  <progress id="bar" max="100" value="0"></progress>
-  <p id="status"></p>
-  <pre id="log"></pre>
+  <section id="install-progress" tabindex="-1" aria-label="Installation progress" data-i18n-aria-label="installer.progress">
+    <progress id="bar" max="100" value="0" aria-label="Installation progress" data-i18n-aria-label="installer.progress"></progress>
+    <p id="status" role="status"></p>
+    <pre id="log"></pre>
+    <p id="studio-handoff" hidden><a class="hero-link" href="../editor/#sound" data-t="editStudio">Edit in Studio</a></p>
+  </section>
   <section class="panel-guide" id="fm1-guide" data-section="knobs" aria-labelledby="panel-heading">
     <div class="panel-heading"><div><h2 id="panel-heading"><span data-i18n="guide.title">Meet your new custom FM-1 controls...</span></h2></div></div>
     <p class="panel-intro"><span data-i18n="guide.intro">Choose a group to highlight the controls and learn what they do.</span></p>
@@ -420,7 +426,18 @@ I18N.onChange(() => { lang = I18N.language; applyLang(); });
 applyLang();
 const sayK = (k, arg = "") => { lastKey = k; lastArg = arg; $("status").textContent = t(k) + arg; };
 const say = (txt) => { lastKey = null; $("status").textContent = txt; };
-const log = (t) => { $("log").textContent += t + "\n"; };
+const log = (t) => {
+  const output = $("log"), follow = output.scrollTop + output.clientHeight >= output.scrollHeight - 4;
+  output.textContent += t + "\n";
+  if (follow) output.scrollTop = output.scrollHeight;
+};
+function beginInstallProgress() {
+  $("studio-handoff").hidden = true;
+  $("bar").value = 0;
+  $("log").textContent = "";
+  $("install-progress").focus({preventScroll:true});
+  $("install-progress").scrollIntoView({behavior:"instant", block:"start"});
+}
 let image = null;
 const meta = /*META*/;
 I18N.text($('release'), 'ui.version', {version:meta.version});
@@ -448,10 +465,11 @@ $("go").addEventListener("click", async () => {
   track('install_attempt');
   let stage = 'permission', writeTracked = false;
   lockInstaller(true);
+  beginInstallProgress();
   let midi;
   try { midi = await navigator.requestMIDIAccess({ sysex: true }); }
   catch (e) { track('install_failed', {stage, error_code: 'denied'}); sayK("denied"); lockInstaller(false); return; }
-  writing = true;
+  let completed = false;
   try {
     const up = new Updater(midi, log);
     stage = 'discovery';
@@ -471,11 +489,12 @@ $("go").addEventListener("click", async () => {
     const ota = await up.find((id) => /^ota-/i.test(id.model));
     if (ota) {
       ota.link.close();
-      const completed = await up.resume(image, step, meta.product);
+      completed = await up.resume(image, step, meta.product);
       track(completed ? 'install_resume_complete' : 'install_failed', completed ? {} : {stage, error_code: 'stopped'});
       sayK(completed ? "done" : "stopped");
     } else {
       await up.install(image, meta.product, step);
+      completed = true;
     }
   } catch (e) {
     const codes = ['notfound', 'model', 'lost', 'stopped', 'noloader', 'noreturn', 'mismatch', 'badreq'];
@@ -485,6 +504,7 @@ $("go").addEventListener("click", async () => {
     log(String(e && e.stack || e));
   }
   lockInstaller(false);
+  $("studio-handoff").hidden = !completed;
 });
 
 $("stock-file").addEventListener("change", async () => {
@@ -515,6 +535,7 @@ function archiveInfo(a) {
 $("stock-go").addEventListener("click", async () => {
   if (!stock || writing) return;
   const selected = stock; lockInstaller(true);
+  beginInstallProgress();
   let link = null;
   try {
     let midi;

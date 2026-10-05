@@ -475,5 +475,7 @@
   "nav.themes": "Thèmes",
   "nav.features": "Fonctions",
   "nav.backToTop": "Retour en haut",
-  "site.release_candidate": "Version candidate 1.0-salt1rc1 : validation sur appareil en attente. La version publiée reste Salt14."
+  "site.release_candidate": "Version candidate 1.0-salt1rc1 : validation sur appareil en attente. La version publiée reste Salt14.",
+  "installer.progress": "Progression de l’installation",
+  "installer.editStudio": "Modifier dans Studio"
 }

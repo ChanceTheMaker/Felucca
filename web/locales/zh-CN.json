@@ -475,5 +475,7 @@
   "nav.themes": "主题",
   "nav.features": "功能",
   "nav.backToTop": "返回顶部",
-  "site.release_candidate": "1.0-salt1rc1 候选版本 — 尚待实机验证。当前发布版本仍为 Salt14。"
+  "site.release_candidate": "1.0-salt1rc1 候选版本 — 尚待实机验证。当前发布版本仍为 Salt14。",
+  "installer.progress": "安装进度",
+  "installer.editStudio": "在 Studio 中编辑"
 }

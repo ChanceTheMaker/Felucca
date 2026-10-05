@@ -475,5 +475,7 @@
   "nav.themes": "Designs",
   "nav.features": "Funktionen",
   "nav.backToTop": "Nach oben",
-  "site.release_candidate": "Release-Kandidat 1.0-salt1rc1 — Hardwareprüfung steht noch aus. Die veröffentlichte Version bleibt Salt14."
+  "site.release_candidate": "Release-Kandidat 1.0-salt1rc1 — Hardwareprüfung steht noch aus. Die veröffentlichte Version bleibt Salt14.",
+  "installer.progress": "Installationsfortschritt",
+  "installer.editStudio": "In Studio bearbeiten"
 }

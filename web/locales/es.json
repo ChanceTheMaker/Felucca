@@ -475,5 +475,7 @@
   "nav.themes": "Temas",
   "nav.features": "Funciones",
   "nav.backToTop": "Volver arriba",
-  "site.release_candidate": "Versión candidata 1.0-salt1rc1: pendiente de validación en el dispositivo. La versión publicada sigue siendo Salt14."
+  "site.release_candidate": "Versión candidata 1.0-salt1rc1: pendiente de validación en el dispositivo. La versión publicada sigue siendo Salt14.",
+  "installer.progress": "Progreso de la instalación",
+  "installer.editStudio": "Editar en Studio"
 }

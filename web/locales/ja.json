@@ -475,5 +475,7 @@
   "nav.themes": "テーマ",
   "nav.features": "機能",
   "nav.backToTop": "ページの先頭へ",
-  "site.release_candidate": "1.0-salt1rc1 リリース候補 — 実機検証は未完了です。公開版は引き続き Salt14 です。"
+  "site.release_candidate": "1.0-salt1rc1 リリース候補 — 実機検証は未完了です。公開版は引き続き Salt14 です。",
+  "installer.progress": "インストールの進行状況",
+  "installer.editStudio": "Studio で編集"
 }

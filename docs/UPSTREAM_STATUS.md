@@ -3,6 +3,11 @@
 Last reviewed: **2026-10-05**. Update this record when importing or offering a
 feature; follow [UPSTREAM_WORKFLOW.md](UPSTREAM_WORKFLOW.md).
 
+Local website follow-up: Install now scrolls to its progress output and confirmed
+success reveals an Edit in Studio link. Desktop/mobile, resumed success, failure,
+retry and translations are tested with a simulated updater. Publication is on
+hold at the owner's request; the published site and draft firmware assets are unchanged.
+
 ## Baseline and release state
 
 - Upstream: [hugelton/Felucca v1.0](https://github.com/hugelton/Felucca/tree/v1.0),

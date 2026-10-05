@@ -13,6 +13,15 @@ feature; follow [UPSTREAM_WORKFLOW.md](UPSTREAM_WORKFLOW.md).
 - Foundation: [PR 16](https://github.com/ChanceTheMaker/Felucca/pull/16), a pinned
   source import, not a merge of upstream Git ancestry. The baseline above is
   therefore the authoritative comparison point for the next upstream sync.
+- Remaining candidate stack: TRS [#17](https://github.com/ChanceTheMaker/Felucca/pull/17),
+  display [#18](https://github.com/ChanceTheMaker/Felucca/pull/18), Studio
+  [#24](https://github.com/ChanceTheMaker/Felucca/pull/24), installer
+  [#25](https://github.com/ChanceTheMaker/Felucca/pull/25), browser DSP
+  [#26](https://github.com/ChanceTheMaker/Felucca/pull/26), regressions
+  [#27](https://github.com/ChanceTheMaker/Felucca/pull/27), and final website/docs
+  [#28](https://github.com/ChanceTheMaker/Felucca/pull/28). Keep these draft until
+  candidate hardware validation is complete. Website PRs #15 and #19–23 are
+  already merged; the live installer still serves Salt14.
 
 ## Features and retained differences
 

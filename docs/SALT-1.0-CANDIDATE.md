@@ -21,6 +21,15 @@ complete. The experimental Bluetooth branch is excluded.
 Each boundary is kept in a separate feature PR. Website visual changes also have
 their own PRs and can ship with Salt14 while the firmware candidate is tested.
 
+Review the stack in order: [foundation #16](https://github.com/ChanceTheMaker/Felucca/pull/16),
+[TRS #17](https://github.com/ChanceTheMaker/Felucca/pull/17),
+[display #18](https://github.com/ChanceTheMaker/Felucca/pull/18),
+[Studio #24](https://github.com/ChanceTheMaker/Felucca/pull/24),
+[installer #25](https://github.com/ChanceTheMaker/Felucca/pull/25),
+[browser DSP #26](https://github.com/ChanceTheMaker/Felucca/pull/26),
+[regressions #27](https://github.com/ChanceTheMaker/Felucca/pull/27), and
+[website integration #28](https://github.com/ChanceTheMaker/Felucca/pull/28).
+
 ## Software validation
 
 - Firmware package builds for `FM-1_910` with the open Felucca loader.
@@ -34,6 +43,9 @@ their own PRs and can ship with Salt14 while the firmware candidate is tested.
 - Chrome browser audio checks cover mode changes, audible keyboard output,
   the live scope, MIDI isolation, restart, and mobile layout.
 - All eight translation catalogs have matching keys and placeholders.
+- Chrome checks pass for twelve themes, light/dark modes, all eight editor tabs,
+  custom controls, keyboard docking, and desktop/mobile layouts. Navigation and
+  the guide pass in all eight languages at four viewport widths.
 
 The optional DaisySP reference comparison was skipped because its checkout is
 absent. Host instruction counters are unavailable on this machine; target

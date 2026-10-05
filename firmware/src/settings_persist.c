@@ -3,7 +3,8 @@
  * the other feature's saved preferences when either is built independently.
  * PER1/PER2 are upstream; PER3 added bold; PER4 added favorites.
  * palette: UI_PAL_TAG + index; an old id (below 20, earlier firmware) is migrated on import.
- * bold: no longer used (one font weight); kept as it was saved, unless it holds the HOLD setting (panel.c). */
+ * bold: upstream HOLD encoding, or Salt's tagged hold/font/monitor preferences (panel.c).
+ * Untagged legacy values are preserved until these preferences change. */
 typedef struct {
     uint32_t magic, palette, lowcut, zoom;
     panel_t panel;

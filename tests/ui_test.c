@@ -1172,8 +1172,12 @@ static int test_display_preferences(void)
                  settings.palette == 6 && T_BG == UI_PALETTES[6].bg && ux.light && ui.menu == 1 && !song.octave &&
                  memcmp(before, host_screen, sizeof before) && !memcmp(sounds, trk, sizeof sounds));
     turn(EN_K1, 1);
-    bad += check("COLOR KNOB 1 steps on to HI-CON, then wraps to MONO",
-                 settings.palette == 7 && (turn(EN_K1, 1), settings.palette == UI_MONO_INDEX));
+    bad += check("COLOR KNOB 1 steps from HI-CON into the additional Salt palettes",
+                 settings.palette == 7 && (turn(EN_K1, 1), settings.palette == 8));
+    settings.palette = NPALETTES - 1; palette_set(settings.palette);
+    turn(EN_K1, 1);
+    bad += check("COLOR wraps from the last Salt palette to MONO",
+                 settings.palette == UI_MONO_INDEX && T_BG == UI_PALETTES[UI_MONO_INDEX].bg);
     settings.lowcut = 2;
     ui.menu_sel = MI_LOWCUT;
     press(B_OCTUP);

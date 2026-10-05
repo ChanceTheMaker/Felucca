@@ -847,6 +847,16 @@ footer a { text-underline-offset:3px; }
 #page-top:focus { outline:none; }
 
 /* Studio signal panels: each functional family moves as one card. */
+/* DOM pickers let wheel input preview choices while the menu stays open.
+   Browsers without base-select retain their normal native dropdowns. */
+@supports (appearance:base-select) {
+ .editor-page select:not([multiple]):not([size]),
+ .editor-page select:not([multiple]):not([size])::picker(select) { appearance:base-select; }
+ .editor-page select:not([multiple]):not([size])::picker(select) { border:1px solid var(--line); border-radius:6px; padding:4px; background:var(--lcd-bg); color:var(--lcd); max-block-size:min(50dvh,320px); max-inline-size:calc(100vw - 24px); overflow:auto; overscroll-behavior:contain; box-shadow:0 8px 24px #0006; }
+ .editor-page select:not([multiple]):not([size]) option { min-block-size:28px; padding:4px 8px; white-space:normal; }
+ .editor-page select:not([multiple]):not([size]) option:checked { background:var(--lcd); color:var(--lcd-bg); }
+ .editor-page select:not([multiple]):not([size]) option:not(:checked):hover { background:color-mix(in srgb,var(--lcd) 18%,var(--lcd-bg)); color:var(--lcd); }
+}
 #groups.unified-groups { grid-template-columns:repeat(4,minmax(0,1fr)); align-items:start; }
 .groups .unified-card,.groups .unified-card[data-controls=knobs] { display:block; min-width:0; }
 .unified-card>.bank-sections { display:grid; gap:14px; }

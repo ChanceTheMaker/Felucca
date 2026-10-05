@@ -3,6 +3,7 @@
 // STUDIO_URL defaults to the shared RC1 preview; no physical MIDI device is used.
 import assert from 'node:assert/strict';
 import {mkdir} from 'node:fs/promises';
+import {builtSiteFixture} from './test_site_fixture.mjs';
 const {chromium}=await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const url=process.env.STUDIO_URL || 'http://127.0.0.1:8768/rc1/webapp/editor/';
 const browser=await chromium.launch({channel:process.env.BROWSER_CHANNEL || 'chrome',headless:true});
@@ -12,11 +13,12 @@ try {
  page.setDefaultTimeout(30000);
  page.on('pageerror',e=>{errors.push(e.message);console.error('PAGE ERROR:',e.message);});
  page.on('requestfailed',request=>console.error('REQUEST FAILED:',request.url(),request.failure()?.errorText));
+ const fixtureHtml=await builtSiteFixture(page,process.env.STUDIO_FIXTURE_DIR);
  // Expose read-only handles inside this test response, never in shipped assets.
  let testHtml;
  await page.route('**/webapp/editor/?*',async route=>{
   if(testHtml) {await route.fulfill({status:200,contentType:'text/html; charset=utf-8',body:testHtml});return;}
-  const response=await route.fetch();let html=await response.text();
+  const response=fixtureHtml?null:await route.fetch();let html=fixtureHtml?await fixtureHtml():await response.text();
   const marker='if (!MOCK && !navigator.requestMIDIAccess) sayK("nomidi");';
   assert(html.includes(marker));
   html=html.replace(marker,marker+`
@@ -27,7 +29,7 @@ try {
    });window.buildGroups=buildGroups;window.engName=engName;
   `);
   testHtml=html;
-  await route.fulfill({response,body:html});
+  await route.fulfill({...(response?{response}:{status:200,contentType:'text/html; charset=utf-8'}),body:html});
  });
  await page.addInitScript(()=>{
   localStorage.setItem('felucca.web.analyticsConsent','denied');

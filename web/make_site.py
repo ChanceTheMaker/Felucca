@@ -78,6 +78,7 @@ def main(pkg, version, out):
         shutil.copy(HERE.parent / doc, fw / doc)
     shutil.copy(HERE / "editor.html", ed / "index.html")
     shutil.copy(HERE / "studio-widgets.js", ed / "studio-widgets.js")
+    shutil.copy(HERE / "select-wheel.js", ed / "select-wheel.js")
     shutil.copytree(HERE / "audio", ed / "audio", dirs_exist_ok=True)
     shutil.copytree(HERE / "screenshots", inst / "screenshots", dirs_exist_ok=True)
     shutil.copy(HERE / "studio-preview.js", inst / "studio-preview.js")

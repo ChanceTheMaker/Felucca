@@ -26,7 +26,8 @@ The preparation stack is published as fork draft PRs
 [arrival diagnostics #41](https://github.com/ChanceTheMaker/Felucca/pull/41).
 They are stacked in that order on the RC1 candidate branch, not merged to main.
 
-Follow-on `feat/smk37-flash-layout` adds offline JLFS/application inspection and
+Follow-on [draft PR #42](https://github.com/ChanceTheMaker/Felucca/pull/42),
+`feat/smk37-flash-layout`, adds offline JLFS/application inspection and
 boot-configuration decoding. All 13 archived packages pass the implemented
 checks; 11 additional tests bring the preparation suite to 30. Pro/Elite v16
 share boot settings and region descriptors, but their decoded application

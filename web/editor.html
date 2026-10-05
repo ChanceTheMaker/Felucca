@@ -1770,6 +1770,10 @@ function makeMockDevice(opt = {}) {
   TP.push(E("CHRD", ["OFF", "DIA3", "DIA7", "MAJ", "MIN", "DOM7", "MAJ7", "MIN7", "SUS4", "POW"], 0),   /* the chord keys 81, 82 */
     E("VOIC", ["CLOSE", "OPEN", "INV1", "INV2", "+OCT"], 0));
   const P_COUNT = 91, G_COUNT = 27, NSTEP = 64, P_E0 = 83, G_ENGSEL = 20, P_SLCR = 45;
+  if (opt.presets) for (let e = 0; e < ENG.length; e++) {
+    ENG[e].presets = (opt.presets[e] || []).map(pr => ({name:pr.name,
+      e:pr.values.slice(P_E0), env:pr.values.slice(1,5), mono:pr.values[37] !== 0}));
+  }
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const enumOrig = (d, v) => d.fmt === F.ENUM && d.names ? aliasOf(d.names, v - d.min) + d.min : v;   /* params.c enum_orig */
   /* four tracks (firmware v3), four synth parts (1.0); engine / preset / p / step below are the selected track's */
@@ -1825,6 +1829,12 @@ function makeMockDevice(opt = {}) {
                                                      matrix off; the SLICER, the chord keys, the steps and the other track
                                                      settings stay (ui.c apply_preset_to) */
     if (st.engine === FM6_E) fm6Slot(st.tracks[st.sel], st.p[P_E0 + 7]);   /* eng_fm6.c fm6_track_loaded */
+    if (opt.presets?.[st.engine]?.[pi]) {
+      const values = opt.presets[st.engine][pi].values;
+      // A browser preset is the actual compiled DSP preset, including its sends and envelope.
+      st.p = values.slice();
+      if (st.engine === FM6_E) fm6Slot(st.tracks[st.sel], st.p[P_E0 + 7]);
+    }
   }
   /* PTCH s -> the track's patch: F1..F8 factory, then the bank (empty: the init voice) */
   function fm6Slot(t, s) {

@@ -14,8 +14,8 @@ export class BrowserSynth {
       const meta = new WebAssembly.Instance(module).exports;
       const bytes = new Uint8Array(meta.memory.buffer);
       const text = p => new TextDecoder().decode(bytes.subarray(p, bytes.indexOf(0, p)));
-      this.presets = Array.from({length: 9}, (_, e) => Array.from({length: meta.preset_count(e)}, (_, p) => ({
-        name: text(meta.preset_name(e, p)), values: Array.from({length: 57}, (_, i) => meta.preset_value(e, p, i)),
+      this.presets = Array.from({length: meta.engine_count()}, (_, e) => Array.from({length: meta.preset_count(e)}, (_, p) => ({
+        name: text(meta.preset_name(e, p)), values: Array.from({length: meta.param_count()}, (_, i) => meta.preset_value(e, p, i)),
       })));
       await context.audioWorklet.addModule(new URL('worklet.js', import.meta.url));
       this.node = new AudioWorkletNode(context, 'felucca-dsp', {numberOfInputs: 0, numberOfOutputs: 1,
@@ -35,7 +35,8 @@ export class BrowserSynth {
     }
   }
   sync(state) {
-    const data = {type: 'state', engine: state.engine, p: Array.from(state.p), g: Array.from(state.g)};
+    const data = {type: 'state', engine: state.engine, p: Array.from(state.p), g: Array.from(state.g),
+      fm6: state.engine === 12 ? Array.from(state.tracks[state.sel].fm6) : null};
     const signature = JSON.stringify(data);
     if (signature === this.signature) return;
     this.signature = signature;

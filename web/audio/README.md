@@ -7,11 +7,15 @@ The live oscilloscope shows browser output in place of the redundant single Soun
 This runs the existing GPL-3.0 Felucca C DSP in an AudioWorklet through WebAssembly.
 It does not open Web MIDI, send firmware, or require an FM-1.
 
-Supported: all nine sound engines, their 54 factory presets, Sound controls, built-in
+Supported: all thirteen sound engines, their 69 factory presets, Sound controls, built-in
 samples, patch file loading/saving, the on-screen/computer keyboard, sustain, chords,
 and a separate browser volume. The preview plays one sound; the MIDI channel selector,
 device storage, sample uploads, sequencer, and other hardware tabs are hidden.
 Patch files referencing user sample slots cannot reproduce those samples here.
+FM6 factory patches and imported patches embedded in sound files are carried into
+the audio engine. The full FM6 patch editor, banks and sequencing remain device workflows.
+The retired DIGITAL engine ID is hidden; imported DIGITAL sounds use the editor's
+upstream DIGITAL-to-FM6 conversion.
 Browser edits are temporary unless exported with the Sound page's save-file button.
 
 DSP renders at its native 44,100 Hz in 32-frame blocks. The worklet linearly resamples

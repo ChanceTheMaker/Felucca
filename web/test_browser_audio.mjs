@@ -18,7 +18,10 @@ await page.addInitScript(() => {
   };
 });
 try {
-  await page.goto('http://127.0.0.1:8768/webapp/editor/#sound', {waitUntil:'domcontentloaded'});
+  await page.goto((process.env.SITE_URL || 'http://127.0.0.1:8768') + '/webapp/editor/#sound', {waitUntil:'domcontentloaded'});
+  const consent = page.locator('.analytics-banner [data-choice=denied]');
+  if (await consent.isVisible()) await consent.click();
+  await page.keyboard.press('Escape');
   await page.getByRole('button',{name:'Browser',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('#status').textContent==='Audio ready');
   assert.equal(await page.locator('#trackbar').isVisible(),false);
@@ -39,7 +42,8 @@ try {
   await page.screenshot({path:'build/screenshots/browser-scope-playing.png'});
   await page.mouse.up();
   await page.locator('#engine').selectOption('4');
-  await page.waitForFunction(()=>document.querySelector('#preset').options.length===5);
+  await page.waitForFunction(()=>document.querySelector('#preset').options.length===4);
+  assert.equal(await page.locator('#engine option').count(),13);
   assert.match(await page.locator('#play-help').textContent(),/Playing in your browser/);
   await page.getByRole('button',{name:'Stop audio',exact:true}).click();
   await page.waitForFunction(()=>window.testAudioContext.state==='suspended');
@@ -59,6 +63,7 @@ try {
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Mobile mode switch and scope fit');
   console.log('Browser audio: mode toggle/autostart, live scope, keyboard audio, MIDI isolation, engine switch, stop/restart, mobile layout passed');
 } catch(error) {
+  await page.screenshot({path:'build/screenshots/browser-audio-failure.png'});
   console.error(errors, await page.locator('#status').textContent(), await page.locator('#audio-status').textContent(), await page.locator('#mode-fm1').getAttribute('aria-pressed'));
   throw error;
 } finally { await browser.close(); }

@@ -13,6 +13,10 @@ class FeluccaProcessor extends AudioWorkletProcessor {
         this.engine.synth_engine(data.engine);
         data.p.forEach((v, i) => this.engine.synth_param(i, v));
         data.g.forEach((v, i) => this.engine.synth_global(i, v));
+        if (data.engine === 12 && data.fm6?.length === 128 && data.fm6.every(v => Number.isInteger(v) && v >= 0 && v < 128)) {
+          new Uint8Array(this.engine.memory.buffer, this.engine.synth_fm6_buffer(),128).set(data.fm6);
+          this.engine.synth_fm6_apply();
+        }
       } else if (data.type === 'midi') this.engine.synth_midi(...data.bytes);
     };
   }

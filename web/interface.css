@@ -6,6 +6,11 @@
 #audio-volume-label:not([hidden]) { display:inline-flex; align-items:center; gap:8px; font-size:12px; }
 #audio-volume { width:90px; }
 #audio-status { font-size:11px; color:var(--dim); }
+.screenshot-gallery { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr)); gap:18px; margin-top:24px; }
+.screenshot-gallery figure { margin:0; min-width:0; overflow:hidden; border:1px solid var(--line); border-radius:10px; background:var(--panel); }
+.screenshot-gallery a { display:block; }
+.screenshot-gallery img { display:block; width:100%; height:auto; }
+.screenshot-gallery figcaption { padding:10px 12px; color:var(--fg); font-size:12px; }
 .mode-switch { display:inline-flex; padding:3px; gap:3px; border-radius:8px; border:1px solid var(--line); background:var(--bg); box-shadow:inset 0 2px 4px #0005; }
 .mode-switch button { min-width:76px; border:0; border-radius:5px; background:transparent; color:var(--dim); box-shadow:none; }
 .mode-switch button[aria-pressed=true] { background:var(--accent); color:var(--ink); box-shadow:0 1px 4px #0005,inset 0 1px #fff5; }

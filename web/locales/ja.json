@@ -285,7 +285,7 @@
   "site.fm_1_browser_mode_switch": "FM-1 / ブラウザーモード切り替え。",
   "site.select_browser_to_start_the_local_sound_engine_or_fm_1_to_edit_y": "「ブラウザー」でローカル音源を起動、「FM-1」で接続中の楽器を編集します。FM-1 に戻すとブラウザーの再生は停止します。",
   "site.a_synth_without_the_hardware": "実機なしでもシンセ。",
-  "site.nine_felucca_engines_54_factory_presets_built_in_samples_live_so": "9 種類の Felucca 音源、54 種類のプリセット、内蔵サンプル、リアルタイム操作、和音、サステイン、独立した音量調整。",
+  "site.nine_felucca_engines_54_factory_presets_built_in_samples_live_so": "13 種類の Felucca 音源、69 種類のプリセット、内蔵サンプル、リアルタイム操作、和音、サステイン、独立した音量調整。",
   "site.live_oscilloscope": "リアルタイム波形表示。",
   "site.a_full_width_display_follows_the_actual_browser_audio_output_and": "ブラウザーの実際の音声出力を全幅の画面に表示。選択したテーマに合わせて変わります。",
   "site.twelve_hardware_inspired_themes": "ハードウェア風の 12 テーマ。",
@@ -312,7 +312,7 @@
   "site.high_contrast_light_mode": "高コントラスト · ライトモード",
   "site.actual_editor_screenshots_select_an_image_to_view_it_full_size": "画像を選ぶと、そのテーマで Studio が開きます。",
   "site.on_the_fm_1_felucca_salt_firmware_features": "FM-1 の Felucca [Salt] ファームウェア機能",
-  "site.included_in_0_9_salt13_building_on_the_original_felucca_firmware": "オリジナルの Felucca を基に、0.9-salt14 に含まれる機能：",
+  "site.included_in_0_9_salt13_building_on_the_original_felucca_firmware": "オリジナルの Felucca を基に、1.0-salt1rc1 に含まれる機能：",
   "site.3_5_mm_trs_midi_input": "3.5 mm TRS MIDI 入力。",
   "site.play_through_usb_or_trs_with_trs_enabled_by_default": "USB または TRS で演奏。TRS は標準で有効です。",
   "site.expressive_playing": "表現豊かな演奏。",
@@ -320,7 +320,7 @@
   "site.external_midi_sync": "外部 MIDI 同期。",
   "site.select_internal_usb_or_trs_clock_with_midi_start_stop_and_contin": "内部、USB、TRS クロックを選択。MIDI Start、Stop、Continue に対応し、keremimo の同期機能への貢献を含みます。",
   "site.more_screen_colors": "画面の色がさらに豊富に。",
-  "site.twenty_palettes_in_total_including_eight_light_palettes_and_high": "合計 20 パレット。8 種類のライトパレットと、明暗両方の高コントラスト表示を含みます。",
+  "site.twenty_palettes_in_total_including_eight_light_palettes_and_high": "ライト、ダーク、高コントラストを含む 21 種類のパレット。",
   "site.clearer_display": "見やすい表示。",
   "site.select_regular_or_bold_text_with_distinct_track_colors_and_statu": "通常・太字を選択可能。トラック別の色と、再生・録音・MIDI 動作の状態色を表示します。",
   "site.preset_favorites": "プリセットのお気に入り。",
@@ -332,7 +332,7 @@
   "site.device_presets_manages_favorite_stars_and_filtering_settings": "本体プリセットでお気に入りと絞り込みを管理。設定",
   "site.global_selects_the_clock_source": "GLOBAL でクロックソースを選択します。",
   "site.install_felucca_salt_and_reconnect_the_editor_to_use_the_new_web": "Felucca [Salt] をインストールし、エディターを再接続して新機能を利用できます。お気に入りは目印です。編集内容はユーザースロットに保存してください。",
-  "site.font_terminus_dimitar_toshkov_zhekov_sil_ofl_1_1_samples_versili": "フォント：Terminus（Dimitar Toshkov Zhekov、SIL OFL 1.1）。サンプル：Versilian Studios VSCO-2 Community Edition と VCSL（CC0 1.0）、Hügelton Sample Pack（© Hügelton Instruments、CC0 ではありません）。",
+  "site.font_terminus_dimitar_toshkov_zhekov_sil_ofl_1_1_samples_versili": "フォント：Inter Tight（The Inter Project Authors、SIL OFL 1.1）。サンプル：Versilian Studios VSCO-2 Community Edition と VCSL（CC0 1.0）、Hügelton Sample Pack（© Hügelton Instruments、CC0 ではありません）。",
   "site.test_build_m_vave_and_fm_1_are_trademarks_of_their_respective_ow": "テストビルド。M-VAVE と FM-1 は各所有者の商標です。",
   "site.download_this_release_s_source_code": "このリリースのソースコードをダウンロード",
   "site.save_to_file": "ファイルに保存",
@@ -474,5 +474,6 @@
   "nav.studio": "Studio",
   "nav.themes": "テーマ",
   "nav.features": "機能",
-  "nav.backToTop": "ページの先頭へ"
+  "nav.backToTop": "ページの先頭へ",
+  "site.release_candidate": "1.0-salt1rc1 リリース候補 — 実機検証は未完了です。公開版は引き続き Salt14 です。"
 }

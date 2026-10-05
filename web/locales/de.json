@@ -274,7 +274,7 @@
   "site.fm_1_browser_mode_switch": "FM-1-/Browser-Umschalter.",
   "site.select_browser_to_start_the_local_sound_engine_or_fm_1_to_edit_y": "Wähle Browser für die lokale Klangerzeugung oder FM-1 zum Bearbeiten des verbundenen Instruments. Zurückschalten beendet die Browserwiedergabe.",
   "site.a_synth_without_the_hardware": "Ein Synth ohne Hardware.",
-  "site.nine_felucca_engines_54_factory_presets_built_in_samples_live_so": "Neun Felucca-Klangerzeuger, 54 Werks-Presets, integrierte Samples, Live-Regler, Akkorde, Sustain und separate Lautstärke.",
+  "site.nine_felucca_engines_54_factory_presets_built_in_samples_live_so": "Dreizehn Felucca-Klangerzeuger, 69 Werks-Presets, integrierte Samples, Live-Regler, Akkorde, Sustain und separate Lautstärke.",
   "site.live_oscilloscope": "Live-Oszilloskop.",
   "site.a_full_width_display_follows_the_actual_browser_audio_output_and": "Eine Anzeige über die volle Breite folgt dem tatsächlichen Browseraudio und passt zum gewählten Design.",
   "site.twelve_hardware_inspired_themes": "Zwölf hardwareinspirierte Designs.",
@@ -301,7 +301,7 @@
   "site.high_contrast_light_mode": "Hoher Kontrast · Hellmodus",
   "site.actual_editor_screenshots_select_an_image_to_view_it_full_size": "Wähle ein Vorschaubild, um Studio mit diesem Design zu öffnen.",
   "site.on_the_fm_1_felucca_salt_firmware_features": "Auf dem FM-1: Felucca-[Salt]-Funktionen",
-  "site.included_in_0_9_salt13_building_on_the_original_felucca_firmware": "In 0.9-salt14 enthalten, auf Basis der ursprünglichen Felucca-Firmware:",
+  "site.included_in_0_9_salt13_building_on_the_original_felucca_firmware": "In 1.0-salt1rc1 enthalten, auf Basis der ursprünglichen Felucca-Firmware:",
   "site.3_5_mm_trs_midi_input": "3,5-mm-TRS-MIDI-Eingang.",
   "site.play_through_usb_or_trs_with_trs_enabled_by_default": "Spiele über USB oder TRS; TRS ist standardmäßig aktiv.",
   "site.expressive_playing": "Ausdrucksstarkes Spiel.",
@@ -309,7 +309,7 @@
   "site.external_midi_sync": "Externe MIDI-Synchronisation.",
   "site.select_internal_usb_or_trs_clock_with_midi_start_stop_and_contin": "Interne, USB- oder TRS-Clock mit MIDI Start, Stop und Continue wählen. Enthält keremimos Beitrag zur Clock-Synchronisation.",
   "site.more_screen_colors": "Mehr Displayfarben.",
-  "site.twenty_palettes_in_total_including_eight_light_palettes_and_high": "Insgesamt zwanzig Paletten, darunter acht helle sowie hoher Kontrast für helle und dunkle Hintergründe.",
+  "site.twenty_palettes_in_total_including_eight_light_palettes_and_high": "21 Paletten mit hellen, dunklen und kontrastreichen Varianten.",
   "site.clearer_display": "Klarere Anzeige.",
   "site.select_regular_or_bold_text_with_distinct_track_colors_and_statu": "Normale oder fette Schrift wählen, mit eigenen Spurfarben und Statusfarben für Wiedergabe, Aufnahme und MIDI-Aktivität.",
   "site.preset_favorites": "Preset-Favoriten.",
@@ -321,7 +321,7 @@
   "site.device_presets_manages_favorite_stars_and_filtering_settings": "Geräte-Presets verwaltet Favoriten und Filter. Einstellungen",
   "site.global_selects_the_clock_source": "GLOBAL wählt die Clock-Quelle.",
   "site.install_felucca_salt_and_reconnect_the_editor_to_use_the_new_web": "Installiere Felucca [Salt] und verbinde den Editor erneut für die neuen Regler. Favoriten sind Lesezeichen; speichere bearbeitete Klänge in einem Benutzerplatz.",
-  "site.font_terminus_dimitar_toshkov_zhekov_sil_ofl_1_1_samples_versili": "Schrift: Terminus (Dimitar Toshkov Zhekov, SIL OFL 1.1). Samples: Versilian Studios VSCO-2 Community Edition und VCSL (CC0 1.0) sowie Hügelton Sample Pack (© Hügelton Instruments, nicht CC0).",
+  "site.font_terminus_dimitar_toshkov_zhekov_sil_ofl_1_1_samples_versili": "Schrift: Inter Tight (The Inter Project Authors, SIL OFL 1.1). Samples: Versilian Studios VSCO-2 Community Edition und VCSL (CC0 1.0) sowie Hügelton Sample Pack (© Hügelton Instruments, nicht CC0).",
   "site.test_build_m_vave_and_fm_1_are_trademarks_of_their_respective_ow": "Testversion. M-VAVE und FM-1 sind Marken ihrer jeweiligen Inhaber.",
   "site.download_this_release_s_source_code": "Quellcode dieser Version herunterladen",
   "editor.smpName": "Name",
@@ -474,5 +474,6 @@
   "nav.studio": "Studio",
   "nav.themes": "Designs",
   "nav.features": "Funktionen",
-  "nav.backToTop": "Nach oben"
+  "nav.backToTop": "Nach oben",
+  "site.release_candidate": "Release-Kandidat 1.0-salt1rc1 — Hardwareprüfung steht noch aus. Die veröffentlichte Version bleibt Salt14."
 }

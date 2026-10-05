@@ -74,6 +74,7 @@
   }
   const later = () => { clearTimeout(timer); timer = setTimeout(hide, 160); };
   for (const link of document.querySelectorAll('a[href="../editor/"]')) {
+    if (link.closest('.site-nav')) continue;
     link.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') show(link); });
     link.addEventListener('pointerleave', later);
     link.addEventListener('focus', () => show(link));

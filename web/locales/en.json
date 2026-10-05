@@ -344,5 +344,5 @@
   "ui.wireDesc": "FM-1 with eight rotary controls, a screen, twelve function buttons, octave buttons, and 27 touch keys.",
   "ui.modeTipConnect": "Connect to your FM-1",
   "ui.modeTipOr": "or",
-  "ui.modeTipPlay": "Play the {engine} built-in the browser."
+  "ui.modeTipPlay": "Play the {engine} built into the browser."
 }

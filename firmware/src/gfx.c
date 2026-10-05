@@ -263,6 +263,9 @@ static void cv_rrect(int32_t x, int32_t y, int32_t w, int32_t h, int32_t r, uint
 /* coverage curves: a little heavier for light ink on dark, lighter for dark ink on light */
 static const uint8_t CURVE_DARK[16] = {0, 24, 43, 62, 80, 97, 114, 130, 147, 163, 178, 194, 210, 225, 240, 255};
 static const uint8_t CURVE_LIGHT[16] = {0, 12, 27, 42, 58, 75, 91, 109, 126, 144, 162, 180, 199, 217, 236, 255};
+#define FELUCCA_FONT_PREF 1
+static uint8_t font_bold;
+static void font_set(uint32_t bold) { font_bold = bold != 0; ux.gen++; }
 #define NRAMP 6u
 static struct {
     uint16_t fg[NRAMP], bg[NRAMP], v[NRAMP][16];   /* v: byte-swapped panel values */
@@ -273,7 +276,8 @@ static struct {
 static const uint16_t *ramp(uint16_t fg, uint16_t bg)
 {
     static const uint8_t SH[3] = {11, 5, 0}, MK[3] = {31, 63, 31};
-    const uint8_t *cv = ux.light ? CURVE_LIGHT : CURVE_DARK;
+    static const uint8_t bold[16] = {0,45,70,92,113,132,150,166,181,195,207,218,229,238,247,255};
+    const uint8_t *cv = font_bold ? bold : ux.light ? CURVE_LIGHT : CURVE_DARK;
     uint32_t i, a, k;
     uint16_t *v;
     if (rc.gen != ux.gen) {

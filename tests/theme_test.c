@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     static const uint8_t pd[] = {0x08, 0xf0};
     const aafont_t probe = {1, 1, 'A', 'A', 0, 0, pg, pd, 0, 0, 0};
     double worst = 100;
-    assert(NPALETTES == 8u && !strcmp(UI_PALETTES[0].name, "MONO") && !strcmp(UI_PALETTES[7].name, "HI-CON"));
+    assert(NPALETTES == 21u && !strcmp(UI_PALETTES[0].name, "MONO") && !strcmp(UI_PALETTES[7].name, "HI-CON"));
     for (unsigned p = 0; p < NPALETTES; p++) {
         uint16_t *tok = &ux.bg;
         palette_set(p);
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
         if (min < worst) worst = min;
         printf("%-7s text %.1f:1, labels %.1f:1, values %.1f:1, selection %.1f:1\n", UI_PALETTES[p].name,
                contrast(T_TEXT, T_BG), contrast(T_MID, T_BG), contrast(T_THEME, T_BG), contrast(T_INK, T_SEL));
-        assert((p == 6u) == ux.light);                         /* PAPER is the light one */
+        assert((p == 6u || p >= 14u) == ux.light);             /* PAPER and Salt's light variants */
         assert(T_REC == (p == UI_MONO_INDEX ? T_ACCENT : ux.light ? UI_REC_LIGHT : UI_REC_DARK));
         /* the blend: transparent, solid and an edge between the two, on two backgrounds */
         for (unsigned b = 0; b < 2; b++) {
@@ -123,6 +123,7 @@ int main(int argc, char **argv)
         assert(text_fit(b, sizeof b, "WWWWWWWW", &AF_M, 1) && b[0] == ELLIPSIS && !b[1]);
     }
     if (argc > 1) {
+        font_set(0);
         FILE *f = fopen(argv[1], "wb"); assert(f);
         fprintf(f, "P6\n%u %u\n255\n", (unsigned)SHEET_W, (unsigned)SHEET_H);
         for (unsigned i = 0; i < SHEET_W * SHEET_H; i++) {
@@ -133,5 +134,13 @@ int main(int argc, char **argv)
         fclose(f);
     }
     printf("Palettes: MONO gray, contrast (worst margin x%.2f), blending, ramp cache, font metrics and ellipsis passed.\n", worst);
+    palette_set(0); font_set(0);
+    uint16_t regular_edge = ramp(T_TEXT, T_BG)[5];
+    int32_t regular_width = text_w(&AF_S, "MIDI MONITOR");
+    font_set(1);
+    assert(ramp(T_TEXT, T_BG)[5] != regular_edge);
+    assert(text_w(&AF_S, "MIDI MONITOR") == regular_width);
+    font_set(0);
+    assert(ramp(T_TEXT, T_BG)[5] == regular_edge);
     return 0;
 }

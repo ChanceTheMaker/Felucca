@@ -39,13 +39,35 @@ PALETTES = [
     ("PAPER",  (244, 239, 228), (226, 218, 202), (34, 30, 24),    (10, 84, 70),    (172, 56, 8)),
     ("HI-CON", (0, 0, 0),       (40, 40, 40),    (255, 255, 255), (255, 232, 0),   (0, 230, 255)),
 ]
-# the 20 palettes of the earlier firmware (index order) -> the new palette
+# Keep upstream's first eight IDs; append Salt's additional color families.
+for name, theme, accent in [
+    ("CYAN", (120, 224, 255), (255, 200, 110)),
+    ("RED", (255, 150, 140), (255, 220, 130)),
+    ("PINK", (255, 180, 220), (160, 230, 255)),
+    ("WARM", (250, 224, 176), (255, 190, 120)),
+    ("OCEAN", (120, 216, 244), (255, 206, 132)),
+    ("DUSK", (218, 184, 244), (255, 224, 148)),
+]:
+    PALETTES.append((name, (8, 10, 14), (24, 28, 34), (248, 248, 248), theme, accent))
+for name, bg, theme, accent in [
+    ("LIGHT", (248, 250, 252), (0, 65, 100), (110, 40, 10)),
+    ("SKY", (232, 246, 255), (0, 52, 105), (100, 38, 14)),
+    ("MINT", (232, 252, 242), (0, 65, 45), (76, 35, 98)),
+    ("LILAC", (248, 240, 255), (65, 20, 98), (0, 64, 64)),
+    ("L-ROSE", (255, 240, 246), (100, 14, 45), (0, 60, 80)),
+    ("SAND", (255, 248, 228), (92, 36, 0), (0, 55, 85)),
+    ("L-HICON", (255, 255, 255), (0, 0, 0), (0, 35, 80)),
+]:
+    PALETTES.append((name, bg, (224, 226, 228), (12, 12, 12), theme, accent))
+# The 20 legacy palettes retain their corresponding Salt color family.
 OLD = ["GREEN", "AMBER", "CYAN", "RED", "MONO", "VIOLET", "PINK", "ICE", "WARM", "OCEAN", "DUSK", "HI-CON",
        "LIGHT", "PAPER", "SKY", "MINT", "LILAC", "ROSE", "SAND", "L-HICON"]
 OLD_TO_NEW = {"GREEN": "GREEN", "AMBER": "AMBER", "CYAN": "ICE", "RED": "ROSE", "MONO": "MONO", "VIOLET": "VIOLET",
               "PINK": "ROSE", "ICE": "ICE", "WARM": "AMBER", "OCEAN": "ICE", "DUSK": "VIOLET", "HI-CON": "HI-CON",
               "LIGHT": "PAPER", "PAPER": "PAPER", "SKY": "PAPER", "MINT": "PAPER", "LILAC": "PAPER", "ROSE": "PAPER",
               "SAND": "PAPER", "L-HICON": "HI-CON"}
+OLD_TO_NEW.update({name: name for name in OLD if name != "ROSE"})
+OLD_TO_NEW["ROSE"] = "L-ROSE"
 PAL_TAG = 64                       # stored id = PAL_TAG + index; below 20: an old id
 REC_DARK, REC_LIGHT = (255, 72, 72), (190, 24, 40)
 QR_LIGHT, QR_DARK, CRASH_BG, CRASH_INK = (255, 255, 255), (0, 0, 0), (160, 0, 0), (255, 255, 255)

@@ -132,6 +132,8 @@ if [ -f build/gen/felucca_tables.h ]; then
         "$OUT/fm4_test" build/fm4_demo
     $CC -O1 -w -Ibuild/gen -Ifirmware/src -o "$OUT/theme_test" tests/theme_test.c -lm
     run "themes: contrast, text blending and font metrics" "$OUT/theme_test"
+    $CC -O1 -w -Ibuild/gen -o "$OUT/monitor_test" tests/monitor_test.c -lm
+    run "Salt MIDI monitor: held notes, events and track isolation" "$OUT/monitor_test"
     $CC -O1 -w -Ibuild/gen -Ifirmware/src -o "$OUT/text_ref_test" tests/text_ref_test.c -lm
     run "text: pens, kerning and pixels equal the reference renderer" "$OUT/text_ref_test"
     if python3 -c "import PIL" 2>/dev/null; then

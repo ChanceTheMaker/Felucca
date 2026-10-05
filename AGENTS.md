@@ -25,3 +25,6 @@ publishing a release. These are Salt's operating rules, not upstream policy.
   upstream adopts a feature, reconcile our implementation and retire duplication.
 
 The owner's explicit instructions in the current session take precedence.
+
+Deferred requests are recorded in [docs/WORK_QUEUE.md](docs/WORK_QUEUE.md).
+Do not silently include queued features in an unrelated active round.

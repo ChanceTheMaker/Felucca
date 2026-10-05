@@ -10,6 +10,16 @@ reserved, with hardware/recovery prerequisites documented in
 unchanged. This round imports no firmware, has no SMK hardware validation,
 and does not promote RC1 or submit work upstream.
 
+Preparation validation: 19 offline tests cover reserved-target behavior,
+container corruption/bounds, and receive-only MIDI recording/analysis. Thirteen
+pinned stock-package samples were inventoried; Pro/Elite v16 share the OTA
+loader but have different flash payloads and product markers. The existing
+FM-1 installer simulation passes; its built-package JavaScript comparison and
+official V15 restore are skipped in the new worktree because those artifacts
+are absent. The isolated MIDI environment uses mido 1.3.3/python-rtmidi 1.5.8;
+dependency checks and input enumeration pass, with no device connected. Physical
+recovery, scanning, audio and calibration behavior remain untested.
+
 Installer follow-up on `feat/rc1-installer-retry`: failed discovery, denied MIDI
 permission, interrupted updates and stopped resumes show Try Again below the
 output. Retrying requests MIDI access and rediscovers the device, hides stale

@@ -1,0 +1,3 @@
+# Only list/capture needs these; package inspection and analysis use the stdlib.
+mido>=1.3,<2
+python-rtmidi>=1.5,<2

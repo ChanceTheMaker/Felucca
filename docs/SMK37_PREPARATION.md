@@ -30,7 +30,7 @@ firmware is not redistributed in our source or releases.
 | Subsystem | Felucca boundary to inspect | Evidence required from SMK |
 | --- | --- | --- |
 | Boot and clocks | `firmware/hal/fm1_sys.h`, vector assembly, `firmware/app.ld` | Boot entry, CPU/clock setup, RAM availability, mailbox reservations |
-| Keys and buttons | `fm1_input.h`, `firmware/src/input.c` | Matrix/secondary MCU protocol, key velocity timing, debounce, encoder wiring |
+| Keys and buttons | `fm1_input.h`, `firmware/src/ui_input.c` | Matrix/secondary MCU protocol, key velocity timing, debounce, encoder wiring |
 | Pads and LEDs | `fm1_input.h` and UI events | Velocity/pressure encoding, RGB driver, multiplexing/current limits |
 | Wheels and faders | `fm1_adc.h`, modulation input | ADC channel mapping, endpoints, centers and calibration storage |
 | Display | `fm1_lcd_hw.h`, `lcd.c` | Controller, bus/pins, reset, resolution and orientation |
@@ -115,6 +115,16 @@ must be measured before choosing polyphonic versus channel aftertouch behavior.
 
 No SMK binary is built or published before these prerequisites are resolved.
 FM-1 host tests do not substitute for SMK hardware validation.
+
+## Prepared tools and validation
+
+- [Package inventory and comparison](smk37/PACKAGES.md): 13 pinned research
+  packages inspected offline; Pro/Elite wrapper and payload differences recorded.
+- [Arrival diagnostics](smk37/DIAGNOSTICS.md): receive-only MIDI recording,
+  offline control/event reports, and the stock baseline test sequence.
+- `python -m unittest discover -s tests -p "smk37_*_test.py"` runs the preparation
+  tests without a device or SDK. Full firmware rebuilds and hardware tests are
+  separate from this preparation round; no firmware source has changed here.
 
 [declaration]: https://manuals.plus/m/fcbba55f34b76e45d57847128f5b1bff1ca6bffc0dca03cc5b4fdcabe0f1be5d.pdf
 [report]: https://device.report/m/e1477f22153841fb96635ae650f53e8ba8cc6abb6095f8c36b40d7b4067e5b4d.pdf

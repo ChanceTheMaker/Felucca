@@ -14,6 +14,9 @@ eight languages. No physical device is accessed by those checks.
 Website deployment and the draft RC1 firmware remain unchanged in this round.
 The header logo also links home from both pages, with its typography preserved
 and visible keyboard focus. This is a separate feature PR in the same UI round.
+The hero Studio preview is 320px wide and stays outside the entire action row,
+including wrapped buttons. Its image contracts to fit short windows. The
+full-width Studio button keeps its original preview size.
 
 ## Baseline and release state
 

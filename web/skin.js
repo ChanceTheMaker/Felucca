@@ -163,9 +163,9 @@
     }
   }
   function setLanguageFlag(button, language) {
-    const english = language === 'ja';
-    button.setAttribute('aria-label', english ? 'Switch to English' : '日本語に切り替え');
-    button.title = english ? 'English' : '日本語';
+    const english = language !== 'ja';
+    button.setAttribute('aria-label', english ? 'English — switch to Japanese' : '日本語 — Switch to English');
+    button.title = english ? 'English — switch to Japanese' : '日本語 — Switch to English';
     let flag = '<rect width="60" height="40" fill="#fff"/><circle cx="30" cy="20" r="12" fill="#bc002d"/>';
     if (english) {
       flag = '<rect width="60" height="40" fill="#fff"/>';

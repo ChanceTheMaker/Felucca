@@ -106,7 +106,7 @@
     panel.addEventListener('close', () => host.closest('.settings-menu').querySelector('summary').focus());
     host.append(open);
   }
-  if (document.readyState !== 'loading') mountPreferences();
+  if (document.readyState === 'complete') mountPreferences();
   else document.addEventListener('DOMContentLoaded', mountPreferences, {once:true});
   document.addEventListener('click', event => {
     const link = event.target.closest('a[href]');

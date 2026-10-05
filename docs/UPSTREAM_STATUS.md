@@ -3,6 +3,19 @@
 Last reviewed: **2026-10-05**. Update this record when importing or offering a
 feature; follow [UPSTREAM_WORKFLOW.md](UPSTREAM_WORKFLOW.md).
 
+## 1.0.1 candidate update
+
+Pinned source: upstream v1.0.1, `20c275e39f75fa820978032efaceddfc5283c8cb`,
+compared with the v1.0 baseline below. This is a selective source import,
+split into lighting, scale quantization, and candidate build/version PRs.
+
+The lighting import adds DIM/INV preferences, idle glow, green PLAY indication,
+and selected-track sequencer/ARP note LEDs. Salt font, monitor, HOLD and palette
+preferences remain independent; their combined persistence is regression tested.
+The hardware menu scrolls its ninth row into view, retaining readable fonts and
+fixed footer controls. Input, settings, backup, UI behavior and renderer checks
+cover the combined implementation. No MIDI receive or Bluetooth code is imported.
+
 Local website follow-up: Install opens the initially collapsed Install Progress
 accordion, scrolls to its output, and confirmed
 success reveals an Edit in Studio link. Desktop/mobile, resumed success, failure,

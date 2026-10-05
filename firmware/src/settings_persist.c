@@ -4,7 +4,7 @@
  * PER1/PER2 are upstream; PER3 added bold; PER4 added favorites.
  * palette: UI_PAL_TAG + index; an old id (below 20, earlier firmware) is migrated on import.
  * bold: upstream HOLD encoding, or Salt's tagged hold/font/monitor preferences (panel.c).
- * Untagged legacy values are preserved until these preferences change. */
+ * zoom: upstream LEDS encoding; untagged legacy values are preserved until changed. */
 typedef struct {
     uint32_t magic, palette, lowcut, zoom;
     panel_t panel;
@@ -40,6 +40,7 @@ static int settings_import(persist_t *p, int n)
 #ifdef FELUCCA_MONITOR
     monitor_mode = (p->bold & ~31u) == SALT_DISPLAY_TAG && ((p->bold >> 3) & 3u) < 3u ? (p->bold >> 3) & 3u : 0;
 #endif
+    settings_leds = (uint8_t)leds_from_stored(p->zoom);
 #ifdef FELUCCA_FAVORITES
     memcpy(&favorites, &p->favorites, sizeof favorites);
     favorites.filter = favorites.filter == 1u;
@@ -64,7 +65,7 @@ static void settings_export(persist_t *p)
     p->magic = PERSIST_MAGIC;
     p->palette = palette_to_stored(settings.palette);
     p->lowcut = settings.lowcut;
-    p->zoom = settings.zoom;
+    p->zoom = settings.zoom = leds_to_stored(settings.zoom, settings_leds);
     p->panel = panel;
     p->bold = hold_to_stored(p->bold, settings_hold);
     uint32_t mon = 0;

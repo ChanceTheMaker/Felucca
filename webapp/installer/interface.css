@@ -57,6 +57,8 @@
 :root { --ui-font:'Segoe UI Variable', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; }
 body { font-family:var(--ui-font); font-size:14px; line-height:1.55; background:radial-gradient(ellipse at 20% 0,color-mix(in srgb,var(--chassis) 20%,var(--desk)),var(--desk) 65%); }
 main { max-width:1560px; margin:24px auto; padding:28px; border:1px solid color-mix(in srgb,var(--line) 55%,transparent); border-radius:20px; background:linear-gradient(155deg,color-mix(in srgb,var(--chassis) 24%,var(--bg)),var(--bg) 28%); box-shadow:0 24px 80px #0005,inset 0 1px #ffffff0a; }
+:root[data-full-width=false] .editor-page main { box-sizing:border-box; width:calc(100% - 48px); }
+@media(max-width:780px) { :root[data-full-width=false] .editor-page main { width:calc(100% - 20px); } }
 .masthead { padding-bottom:26px; }
 .brand-row { min-height:90px; }
 .brand-row h1 { font:750 clamp(32px,3.5vw,50px)/1.15 var(--ui-font); letter-spacing:-2px; margin:5px 0 7px; color:var(--fg); }
@@ -532,7 +534,6 @@ footer a { text-underline-offset:3px; }
 }
 
 /* Compact nameplate; no bottom rule or ornamental perforation row. */
-:root[data-skin] main { margin-top:0; }
 :root[data-skin] .masthead { padding-top:12px; padding-bottom:12px; margin-bottom:14px; border-bottom:0; box-shadow:inset 0 1px 3px #0003; }
 :root[data-skin] .brand-row { min-height:0; }
 :root[data-skin] .brand-row h1 { margin:2px 0; line-height:1.15; }

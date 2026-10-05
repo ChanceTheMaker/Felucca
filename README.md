@@ -10,6 +10,11 @@ Salt adds the content-driven TRS MIDI receive-ring fix, 21 screen palettes,
 regular/bold text, an Events/Notes MIDI monitor, and the themed browser Studio.
 Experimental Bluetooth changes are excluded.
 
+Development follows the [upstream workflow](docs/UPSTREAM_WORKFLOW.md): receive
+updates in focused PRs, keep Salt differences explicit, and prepare selected
+contributions on clean upstream branches. See [upstream status](docs/UPSTREAM_STATUS.md)
+for the reviewed revision, retained features, and contribution ledger.
+
 ## Studio and website
 
 Select **Browser** to play the Felucca Synth built into the browser, or **FM-1**

@@ -860,7 +860,7 @@ footer a { text-underline-offset:3px; }
 #groups.unified-groups { grid-template-columns:repeat(4,minmax(0,1fr)); align-items:start; }
 .groups .unified-card,.groups .unified-card[data-controls=knobs] { display:block; min-width:0; }
 .unified-card>.bank-sections { display:grid; gap:14px; }
-.unified-card .bank-section { min-width:0; }
+.unified-card .bank-section { min-width:0; position:relative; }
 .unified-card .bank-section h3 { margin:0 0 8px; padding:0; color:var(--dim); font:650 10px/1.4 var(--ui-font); letter-spacing:.8px; }
 .unified-card .bank-section+.bank-section { border-top:1px solid var(--line); padding-top:12px; }
 .unified-card[data-controls=knobs] .bank-rows { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:5px; }
@@ -905,6 +905,24 @@ footer a { text-underline-offset:3px; }
 .widget-off .widget-line,.widget-off .widget-area { opacity:.25; }
 .widget-slicer .widget-plot,.widget-arp .widget-plot { height:58px; }
 .widget-arp .widget-line { stroke-width:4; }
+/* Silent rack details live only in space the controls already leave unused. */
+.bank-hardware,.bank-hardware-gap { pointer-events:none; user-select:none; gap:5px; }
+.bank-hardware { display:none; min-width:0; grid-column:span var(--spare-columns); grid-template-columns:repeat(calc(var(--spare-columns)*2),minmax(0,1fr)); }
+.unified-card[data-controls=knobs] .bank-hardware { display:grid; }
+.bank-hardware-gap { display:grid; position:absolute; inset:auto 0 0; grid-template-columns:repeat(8,minmax(0,1fr)); }
+.bank-hardware-gap[hidden] { display:none; }
+.hardware-plate { position:relative; display:block; grid-column:span var(--hardware-span); min-width:0; min-height:0; max-height:110px; overflow:hidden; border:1px solid color-mix(in srgb,var(--line) 75%,#000); border-radius:5px; color:var(--dim); background:linear-gradient(135deg,#ffffff0d,#0002),var(--panel); box-shadow:inset 0 1px #ffffff20,inset 0 -2px 4px #0005; }
+.hardware-plate svg { display:block; position:absolute; inset:0; width:100%; height:100%; max-height:110px; }
+.hardware-screw { fill:var(--dim); stroke:#0009; stroke-width:1; }
+.hardware-slot { stroke:#171a1b; stroke-width:1.2; }
+.hardware-jack-rim { fill:var(--dim); stroke:var(--line); stroke-width:2; }
+.hardware-jack-ring { fill:#25282a; stroke:#ffffff60; stroke-width:1; }
+.hardware-jack-hole { fill:#080b0c; }
+.hardware-cone { fill:#212627; stroke:var(--dim); stroke-width:3; }
+.hardware-cone-ring { fill:#171d1f; stroke:#5e6869; stroke-width:3; }
+.hardware-dustcap { fill:#0e1416; stroke:#657072; stroke-width:2; }
+.hardware-speaker::after { content:''; position:absolute; inset:4px; border-radius:3px; background:radial-gradient(circle,#080b0dcc .7px,transparent 1.2px) 0 0 / 4px 4px; box-shadow:inset 0 0 6px #0006; }
+[data-contrast=high] .hardware-plate { opacity:.5; box-shadow:none; }
 @media(max-width:1150px) {
  #groups.unified-groups { grid-template-columns:repeat(2,minmax(0,1fr)); }
  .unified-card[data-section=FX]>.bank-sections { grid-template-columns:repeat(2,minmax(0,1fr)); }

@@ -8,7 +8,7 @@
   let consent = '', loaded = false;
   try { consent = localStorage.getItem(key) || ''; } catch (_) {}
   window.dataLayer = window.dataLayer || [];
-  const tag = (...args) => window.dataLayer.push(args);
+  function tag() { window.dataLayer.push(arguments); }
   const denied = {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'};
   tag('consent', 'default', denied);
   function enable() {

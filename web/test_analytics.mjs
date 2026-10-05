@@ -26,6 +26,7 @@ fresh.context.FeluccaAnalytics.track('install_attempt');
 assert.equal(fresh.context.dataLayer.filter(x => x[0] === 'event').length, 0);
 fresh.choose('granted');
 assert.equal(fresh.scripts.length, 1);
+assert.equal(Object.prototype.toString.call(fresh.context.dataLayer[0]), '[object Arguments]', 'Google tag commands use the documented arguments-object queue');
 const config = fresh.context.dataLayer.find(x => x[0] === 'config')[2];
 assert.ok(!config.page_location.includes('?'));
 assert.equal(config.page_referrer, 'https://example.org');

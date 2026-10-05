@@ -2,6 +2,17 @@
 // Theme-matched hover and keyboard previews for Studio links on the installer.
 (() => {
   const I18N = window.FeluccaI18n;
+  // Gallery cards enlarge in place; keep the floating preview for other Studio links.
+  for (const caption of document.querySelectorAll('.screenshot-gallery figcaption')) {
+    const description = document.createElement('span');
+    description.className = 'gallery-description';
+    description.append(...caption.childNodes);
+    const action = document.createElement('span');
+    action.className = 'gallery-action';
+    action.dataset.i18n = 'ui.clickToPlayEdit';
+    action.textContent = I18N.t('ui.clickToPlayEdit');
+    caption.append(description, action);
+  }
   const names = {stage:'Stage Red', matrix:'Matrix', dx:'Vintage DX7', modeld:'Model D Walnut',
     chocolate:'Chocolate Factory', vapor:'Vaporwave', midnight:'Midnight Studio', space:'Space Mission',
     bauhaus:'Bauhaus', ocean:'Ocean Lab', arcade:'Arcade ’84', hicon:'High Contrast'};
@@ -62,7 +73,7 @@
     bubble.hidden = false; refresh();
   }
   const later = () => { clearTimeout(timer); timer = setTimeout(hide, 160); };
-  for (const link of document.querySelectorAll('a[href="../editor/"], .screenshot-gallery a')) {
+  for (const link of document.querySelectorAll('a[href="../editor/"]')) {
     link.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') show(link); });
     link.addEventListener('pointerleave', later);
     link.addEventListener('focus', () => show(link));

@@ -346,5 +346,6 @@
   "ui.modeTipOr": "ou sélectionnez",
   "ui.modeTipPlay": "Jouez avec le {engine} intégré au navigateur.",
   "ui.themeThumbnail": "Thème {theme} de Studio",
-  "ui.clickToPlay": "Cliquez pour jouer"
+  "ui.clickToPlay": "Cliquez pour jouer",
+  "ui.clickToPlayEdit": "Cliquez pour jouer/modifier"
 }

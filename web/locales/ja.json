@@ -346,5 +346,6 @@
   "ui.modeTipOr": "または選択",
   "ui.modeTipPlay": "ブラウザー内蔵の {engine} を演奏。",
   "ui.themeThumbnail": "Studio の {theme} テーマ",
-  "ui.clickToPlay": "クリックして演奏"
+  "ui.clickToPlay": "クリックして演奏",
+  "ui.clickToPlayEdit": "クリックして演奏・編集"
 }

@@ -20,6 +20,12 @@ are absent. The isolated MIDI environment uses mido 1.3.3/python-rtmidi 1.5.8;
 dependency checks and input enumeration pass, with no device connected. Physical
 recovery, scanning, audio and calibration behavior remain untested.
 
+The preparation stack is published as fork draft PRs
+[target and plan #39](https://github.com/ChanceTheMaker/Felucca/pull/39),
+[package inspection #40](https://github.com/ChanceTheMaker/Felucca/pull/40), and
+[arrival diagnostics #41](https://github.com/ChanceTheMaker/Felucca/pull/41).
+They are stacked in that order on the RC1 candidate branch, not merged to main.
+
 Installer follow-up on `feat/rc1-installer-retry`: failed discovery, denied MIDI
 permission, interrupted updates and stopped resumes show Try Again below the
 output. Retrying requests MIDI access and rediscovers the device, hides stale

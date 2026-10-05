@@ -109,9 +109,10 @@ preview connection failures; it does not mock the UI, select behavior or DSP.
 ## Decorative grille fillers
 
 `feat/studio-hardware-fillers` fills only unused space inside the unified Sound
-cards with perforated speaker-grille holes. Following visual review, jack plates,
-mounting screws, frames and circular speaker drivers were removed. The holes sit
-directly on the card surface, using CSS with no external image assets.
+cards with framed, perforated speaker-grille panels. Following visual review,
+the inset panel border and shaded surface were restored; jack sockets and
+circular speaker drivers remain removed. The panels use CSS with no external
+image assets.
 
 In knob mode, grilles occupy spare cells in the existing four-control rows.
 Other grilles fit blank space beneath shorter sections of a shared card. They

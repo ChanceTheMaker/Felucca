@@ -142,8 +142,8 @@ assets. Firmware and publication remain unchanged.
 Wheel selection is [PR #52](https://github.com/ChanceTheMaker/Felucca/pull/52).
 Its follow-up [PR #53](https://github.com/ChanceTheMaker/Felucca/pull/53),
 `feat/studio-hardware-fillers`, fills unused Sound-card space with decorative
-speaker-grille holes. After visual review, patch plates and circular drivers
-were removed in favor of unframed perforations. Dedicated browser checks pass
+speaker-grille panels. After visual review, patch sockets and circular drivers
+were removed; framed panels with perforations were retained. Dedicated browser checks pass
 48 combinations, including unchanged card/control geometry and no overlap or
 interaction. The preceding full Studio regression passed 192 layout/theme
 combinations, thirteen engines, eight languages and browser audio. See

@@ -1,7 +1,7 @@
 # Felucca [Salt]
 
 Felucca [Salt] by Chance Roth (@ChanceTheMaker), based on Felucca by Leo Kuroshita
-and Hügelton Instruments. Current Salt release: **0.9-salt13**.
+and Hügelton Instruments. Current Salt release: **0.9-salt14**.
 
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
@@ -14,8 +14,12 @@ A multi-engine synthesizer for the M-VAVE FM-1 and a hardware-inspired browser
 Studio. Select **Browser** in the Studio to start playing without an FM-1 or a
 firmware installation. Select **FM-1** to edit your connected instrument.
 
-Current device firmware is **0.9-salt13 beta**. Website updates do not require
+Current device firmware is **0.9-salt14 beta**. Website updates do not require
 reflashing the device. Experimental Bluetooth builds are not included in this release.
+
+Salt14 includes keremimo's TRS MIDI receive-buffer fix: note-off messages are
+processed from the bytes actually received, avoiding stuck notes caused by a
+hardware byte-count mismatch. Install the new firmware to receive this fix.
 
 ![Felucca Salt Studio in Stage Red, with browser audio and oscilloscope](web/screenshots/stage.jpg)
 

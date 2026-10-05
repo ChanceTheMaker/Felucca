@@ -346,5 +346,6 @@
   "ui.modeTipOr": "или выберите",
   "ui.modeTipPlay": "Играйте на встроенном в браузер {engine}.",
   "ui.themeThumbnail": "Тема {theme} для Studio",
-  "ui.clickToPlay": "Нажмите, чтобы играть"
+  "ui.clickToPlay": "Нажмите, чтобы играть",
+  "ui.clickToPlayEdit": "Нажмите для игры/редактирования"
 }

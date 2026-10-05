@@ -346,5 +346,6 @@
   "ui.modeTipOr": "o selecciona",
   "ui.modeTipPlay": "Toca el {engine} integrado en el navegador.",
   "ui.themeThumbnail": "Tema {theme} de Studio",
-  "ui.clickToPlay": "Haz clic para tocar"
+  "ui.clickToPlay": "Haz clic para tocar",
+  "ui.clickToPlayEdit": "Haz clic para tocar/editar"
 }

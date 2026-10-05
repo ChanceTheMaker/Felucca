@@ -346,5 +346,6 @@
   "ui.modeTipOr": "or select",
   "ui.modeTipPlay": "Play the {engine} built into the browser.",
   "ui.themeThumbnail": "{theme} Studio theme",
-  "ui.clickToPlay": "Click to Play"
+  "ui.clickToPlay": "Click to Play",
+  "ui.clickToPlayEdit": "Click to Play/Edit"
 }

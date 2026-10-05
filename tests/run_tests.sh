@@ -226,6 +226,9 @@ run "regression: target cost of the render loops (pi32v2 disassembly)" python3 t
 
 run "installer CLI (fm1_install.py) against a simulated FM-1" python3 tests/install_test.py
 
+run "SMK-37 preparation: board selection, offline packages and receive-only MIDI" \
+    python3 -m unittest discover -s tests -p 'smk37_*_test.py'
+
 if [ "${SKIP_WEB:-0}" != 1 ] && command -v node >/dev/null 2>&1; then
     run "web pages: editor protocol + samples, package builder, update protocol" node web/test_web.mjs
     run "web backup: capture, validation before writes, restore order" node web/test_backup.mjs

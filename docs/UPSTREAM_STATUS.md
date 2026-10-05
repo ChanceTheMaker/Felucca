@@ -44,6 +44,14 @@ an SMK attached. This does not validate SMK interfaces, recovery or any board
 pinout. Stock-manual bank/latch distinctions are added to the capture guide;
 forced firmware recovery remains unverified.
 
+`feat/smk37-interface-research` extends that stack with an offline USB descriptor
+and diagnostic-string scanner. All 13 stock packages were inspected; Pro/Elite
+v16 have different candidate PIDs, while earlier versions and other models
+share IDs. These are compiled-in candidates, not live enumeration. Seven new
+tests bring the preparation suite to 44 passing tests. See
+[interface evidence](smk37/INTERFACES.md). No peripheral pinout or recovery
+sequence is established, and the SMK build guard remains in place.
+
 The separately requested saxophone options are documented and queued in
 [draft PR #43](https://github.com/ChanceTheMaker/Felucca/pull/43), based directly
 on RC1 rather than the SMK stack. It proposes sampled-tenor improvements,

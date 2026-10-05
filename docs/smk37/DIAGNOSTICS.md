@@ -106,6 +106,11 @@ Use [SMK37_PREPARATION.md](../SMK37_PREPARATION.md) for the recovery and staged
 bring-up requirements. These diagnostics characterize stock behavior; they do
 not demonstrate that Felucca runs on the keyboard yet.
 
+Compare observed IDs with [stock interface candidates](INTERFACES.md). Pro and
+Elite v16 differ, while older versions and other models share IDs. Keep the
+physical model and installed firmware version alongside the USB observation;
+do not choose an update file from VID/PID alone.
+
 ## Offline verification
 
 ```sh

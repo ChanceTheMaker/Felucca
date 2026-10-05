@@ -36,10 +36,30 @@
 #audio-volume { width:90px; }
 #audio-status { font-size:11px; color:var(--dim); }
 .screenshot-gallery { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr)); gap:18px; margin-top:24px; }
-.screenshot-gallery figure { margin:0; min-width:0; width:100%; max-width:300px; box-sizing:border-box; justify-self:center; overflow:hidden; border:1px solid var(--line); border-radius:10px; background:var(--panel); }
+.screenshot-gallery figure { position:relative; margin:0; min-width:0; width:100%; max-width:300px; box-sizing:border-box; justify-self:center; overflow:hidden; border:1px solid var(--line); border-radius:10px; background:var(--panel); transition:transform .2s ease,box-shadow .2s ease; }
 .screenshot-gallery a { display:block; }
+.screenshot-gallery a::after { content:''; position:absolute; inset:0; }
 .screenshot-gallery img { display:block; width:100%; height:auto; }
-.screenshot-gallery figcaption { padding:10px 12px; color:var(--fg); font-size:12px; }
+.screenshot-gallery figcaption { display:grid; padding:10px 12px; color:var(--fg); font-size:12px; }
+.screenshot-gallery figcaption > span { grid-area:1 / 1; align-self:center; }
+.screenshot-gallery .gallery-action { visibility:hidden; text-align:center; font-weight:600; color:var(--accent); }
+.screenshot-gallery figure:focus-within { z-index:2; box-shadow:0 12px 32px #0006; }
+.screenshot-gallery figure:focus-within .gallery-description { visibility:hidden; }
+.screenshot-gallery figure:focus-within .gallery-action { visibility:visible; }
+@media (hover:hover) and (pointer:fine) {
+  .screenshot-gallery figure:hover { z-index:2; box-shadow:0 12px 32px #0006; }
+  .screenshot-gallery figure:hover .gallery-description { visibility:hidden; }
+  .screenshot-gallery figure:hover .gallery-action { visibility:visible; }
+}
+@media (min-width:600px) {
+  .screenshot-gallery figure:focus-within { transform:scale(1.35); }
+}
+@media (min-width:600px) and (hover:hover) and (pointer:fine) {
+  .screenshot-gallery figure:hover { transform:scale(1.35); }
+}
+@media (prefers-reduced-motion:reduce) {
+  .screenshot-gallery figure { transition:none; }
+}
 .mode-switch { display:inline-flex; padding:3px; gap:3px; border-radius:8px; border:1px solid var(--line); background:var(--bg); box-shadow:inset 0 2px 4px #0005; }
 .mode-switch button { min-width:76px; border:0; border-radius:5px; background:transparent; color:var(--dim); box-shadow:none; }
 .mode-switch button[aria-pressed=true] { background:var(--accent); color:var(--ink); box-shadow:0 1px 4px #0005,inset 0 1px #fff5; }

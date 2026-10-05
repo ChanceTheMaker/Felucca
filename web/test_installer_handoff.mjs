@@ -2,6 +2,8 @@
 // UI-only simulation: the updater and MIDI permission are replaced in this test's browser context.
 import assert from 'node:assert/strict';
 import {mkdir,readFile} from 'node:fs/promises';
+import {resolve,sep,extname} from 'node:path';
+import {fileURLToPath} from 'node:url';
 const {chromium}=await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const browser=await chromium.launch({channel:'chrome',headless:true});
 const base=process.env.SITE_URL || 'http://127.0.0.1:8871';
@@ -34,21 +36,38 @@ try {
  page.setDefaultTimeout(10000);
  page.setDefaultNavigationTimeout(20000);
  page.on('pageerror',e=>errors.push(e.message));
- await page.route('**/webapp/installer/',async route=>{
-  const source=await readFile(new URL('../build/site/webapp/installer/index.html',import.meta.url),'utf8');
-  const marker='const $ = (id) => document.getElementById(id);';
-  assert(source.includes(marker));
-  await route.fulfill({contentType:'text/html; charset=utf-8',body:source.replace(marker,'Updater = window.TestUpdater;\n'+marker)});
+ const root=fileURLToPath(new URL('../build/site/',import.meta.url));
+ await page.route(base+'/**',async route=>{
+  const pathname=decodeURIComponent(new URL(route.request().url()).pathname);
+  const file=resolve(root,'.'+pathname+(pathname.endsWith('/')?'index.html':''));
+  if(!file.startsWith(resolve(root)+sep)) return route.abort();
+  let body=await readFile(file);
+  if(pathname==='/webapp/installer/') {
+   const source=body.toString('utf8'),marker='const $ = (id) => document.getElementById(id);';
+   assert(source.includes(marker));
+   body=Buffer.from(source.replace(marker,'Updater = window.TestUpdater;\n'+marker));
+  }
+  const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.jpg':'image/jpeg','.ttf':'font/ttf','.woff2':'font/woff2'};
+  await route.fulfill({contentType:mime[extname(file)]||'application/octet-stream',body});
  });
  await page.goto(base+'/webapp/installer/',{waitUntil:'domcontentloaded'});
  const go=page.locator('#go'), handoff=page.locator('#studio-handoff');
  await page.waitForFunction(()=>!document.querySelector('#go').disabled);
  assert.equal(await handoff.isVisible(),false);
+ assert.equal(await page.locator('#install-progress').evaluate(e=>e.open),false,'Progress starts collapsed');
+ assert.equal(await page.locator('#bar').isVisible(),false);
+ assert.equal(await page.locator('#status').isVisible(),false);
+ assert.equal(await page.locator('#install-progress summary').textContent(),'Install Progress');
  for(const [scenario,width] of [['success',1440],['resume-success',390],['failed',390],['resume-stopped',390]]) {
+  if(await page.locator('#install-progress').evaluate(e=>e.open)) {
+   await page.locator('#install-progress summary').click();
+   assert.equal(await page.locator('#bar').isVisible(),false,'Accordion can be collapsed');
+  }
   await page.setViewportSize({width,height:844});
   await page.evaluate(s=>{window.scenario=s;window.finishInstall=null;scrollTo(0,0);},scenario);
   await go.click();
   await page.waitForFunction(()=>!!window.finishInstall);
+  assert.equal(await page.locator('#install-progress').evaluate(e=>e.open),true,'Install opens progress');
   assert.equal(await handoff.isVisible(),false,'No Studio button during a write');
   assert(await go.isDisabled(),'Install locks during the write');
   const progress=await page.locator('#install-progress').boundingBox();

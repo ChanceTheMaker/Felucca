@@ -476,6 +476,6 @@
   "nav.features": "Features",
   "nav.backToTop": "Back to top",
   "site.release_candidate": "1.0-salt1rc1 release candidate — hardware validation pending. The published release remains Salt14.",
-  "installer.progress": "Installation progress",
+  "installer.progress": "Install Progress",
   "installer.editStudio": "Edit in Studio"
 }

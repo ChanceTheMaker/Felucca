@@ -2,17 +2,9 @@
 // Decorative rack hardware occupies existing blank space; never sound controls.
 (() => {
   const states=new WeakMap();
-  const screw=(x,y)=>`<circle cx="${x}" cy="${y}" r="3" class="hardware-screw"/><path d="M${x-1.5} ${y+1.5}l3-3" class="hardware-slot"/>`;
-  const jack=(x,y)=>`<circle cx="${x}" cy="${y}" r="10" class="hardware-jack-rim"/><circle cx="${x}" cy="${y}" r="6.5" class="hardware-jack-ring"/><circle cx="${x}" cy="${y}" r="3.5" class="hardware-jack-hole"/>`;
-  function plate(fraction,kind='patch') {
+  function grille() {
     const item=document.createElement('span');
-    item.className=`hardware-plate hardware-${kind}`;item.dataset.fraction=fraction;
-    item.style.setProperty('--hardware-span',fraction==='1/2'?4:fraction==='1/4'?2:1);
-    const width=fraction==='1/2'?160:fraction==='1/4'?80:40;
-    let art;
-    if(kind==='speaker') art='<circle cx="80" cy="84" r="70" class="hardware-cone"/><circle cx="80" cy="84" r="57" class="hardware-cone-ring"/><circle cx="80" cy="84" r="44" class="hardware-cone-ring"/><circle cx="80" cy="84" r="22" class="hardware-dustcap"/>';
-    else art=(fraction==='1/2'?[32,80,128]:fraction==='1/4'?[24,56]:[20]).map(x=>jack(x,31)+jack(x,61)).join('');
-    item.innerHTML=`<svg viewBox="0 0 ${width} 84" aria-hidden="true" focusable="false">${art}${screw(7,7)}${screw(width-7,7)}${screw(7,77)}${screw(width-7,77)}</svg>`;
+    item.className='hardware-grille';
     return item;
   }
   function filler(className) {
@@ -29,18 +21,14 @@
       if(!spare)continue;
       const extra=filler('bank-hardware');extra.style.setProperty('--spare-columns',spare);
       // These use only the unused cells in the existing four-control grid row.
-      if(spare>=2)extra.append(plate('1/2',count===1?'speaker':'patch'));
-      if(spare%2) {
-        if(count===3)extra.append(plate('1/8'),plate('1/8'));
-        else extra.append(plate('1/4'));
-      }
+      extra.append(grille());
       bank.append(extra);
     }
     for(const section of container.querySelectorAll('.unified-card .bank-section')) {
       const last=section.lastElementChild;
       if(!last)continue;
       const extra=filler('bank-hardware-gap');extra.hidden=true;
-      extra.append(plate('1/2','speaker'),plate('1/4'),plate('1/8'),plate('1/8'));
+      extra.append(grille());
       section.append(extra);sections.push({section,last,extra});
     }
     const state={frame:0};

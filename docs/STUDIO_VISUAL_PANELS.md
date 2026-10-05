@@ -106,24 +106,25 @@ Set `STUDIO_FIXTURE_DIR` to a built `webapp/editor` directory to serve its stati
 assets directly to an isolated test browser. This avoids intermittent shared
 preview connection failures; it does not mock the UI, select behavior or DSP.
 
-## Decorative hardware fillers
+## Decorative grille fillers
 
 `feat/studio-hardware-fillers` fills only unused space inside the unified Sound
-cards. Original SVG patch plates come in half, quarter and eighth widths, with
-jack sockets and mounting screws; half-speaker grilles include a cone and mesh.
-The artwork follows the current theme. No external images are used.
+cards with perforated speaker-grille holes. Following visual review, jack plates,
+mounting screws, frames and circular speaker drivers were removed. The holes sit
+directly on the card surface, using CSS with no external image assets.
 
-In knob mode, plates occupy spare cells in the existing four-control rows.
-Other fillers fit blank space beneath shorter sections of a shared card. They
-disappear when that space is too small, including when responsive columns stack.
+In knob mode, grilles occupy spare cells in the existing four-control rows.
+Other grilles fit blank space beneath shorter sections of a shared card. They
+hide when that space is too small, including when responsive columns stack.
 They never create extra rows, enlarge cards or occupy gaps between cards.
 Decoration is inert, hidden from assistive technology and ignores pointer input;
 it has no audio or routing behavior.
 
 `web/test_studio_hardware.mjs` passes 48 theme, light/dark, control-mode and
-viewport combinations. It checks all plate sizes, bounds, control overlap,
-noninteraction and rebuilds, and compares card/control geometry with decoration
-removed. Desktop and mobile screenshots were inspected. The complete Studio
-regression also passes thirteen engines, eight languages, 192 layout/theme
-combinations and actual browser DSP output. These browser checks used built-site
-fixtures because the shared preview server intermittently resets asset requests.
+viewport combinations. It checks bounds, control overlap, noninteraction and
+rebuilds, verifies that no patch plates or drivers remain, and compares
+card/control geometry with decoration removed. Desktop and mobile screenshots
+were inspected. The earlier complete Studio regression passed thirteen engines,
+eight languages, 192 layout/theme combinations and actual browser DSP output.
+These browser checks used built-site fixtures because the shared preview server
+intermittently resets asset requests.

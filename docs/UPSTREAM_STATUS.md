@@ -140,12 +140,13 @@ updates and the full Studio layout/audio matrix pass against isolated built-site
 assets. Firmware and publication remain unchanged.
 
 Wheel selection is [PR #52](https://github.com/ChanceTheMaker/Felucca/pull/52).
-Its follow-up `feat/studio-hardware-fillers` adds original decorative patch plates
-and half-speaker grilles exclusively inside unused Sound-card space. Half,
-quarter and eighth plates adapt to themes and available space without changing
-card/control geometry or handling input. Dedicated browser checks pass 48
-combinations; the full Studio regression passes 192 layout/theme combinations,
-thirteen engines, eight languages and browser audio. See
+Its follow-up [PR #53](https://github.com/ChanceTheMaker/Felucca/pull/53),
+`feat/studio-hardware-fillers`, fills unused Sound-card space with decorative
+speaker-grille holes. After visual review, patch plates and circular drivers
+were removed in favor of unframed perforations. Dedicated browser checks pass
+48 combinations, including unchanged card/control geometry and no overlap or
+interaction. The preceding full Studio regression passed 192 layout/theme
+combinations, thirteen engines, eight languages and browser audio. See
 [STUDIO_VISUAL_PANELS.md](STUDIO_VISUAL_PANELS.md). This remains a fork-only
 presentation change, with no upstream import, firmware change or publication.
 

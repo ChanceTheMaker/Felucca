@@ -70,6 +70,7 @@
       previousDescription = link.getAttribute('aria-describedby');
       link.setAttribute('aria-describedby', [previousDescription, caption.id].filter(Boolean).join(' '));
     }
+    bubble.classList.toggle('studio-preview-hero', !!link.closest('.hero-actions'));
     bubble.hidden = false; refresh();
   }
   const later = () => { clearTimeout(timer); timer = setTimeout(hide, 160); };

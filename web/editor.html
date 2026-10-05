@@ -178,11 +178,21 @@
   <header class="top">
     <div class="bar">
       <button id="connect" data-t="connect" data-ic="port_usb_c"></button>
+      <div id="audio-mode" class="mode-switch" role="group" aria-label="Sound source">
+        <button id="mode-fm1" type="button" aria-pressed="true">FM-1</button>
+        <button id="mode-browser" type="button" aria-pressed="false">Browser</button>
+      </div>
+      <label id="audio-volume-label" hidden>Volume <input id="audio-volume" type="range" min="0" max="100" value="35" aria-label="Browser audio volume"></label>
+      <span id="audio-status" role="status"></span>
       <span id="version" class="dim"></span>
       <span id="live" class="dim"></span>
       <span id="mock" class="dim" hidden data-t="mock"></span>
     </div>
     <div id="status"></div>
+    <div id="audio-scope" class="audio-scope" hidden>
+      <span class="scope-label">OSCILLOSCOPE <span>OUTPUT</span></span>
+      <canvas id="scope-canvas" role="img" aria-label="Live browser audio waveform"></canvas>
+    </div>
     <nav class="tabs" id="tabs" role="tablist">
       <button role="tab" data-tab="sound" data-t="sound" data-ic="symbol_audio"></button>
       <button role="tab" data-tab="sequencer" data-t="tabSeq" data-ic="symbol_grid"></button>
@@ -1194,6 +1204,10 @@ function makeMockDevice(opt = {}) {
     [[60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75], [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]],
   ];
   const P_COUNT = 57, G_COUNT = 27, NSTEP = 64, P_E0 = 49, G_ENGSEL = 20, P_SLCR = 45;
+  if (opt.presets) opt.presets.forEach((presets, e) => {
+    ENG[e].presets = presets.map(pr => ({name: pr.name, e: pr.values.slice(49), env: pr.values.slice(1, 5), mono: pr.values[37] === 2, values: pr.values}));
+  });
+  if (opt.presets) [4, 8].forEach(e => { ENG[e].edit[0].max = 4; ENG[e].edit[0].names = ['PIANO', 'TRANH', 'FLUTE', 'SAX', 'PERC']; });
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   /* four tracks (firmware v3); engine / preset / p / step below are the selected track's */
   const NTRK = 4, TRK_DRUM = 3;
@@ -1236,6 +1250,7 @@ function makeMockDevice(opt = {}) {
     [1, 2, 3, 4].forEach((id, k) => { st.p[id] = pr.env[k]; });
     st.p[37] = pr.mono ? 2 : 0;
     st.p[33] = 0; st.p[34] = 24; st.p[35] = 28; st.p[36] = 36;
+    if (pr.values) [1,2,3,4,5,17,18,19,20,33,34,35,36,37].forEach(i => { st.p[i] = pr.values[i]; });
     for (let i = P_SLCR; i < P_E0; i++) st.p[i] = TP[i].def;   /* a factory preset turns the SLICER off */
     if (pr.pat && seqEmpty()) loadPattern(pr.pat - 1);
   }
@@ -1264,6 +1279,7 @@ function makeMockDevice(opt = {}) {
   setEngine(0);
   clearSteps();
   applyPreset(4);                                   /* ACID with its pattern */
+  if (opt.presets) { clearSteps(); st.bank.fill(null); st.slots.fill(null); st.rec = 0; applyPreset(0); }
   const project = () => JSON.parse(JSON.stringify({ tracks: st.tracks, sel: st.sel, g: st.g }));
   st.slots[0] = project();
 
@@ -1368,7 +1384,7 @@ function makeMockDevice(opt = {}) {
         break;
       }
       case CMD.INFO:
-        s(opt.legacy ? "FELUCCA 0.4 BETA (MOCK)" : "FELUCCA 0.5 BETA (MOCK)"); b(ENG.length); b(P_COUNT); b(G_COUNT); b(NSTEP); b(P_E0);
+        s(opt.presets ? "FELUCCA Browser Preview" : opt.legacy ? "FELUCCA 0.4 BETA (MOCK)" : "FELUCCA 0.5 BETA (MOCK)"); b(ENG.length); b(P_COUNT); b(G_COUNT); b(NSTEP); b(P_E0);
         ENG.forEach((e) => s(e.name));
         if (!opt.legacy) { b(NTRK); if (st.uiCaps) b(st.uiCaps); }
         break;
@@ -1521,7 +1537,7 @@ function makeMockDevice(opt = {}) {
     id: "mock-out", name: "Felucca", type: "output", state: "connected",
     send(data) {
       if (data.length === 3 && [0x80, 0x90, 0xB0].includes(data[0] & 0xF0)) {
-        st.lastMidi = Array.from(data); return; // keyboard preview, no simulated audio
+        st.lastMidi = Array.from(data); opt.onMidi?.(data); return;
       }
       const f = unframe(data);
       if (!f) { console.error("mock: refused a frame that is not F0 7D 46 4C ... F7", data); return; }
@@ -1533,6 +1549,7 @@ function makeMockDevice(opt = {}) {
       setTimeout(() => {
         busy = false;
         const r = handle(f.cmd, f.a);
+        opt.onState?.(st);
         if (r && input.onmidimessage) input.onmidimessage({ data: Uint8Array.from(r) });
         const ra = r ? r.slice(5, -1) : [];
         if (r && ((f.cmd === CMD.SET && f.a[0] === 1 && f.a[1] === G_ENGSEL) || f.cmd === CMD.PRESET
@@ -1944,6 +1961,7 @@ let tab = (() => {
 })();
 const hasTracks = () => !!dev && !!dev.info && !!dev.info.ntrk;
 function showTab(name) {
+  if (new URLSearchParams(location.search).get('audio') === '1') name = 'sound';
   if (!TABS.includes(name)) name = "sound";
   const prev = tab;
   tab = name;
@@ -1989,8 +2007,28 @@ $("tabs").addEventListener("keydown", (e) => {          /* arrow keys move betwe
 window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (TABS.includes(h) && h !== tab) showTab(h); });
 
 const QS = new URLSearchParams(location.search);
-const MOCK = QS.get("mock") === "1";
-$("mock").hidden = !MOCK;
+let BROWSER_AUDIO = QS.get('audio') === '1';
+let MOCK = QS.get("mock") === "1" || BROWSER_AUDIO;
+$("mock").hidden = !MOCK || BROWSER_AUDIO;
+let browserSynth = null;
+const audioModule = import('./audio/browser.js');
+const deviceText = Object.fromEntries(['en', 'ja'].map(l => [l, {...TEXT[l]}]));
+function renderAudioMode() {
+  for (const l of ['en', 'ja']) Object.assign(TEXT[l], deviceText[l]);
+  if (BROWSER_AUDIO) {
+  Object.assign(TEXT.en, {connect: 'Enable audio', disconnect: 'Stop audio', ready: 'Audio ready', needDevice: 'Enable audio to play and edit a sound in your browser.'});
+  Object.assign(TEXT.ja, {connect: '音声を有効にする', disconnect: '音声を停止', ready: '音声準備完了', needDevice: '音声を有効にしてブラウザーで演奏できます。'});
+  }
+  document.documentElement.classList.toggle('browser-audio', BROWSER_AUDIO);
+  $('audio-volume-label').hidden = !BROWSER_AUDIO;
+  $('audio-scope').hidden = !BROWSER_AUDIO;
+  $('mode-fm1').setAttribute('aria-pressed', String(!BROWSER_AUDIO));
+  $('mode-browser').setAttribute('aria-pressed', String(BROWSER_AUDIO));
+  $('mock').hidden = !MOCK || BROWSER_AUDIO;
+  $('audio-status').textContent = BROWSER_AUDIO ? 'Browser sound · No hardware needed' : '';
+}
+renderAudioMode();
+$('audio-volume').oninput = e => browserSynth?.volume(Number(e.target.value) / 100);
 let mock = null;
 
 /* -------------------------------------------------------------- state --- */
@@ -2048,8 +2086,16 @@ async function connect() {
   $("connect").disabled = true;
   sayK("connecting");
   try {
+    if (BROWSER_AUDIO) {
+      if (!browserSynth) { const {BrowserSynth} = await audioModule; browserSynth = new BrowserSynth(); }
+      await browserSynth.start();
+      browserSynth.showScope($('scope-canvas'));
+      browserSynth.volume(Number($('audio-volume').value) / 100);
+      $('audio-status').textContent = 'Browser audio · One sound · Built-in samples';
+    }
     if (!access) {
-      if (MOCK) { mock = makeMockDevice({ legacy: QS.get("legacy") === "1" }); access = mock.access; }
+      if (MOCK) { mock = makeMockDevice(BROWSER_AUDIO ? {auto: false, uiCaps: 0, presets: browserSynth.presets,
+        onMidi: bytes => browserSynth.midi(bytes), onState: state => browserSynth.sync(state)} : { legacy: QS.get("legacy") === "1" }); access = mock.access; }
       else {
         try { access = await navigator.requestMIDIAccess({ sysex: true }); }
         catch (e) { sayK("denied"); return; }
@@ -2076,6 +2122,7 @@ async function connect() {
     playKeyboard.connect(dev ? dev.output : null);
   } catch (e) {
     console.error(e);
+    if (BROWSER_AUDIO) { $('audio-status').textContent = e.message; browserSynth?.stop(); }
     if (dev) {                                       /* not unplugged meanwhile (that says "lost") */
       const timeout = /^timeout/.test(e.message);
       disconnect();
@@ -2088,6 +2135,7 @@ async function connect() {
 
 function disconnect(reasonKey = "disconnected") {
   playKeyboard.connect(null);
+  if (BROWSER_AUDIO) { browserSynth?.stop(); $('audio-status').textContent = 'Browser audio stopped · Enable audio to resume'; }
   if (dev) {
     dev.link.close();
     dev.input.onmidimessage = null;
@@ -3623,6 +3671,7 @@ function renderPlayState() {
   $("play-sustain").disabled = $("play-stop").disabled = !connected;
   $("play-sustain").setAttribute("aria-pressed", String(playKeyboard.sustain));
   $("play-help").textContent = t(connected ? (MOCK ? "playMock" : "playHelp") : "playConnect");
+  if (BROWSER_AUDIO) $('play-help').textContent = connected ? 'Playing in your browser · Sustain and polyphonic chords supported · No FM-1 required' : 'Click Enable audio to play in your browser.';
   if (playResizePending && !playKeyboard.held.size && !playPointers.size) {
     playResizePending = false; requestAnimationFrame(() => renderPlayKeys(true));
   }
@@ -3717,6 +3766,31 @@ new ResizeObserver(() => renderPlayKeys(true)).observe($("play-keys"));
 $("connect").addEventListener("click", () => {
   if (dev) { wantConnected = false; disconnect(); } else connect();
 });
+async function switchAudioMode(browser) {
+  if ($('connect').disabled) return;
+  if (browser === BROWSER_AUDIO) { if (browser && !dev) await connect(); return; }
+  $('mode-fm1').disabled = $('mode-browser').disabled = true;
+  try {
+    // Finish an in-flight editor operation instead of silently ignoring the switch.
+    while (busy > 0 && dev) await sleep(20);
+    wantConnected = false;
+    clearTimeout(onState.tm);
+    disconnect();
+    if (access) access.onstatechange = null;
+    if (BROWSER_AUDIO) await browserSynth?.stop();
+    mock?.stop(); mock = null; access = null;
+    sets.clear();
+    BROWSER_AUDIO = browser;
+    MOCK = browser || QS.get('mock') === '1';
+    const url = new URL(location.href);
+    if (browser) url.searchParams.set('audio', '1'); else url.searchParams.delete('audio');
+    history.replaceState(null, '', url.pathname + url.search + '#sound');
+    renderAudioMode(); applyLang(); showTab('sound');
+    if (browser) await connect(); else sayK('disconnected');
+  } finally { $('mode-fm1').disabled = $('mode-browser').disabled = false; }
+}
+$('mode-fm1').onclick = () => switchAudioMode(false);
+$('mode-browser').onclick = () => switchAudioMode(true);
 applyLang();
 showTab(tab);
 libInit();

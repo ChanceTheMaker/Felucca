@@ -183,7 +183,7 @@
   "installer.direct": "将 USB 线直接连接到电脑。无需调试探针或 Transporter。",
   "installer.brick": "如果安装失败且 FM-1 无法启动，需要使用 Transporter 恢复：",
   "installer.beta": "虽然已在实机上测试，此固件仍为测试版。\n对于使用此自定义固件造成的 FM-1 损坏或异常，作者不承担责任。使用风险由您自行承担。",
-  "installer.back": "要恢复官方固件，需要 M-VAVE 官方更新程序 M-UPGRADE（Downloads → PC Software → M-UPGRADE）及官方固件（PC Firmware → FM-1 V15）。",
+  "installer.back": "从 M-VAVE 下载 FM-1 V15，选择未经修改的 FM-1.fwsc。浏览器在本地验证，不会上传文件。",
   "installer.loadfail": "无法加载： ",
   "installer.start": "正在开始",
   "installer.verify": "正在验证",
@@ -415,5 +415,16 @@
   "editor.songBusy": "请先停止再编辑",
   "editor.songInvalid": "请检查槽位和重复次数",
   "editor.songPlaying": "正在播放行",
-  "editor.songSaved": "乐段链已更改。请保存项目以保留更改。"
+  "editor.songSaved": "乐段链已更改。请保存项目以保留更改。",
+  "installer.stockTitle": "恢复官方 V15",
+  "installer.stockFile": "官方 FM-1.fwsc",
+  "installer.stockGo": "备份并恢复官方 V15",
+  "installer.stockBackup": "首先备份当前及已保存的音乐、音色库、采样和设置。旧固件需要升级 Felucca 才能完整备份。恢复备份时，请重新安装 Felucca 并使用编辑器。",
+  "installer.stockRecovery": "继续中断的更新：我已将完整备份保存到此电脑",
+  "installer.stockValid": "官方 V15 已验证",
+  "installer.stockConfirm": "完整备份是否已保存到此电脑？继续将恢复官方 V15。V15 无法打开 Felucca 音乐。",
+  "installer.stockNeedBackup": "更新加载器无法导出备份。仅在已保存完整备份的情况下继续。",
+  "installer.stockUnsupported": "此 Felucca 版本不支持完整备份。请先安装当前版本。",
+  "installer.backup": "正在保存完整备份 ",
+  "installer.stockError": "无法验证官方固件："
 }

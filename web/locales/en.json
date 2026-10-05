@@ -192,7 +192,7 @@
   "installer.direct": "Connect the USB cable directly to the computer. No probe or Transporter is needed.",
   "installer.brick": "If an install fails and the FM-1 no longer starts, recovering it needs a Transporter:",
   "installer.beta": "Although tested on device, this firmware is a beta.\nThe author accepts no responsibility if your FM-1 is damaged or misbehaves because of this custom firmware. Use it at your own risk.",
-  "installer.back": "To go back to the official firmware you need M-VAVE's official updater, M-UPGRADE (Downloads → PC Software → M-UPGRADE), and the official firmware (PC Firmware → FM-1 V15).",
+  "installer.back": "Get official FM-1 V15 from M-VAVE and select the unmodified FM-1.fwsc. The browser validates it locally; it is not sent to a server.",
   "installer.nomidi": "This browser cannot do it. Open the page in Chrome or Edge.",
   "installer.loadfail": "Could not load: ",
   "installer.start": "Starting",
@@ -415,5 +415,16 @@
   "editor.songBusy": "Stop before editing",
   "editor.songInvalid": "Check slots and repeats",
   "editor.songPlaying": "Playing row",
-  "editor.songSaved": "Chain changed. Save a project to keep it."
+  "editor.songSaved": "Chain changed. Save a project to keep it.",
+  "installer.stockTitle": "Return to official V15",
+  "installer.stockFile": "Official FM-1.fwsc",
+  "installer.stockGo": "Back up and return to official V15",
+  "installer.stockBackup": "Current music, saved music, sound banks, samples and settings are saved first. Older firmware needs a Felucca update for complete backups. To restore an archive later, reinstall Felucca and use the editor.",
+  "installer.stockRecovery": "Resume an interrupted update: I already saved a complete backup to this computer",
+  "installer.stockValid": "Official V15 verified",
+  "installer.stockConfirm": "Has the complete backup file been saved to this computer? Continue to return to official V15. Official V15 cannot open Felucca music.",
+  "installer.stockNeedBackup": "An update loader cannot export a backup. Only select resume if you already saved a complete backup.",
+  "installer.stockUnsupported": "This Felucca does not support complete backups. Install the current Felucca first.",
+  "installer.backup": "Saving complete backup ",
+  "installer.stockError": "Cannot validate official firmware: "
 }

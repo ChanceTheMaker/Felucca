@@ -183,7 +183,7 @@
   "installer.direct": "Branchez le câble USB directement à l’ordinateur. Aucune sonde ni Transporter n’est nécessaire.",
   "installer.brick": "Si l’installation échoue et que le FM-1 ne démarre plus, un Transporter est nécessaire pour le restaurer :",
   "installer.beta": "Bien que testé sur l’appareil, ce firmware est une version bêta.\nL’auteur décline toute responsabilité en cas de dommages ou de dysfonctionnement du FM-1 causés par ce firmware personnalisé. Utilisation à vos risques et périls.",
-  "installer.back": "Pour revenir au firmware officiel, utilisez M-UPGRADE de M-VAVE (Downloads → PC Software → M-UPGRADE) et le firmware officiel (PC Firmware → FM-1 V15).",
+  "installer.back": "Téléchargez FM-1 V15 chez M-VAVE et sélectionnez le fichier FM-1.fwsc non modifié. La validation est locale, sans envoi à un serveur.",
   "installer.loadfail": "Chargement impossible : ",
   "installer.start": "Démarrage",
   "installer.verify": "Vérification",
@@ -415,5 +415,16 @@
   "editor.songBusy": "Arrêtez la lecture avant de modifier",
   "editor.songInvalid": "Vérifiez les emplacements et répétitions",
   "editor.songPlaying": "Lecture de la ligne",
-  "editor.songSaved": "Chaîne modifiée. Sauvegardez un projet pour la conserver."
+  "editor.songSaved": "Chaîne modifiée. Sauvegardez un projet pour la conserver.",
+  "installer.stockTitle": "Revenir au firmware officiel V15",
+  "installer.stockFile": "FM-1.fwsc officiel",
+  "installer.stockGo": "Sauvegarder et revenir à V15",
+  "installer.stockBackup": "La musique actuelle et enregistrée, les banques, les échantillons et les réglages sont sauvegardés d’abord. Les anciens firmwares nécessitent une mise à jour de Felucca. Pour restaurer, réinstallez Felucca et utilisez l’éditeur.",
+  "installer.stockRecovery": "Reprendre une mise à jour interrompue : une sauvegarde complète est déjà enregistrée sur cet ordinateur",
+  "installer.stockValid": "V15 officiel vérifié",
+  "installer.stockConfirm": "La sauvegarde complète est-elle enregistrée sur cet ordinateur ? Continuer pour revenir à V15. V15 ne peut pas ouvrir la musique Felucca.",
+  "installer.stockNeedBackup": "Le chargeur de mise à jour ne peut pas exporter de sauvegarde. Reprenez uniquement si une sauvegarde complète est déjà enregistrée.",
+  "installer.stockUnsupported": "Cette version de Felucca ne permet pas les sauvegardes complètes. Installez d’abord la version actuelle.",
+  "installer.backup": "Sauvegarde complète en cours ",
+  "installer.stockError": "Impossible de valider le firmware officiel : "
 }

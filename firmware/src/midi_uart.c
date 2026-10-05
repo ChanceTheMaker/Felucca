@@ -9,18 +9,23 @@
  * host tests: midi_uart_test, hostsim TRACKS trs_test);
  * Clock/Start/Continue/Stop retain timestamps and source; other realtime,
  * system common and SysEx are ignored (no SysEx->UBOOT from DIN). */
+/* Read the DMA ring by its contents: HRXCNT can miss a received byte and leave
+ * every later note-off waiting for one more byte. Salt14 hardware reports and
+ * midi_uart_test cover this drift. Keep upstream timestamp/overflow handling. */
 #include "../hal/fm1_uart.h"   /* registers; relative, so the host tests find it too */
 
 #define UM_RING 128u
+#define UM_EMPTY 0xFDu /* undefined MIDI realtime byte marks an unwritten slot */
 static volatile uint8_t um_ring[UM_RING] __attribute__((aligned(16)));
 static struct {
-    uint32_t rd, pend;
+    uint32_t rd;
     volatile uint32_t bytes, drops, msgs;          /* TIMER5 writes; read-only CDC diagnostics */
     uint8_t st, need, got, d0, sysex;
 } um;
 
 static void uart_midi_init(void)                   /* before timer5_start(): PORTH RMW */
 {
+    for (uint32_t i = 0; i < UM_RING; i++) um_ring[i] = UM_EMPTY;
     fm1_uart1_midi_init(um_ring, UM_RING);
 }
 
@@ -67,22 +72,35 @@ static void um_byte(uint32_t b)
     }
 }
 
-static void uart_midi_take(uint32_t n)
+/* the bytes the DMA has written since the last call; a received UM_EMPTY (line
+ * noise) is passed over once the byte after it has landed */
+static void um_drain(void)
 {
-    um.pend += n;
-    if (um.pend > UM_RING) {
-        um.drops += um.pend - UM_RING;
-        um.rd = (um.rd + um.pend - UM_RING) & (UM_RING - 1u);
-        um.pend = UM_RING;
-        um.st = um.got = um.sysex = 0;              /* lost bytes: wait for a complete new status */
+    uint32_t n;
+    for (n = 0; n < UM_RING; n++) {
+        uint32_t b = um_ring[um.rd];
+        if (b == UM_EMPTY) {
+            if (um_ring[(um.rd + 1u) & (UM_RING - 1u)] == UM_EMPTY)
+                break;
+            b = um_ring[um.rd];                    /* the DMA writes in order: this one has landed too */
+        }
+        um_ring[um.rd] = UM_EMPTY;
+        um.rd = (um.rd + 1u) & (UM_RING - 1u);
+        um.bytes++;
+        um_byte(b);                                /* a UM_EMPTY is an unknown realtime byte: ignored */
+    }
+}
+
+static void uart_midi_take(uint32_t reported)
+{
+    /* The tally is only an overrun warning, never the normal read limit. */
+    if (reported > UM_RING) {
+        um.drops += reported - UM_RING;
+        um.rd = (um.rd + reported - UM_RING) & (UM_RING - 1u);
+        um.st = um.got = um.sysex = 0;
         midi_in_overflow = 1;
     }
-    while (um.pend) {
-        um_byte(um_ring[um.rd]);
-        um.rd = (um.rd + 1u) & (UM_RING - 1u);
-        um.pend--;
-        um.bytes++;
-    }
+    um_drain();
 }
 static void uart_midi_poll(void)                   /* TIMER5 ISR, same context as usb_poll */
 {

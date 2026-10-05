@@ -6,7 +6,8 @@
  *
  *   fm1_uart1_midi_init(ring, len)   len a power of two, ring aligned 16;
  *                                    before TIMER5 starts (PORTH RMW)
- *   fm1_uart1_rx_take()              bytes DMA'd since the last call
+ *   fm1_uart1_rx_take()              acknowledges RX; tally can miss bytes, so
+ *                                    midi_uart.c drains actual ring contents
  */
 #pragma once
 #include <stdint.h>

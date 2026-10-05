@@ -132,6 +132,13 @@ The existing web suite, graph-model checks and expanded browser checks cover the
 changes; see [STUDIO_VISUAL_PANELS.md](STUDIO_VISUAL_PANELS.md). No firmware or
 upstream baseline changes, merge or publication are included.
 
+The review fixes are [PR #51](https://github.com/ChanceTheMaker/Felucca/pull/51).
+Follow-up `feat/studio-select-wheel` adds hover-only wheel selection inside open
+Studio dropdowns, using native customizable select pickers with fallback to
+normal menus in unsupported browsers. Wheel and keyboard behavior, live graph
+updates and the full Studio layout/audio matrix pass against isolated built-site
+assets. Firmware and publication remain unchanged.
+
 No new upstream PR has been authorized or submitted during this round. Preparing
 and documenting candidates does not imply upstream acceptance. For each future
 contribution, append the following information:

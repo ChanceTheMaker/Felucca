@@ -83,3 +83,25 @@ merge, firmware promotion or website publication is part of this round.
 - Larger captions, 28-pixel handle targets, 32-pixel shortcut buttons and more
   legible out-of-scale notes improve use on small displays.
 - The modulation matrix has translated Source, Destination and Amount headings.
+
+## Open-select wheel navigation
+
+`feat/studio-select-wheel` adds live option changes when the mouse wheel is over
+an open Studio select or its picker. Closed controls and wheel events outside
+the menu do not change values. Small trackpad deltas accumulate; direction
+changes, reopening and idle gaps reset the gesture. Disabled/hidden options are
+skipped, the ends do not wrap, and Escape closes the picker keeping the value
+already applied. Existing input/change handlers update the synth and graphs.
+
+The implementation uses [native customizable selects](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Customizable_select),
+including native keyboard, focus, dismissal and touch behavior. Browsers without
+`base-select` and `:open` support retain their normal native menus. Chrome's
+top-layer options do not set `:hover` on their parent select, so the actual wheel
+event target identifies the hovered menu.
+
+Validation includes real browser wheel events, outside/closed controls, limits,
+hidden/disabled options, Escape, waveform updates, and keyboard navigation via
+`web/test_select_wheel.mjs`, plus the Studio layout/audio regression suite.
+Set `STUDIO_FIXTURE_DIR` to a built `webapp/editor` directory to serve its static
+assets directly to an isolated test browser. This avoids intermittent shared
+preview connection failures; it does not mock the UI, select behavior or DSP.

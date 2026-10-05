@@ -12,9 +12,9 @@
   const denied = {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'};
   tag('consent', 'default', denied);
   function enable() {
-    if (!production || consent !== 'granted') return;
+    if (!production || consent === 'denied') return;
     window['ga-disable-' + id] = false;
-    tag('consent', 'update', {...denied, analytics_storage: 'granted'});
+    tag('consent', 'update', {...denied, analytics_storage: consent === 'granted' ? 'granted' : 'denied'});
     if (loaded) return;
     loaded = true;
     tag('js', new Date());
@@ -31,7 +31,7 @@
   window.FeluccaAnalytics = Object.freeze({
     track(name, props = {}) {
       try {
-        if (!production || consent !== 'granted' || !allowed.has(name)) return;
+        if (!production || consent === 'denied' || !allowed.has(name)) return;
         const safe = {};
         for (const field of ['firmware_version', 'stage', 'error_code', 'file_type']) {
           if (typeof props[field] === 'string' && /^[a-zA-Z0-9_.-]{1,64}$/.test(props[field])) safe[field] = props[field];
@@ -42,15 +42,15 @@
   });
   const panel = document.createElement('details');
   panel.className = 'analytics-choice';
-  panel.open = !consent;
+  panel.open = false;
   const ja = (navigator.language || 'en').toLowerCase().startsWith('ja');
   panel.innerHTML = ja
-    ? '<summary>アクセス解析の設定</summary><p>Google Analytics の Cookie を使って訪問数、ダウンロードのクリック、インストール結果を計測してもよろしいですか？ MIDI ノート、音声、プリセット名は送信しません。拒否してもすべての機能を使えます。</p><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google のプライバシーポリシー</a> <button type="button" data-choice="granted">許可</button> <button type="button" data-choice="denied">拒否</button>'
-    : '<summary>Analytics preferences</summary><p>Allow Google Analytics cookies to measure visits, download clicks, and installation outcomes? We do not send MIDI notes, audio, or preset names. All features work if you decline. You can change this choice here anytime.</p><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google privacy policy</a> <button type="button" data-choice="granted">Allow analytics</button> <button type="button" data-choice="denied">Decline</button>';
+    ? '<summary>アクセス解析の設定</summary><p>標準では Cookie を使わずに訪問数、ダウンロードのクリック、インストール結果を Google Analytics に送信します。アクセス解析用 Cookie を許可することも、解析を停止することもできます。MIDI ノート、音声、プリセット名は送信しません。どの設定でもすべての機能を使えます。</p><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google のプライバシーポリシー</a> <button type="button" data-choice="basic">Cookie なし</button> <button type="button" data-choice="granted">Cookie を許可</button> <button type="button" data-choice="denied">解析を停止</button>'
+    : '<summary>Analytics preferences</summary><p>By default, we send cookieless visit, download-click, and installation measurements to Google Analytics. You can allow analytics cookies for fuller measurement or turn analytics off. We do not send MIDI notes, audio, or preset names. Every feature works with any choice.</p><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google privacy policy</a> <button type="button" data-choice="basic">Without cookies</button> <button type="button" data-choice="granted">Allow analytics cookies</button> <button type="button" data-choice="denied">Turn analytics off</button>';
   function choose(value) {
     consent = value;
     try { localStorage.setItem(key, consent); } catch (_) {}
-    if (consent === 'granted') enable();
+    if (consent !== 'denied') enable();
     else { window['ga-disable-' + id] = true; tag('consent', 'update', denied); }
     panel.open = false;
     for (const button of panel.querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.dataset.choice === consent));
@@ -60,7 +60,7 @@
     if (choice) choose(choice);
   });
   window.addEventListener('storage', event => {
-    if (event.key === key) choose(event.newValue === 'granted' ? 'granted' : 'denied');
+    if (event.key === key) choose(['granted', 'denied'].includes(event.newValue) ? event.newValue : 'basic');
   });
   (document.querySelector('main') || document.body).append(panel);
   document.addEventListener('click', event => {

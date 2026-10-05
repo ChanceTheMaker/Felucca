@@ -82,7 +82,7 @@ def main(pkg, version, out):
     shutil.copy(HERE / "studio-preview.js", inst / "studio-preview.js")
     shutil.copy(HERE / "panel-guide.js", inst / "panel-guide.js")
     for target in (inst, ed):
-        for asset in ("skin.css", "interface.css", "skin.js", "fonts.css", "analytics.js", "i18n.js", "locales.js", "site-nav.js"):
+        for asset in ("skin.css", "interface.css", "skin.js", "fonts.css", "analytics.js", "i18n.js", "locales.js", "site-nav.js", "salt-shaker.png"):
             shutil.copy(HERE / asset, target / asset)
         shutil.copytree(HERE / "fonts", target / "fonts", dirs_exist_ok=True)
     for f in ("fukiai.ttf", "FUKIAI-LICENSE.txt", "fm1backup.js"):

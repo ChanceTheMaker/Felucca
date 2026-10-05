@@ -1,5 +1,10 @@
 /* SPDX-License-Identifier: GPL-3.0-only
    Interface finish: layout and typography, independent of the skin palette. */
+.analytics-choice { margin:24px 0 8px; padding:12px; border:1px solid var(--dim); border-radius:8px; font:12px/1.5 var(--ui-font); color:var(--fg); background:var(--panel); }
+.analytics-choice summary { cursor:pointer; }
+.analytics-choice p { margin:10px 0; max-width:75ch; }
+.analytics-choice a { color:inherit; }
+.analytics-choice button { margin:6px; }
 .browser-audio #tabs,
 .browser-audio #trackbar, .browser-audio #factlib,
 .browser-audio #play-channel, .browser-audio label:has(#play-channel) { display:none!important; }
@@ -74,7 +79,8 @@ select, input[type=text], input[type=number], input[type=search] { border-radius
 .installer-page #go:hover:not(:disabled) { transform:translateY(-2px); filter:brightness(1.06); box-shadow:inset 0 2px 1px #ffffff80,0 7px 0 color-mix(in srgb,var(--accent) 45%,black),0 16px 34px color-mix(in srgb,var(--accent) 28%,transparent); }
 .installer-page #go:active:not(:disabled) { transform:translateY(3px); box-shadow:inset 0 1px 3px #0003,0 2px 0 color-mix(in srgb,var(--accent) 45%,black); }
 .installer-page #go:focus-visible { outline:3px solid var(--fg); outline-offset:7px; }
-.install-action { margin:24px 0 30px; }
+.install-action { display:table; max-width:100%; margin:24px 0 16px; }
+.install-action #release { margin:8px 0 0; text-align:center; }
 .mode-tip:not([hidden]) { display:flex; align-items:center; gap:12px; position:fixed; z-index:1000; box-sizing:border-box; padding:15px 12px 15px 18px; border:1px solid var(--accent); border-radius:12px; background:var(--panel); color:var(--fg); font:600 13px/1.5 var(--ui-font); box-shadow:0 8px 28px #0005,inset 0 1px #ffffff18; animation:mode-tip-enter .22s ease-out; }
 .mode-tip::before { content:''; position:absolute; left:-7px; top:calc(50% - 6px); width:12px; height:12px; background:var(--panel); border-left:1px solid var(--accent); border-bottom:1px solid var(--accent); transform:rotate(45deg); }
 .mode-tip.below::before { left:calc(var(--tip-arrow-x) - 6px); top:-7px; transform:rotate(135deg); }
@@ -163,7 +169,14 @@ footer a { text-underline-offset:3px; }
 .installer-page main { max-width:1180px; }
 .installer-page .install-console { padding:30px; border-radius:14px; border-color:var(--line); box-shadow:none; }
 .installer-hero { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:28px; align-items:center; padding:8px 0 32px; margin-bottom:28px; border-bottom:1px solid var(--line); }
-.installer-hero .hero-link { margin-top:22px; }
+.hero-actions { display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap; margin-top:22px; }
+.hero-actions .install-action { margin:0; }
+.installer-page .hero-actions #go { --accent:#b52938; --ink:#fff; min-height:52px; padding:12px 15px; gap:9px; font-size:15px; }
+.installer-page .hero-actions #go::before { width:24px; height:24px; font-size:19px; }
+.installer-hero .hero-actions .hero-link { display:inline-flex; align-items:center; justify-content:center; min-height:52px; box-sizing:border-box; margin:0; padding:12px 16px; background:linear-gradient(150deg,#246793,#164568); color:#fff; border:1px solid #4788b1; box-shadow:inset 0 1px #ffffff40,0 4px 0 #10334d; font-size:15px; }
+.installer-hero .hero-actions .hero-link:hover { filter:brightness(1.15); }
+.installer-hero .install-action #release { margin-top:10px; font-size:11px; }
+.installer-hero .beta-notice { margin-top:20px; font-size:12px; line-height:1.6; }
 .hero-instrument { min-width:0; color:var(--accent); background:radial-gradient(ellipse,color-mix(in srgb,var(--accent) 7%,transparent),transparent 70%); }
 .hero-instrument svg { display:block; width:100%; height:auto; overflow:visible; transform:rotate(-4deg); filter:drop-shadow(0 5px 12px #0002); }
 .hero-instrument .wire-secondary { opacity:.42; }

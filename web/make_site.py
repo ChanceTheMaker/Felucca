@@ -59,6 +59,8 @@ def main(pkg, version, out):
     (inst / "index.html").write_text(html, encoding="utf-8")
     shutil.copy(pkg, fw / name)
     shutil.copy(HERE / "editor.html", ed / "index.html")
+    shutil.copytree(HERE / "audio", ed / "audio", dirs_exist_ok=True)
+    shutil.copytree(HERE / "screenshots", inst / "screenshots", dirs_exist_ok=True)
     for target in (inst, ed):
         for asset in ("skin.css", "interface.css", "skin.js", "fonts.css"):
             shutil.copy(HERE / asset, target / asset)

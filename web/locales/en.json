@@ -397,5 +397,6 @@
   "nav.features": "Features",
   "nav.backToTop": "Back to top",
   "installer.progress": "Install Progress",
-  "installer.editStudio": "Edit in Studio"
+  "installer.editStudio": "Edit in Studio",
+  "installer.retry": "Try Again"
 }

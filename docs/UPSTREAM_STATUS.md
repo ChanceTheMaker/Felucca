@@ -3,6 +3,14 @@
 Last reviewed: **2026-10-05**. Update this record when importing or offering a
 feature; follow [UPSTREAM_WORKFLOW.md](UPSTREAM_WORKFLOW.md).
 
+Installer follow-up on `feat/installer-retry`: failed discovery, denied MIDI
+permission, interrupted updates and stopped resumes show Try Again below the
+output. It starts a fresh connection attempt, clears stale actions and becomes
+unavailable during the update. Success replaces it with Edit in Studio. Labels
+are translated in all eight languages; desktop/mobile simulated-device checks
+cover failure and successful retry. The firmware package remains Salt14. This
+feature branch is prepared for review; it has not been published.
+
 ## Website follow-up
 
 The owner authorized merging the completed UI round into the fork's main on

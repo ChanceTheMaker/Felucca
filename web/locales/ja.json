@@ -397,5 +397,6 @@
   "nav.features": "機能",
   "nav.backToTop": "ページの先頭へ",
   "installer.progress": "インストールの進行状況",
-  "installer.editStudio": "Studio で編集"
+  "installer.editStudio": "Studio で編集",
+  "installer.retry": "再試行"
 }

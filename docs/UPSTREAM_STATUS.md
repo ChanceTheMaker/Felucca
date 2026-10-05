@@ -112,6 +112,18 @@ import. See [STUDIO_VISUAL_PANELS.md](STUDIO_VISUAL_PANELS.md) for behavior,
 validation and visualization limits. It has not been selected for upstream
 submission or published; the upstream baseline and candidate status above remain.
 
+Follow-up `fix/studio-piano-shortcuts` corrects the typing-key pattern for the
+FM-1's F-start range. Home-row keys now consistently play white notes and the
+upper row plays black notes (R = A-sharp, F = B; T is unused). The earlier
+C-start pattern had assigned F to A-sharp and T to B. Labels and key events share
+the corrected table. Keyboard regression tests verify each row's note colors;
+`web/test_keyboard_layout.mjs` additionally verifies all seventeen displayed
+shortcuts and their note-on/off behavior in Chrome against the simulated device.
+The note range, MIDI handling and firmware remain unchanged. The panel feature
+is [fork PR #49](https://github.com/ChanceTheMaker/Felucca/pull/49), dependent on
+[RC1 branding PR #48](https://github.com/ChanceTheMaker/Felucca/pull/48); stable
+branding is separately [PR #47](https://github.com/ChanceTheMaker/Felucca/pull/47).
+
 No new upstream PR has been authorized or submitted during this round. Preparing
 and documenting candidates does not imply upstream acceptance. For each future
 contribution, append the following information:

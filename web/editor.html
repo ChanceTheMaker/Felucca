@@ -4754,7 +4754,8 @@ $("bkexport").addEventListener("click", () => libOp(async (d, rqf) => {
 
 /* Bottom keyboard stays available on every editor tab. */
 const playKeyboard = new BrowserKeyboard(renderPlayState);
-const playCodes = ["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyF", "KeyT", "KeyG", "KeyY", "KeyH", "KeyU", "KeyJ", "KeyK", "KeyO", "KeyL", "KeyP", "Semicolon"];
+// The FM-1 range begins on F: home-row white keys, upper-row black keys.
+const playCodes = ["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyR", "KeyF", "KeyG", "KeyY", "KeyH", "KeyU", "KeyJ", "KeyK", "KeyO", "KeyL", "KeyP", "Semicolon"];
 const playPointers = new Set();
 let playResizePending = false, playLayout = "";
 for (let octave = -1; octave <= 7; octave++) $("play-octave").append(el("option", { value: octave, text: `F${octave}` }));

@@ -8,6 +8,9 @@ feature; follow [UPSTREAM_WORKFLOW.md](UPSTREAM_WORKFLOW.md).
 Pinned source: upstream v1.0.1, `20c275e39f75fa820978032efaceddfc5283c8cb`,
 compared with the v1.0 baseline below. This is a selective source import,
 split into lighting, scale quantization, and candidate build/version PRs.
+Lighting is [PR #34](https://github.com/ChanceTheMaker/Felucca/pull/34), followed
+by [QNT SEQ #35](https://github.com/ChanceTheMaker/Felucca/pull/35). The final
+version/build record is on `feat/1.0.1-rc1-candidate`. These extend draft PR #28.
 
 The lighting import adds DIM/INV preferences, idle glow, green PLAY indication,
 and selected-track sequencer/ARP note LEDs. Salt font, monitor, HOLD and palette
@@ -23,12 +26,24 @@ Drum lanes and engines with their own key maps remain unchanged. Upstream scale
 and UI regression coverage travels with the import; the browser DSP is rebuilt
 from the combined source before packaging this candidate.
 
-Local website follow-up: Install opens the initially collapsed Install Progress
+Validation: complete host suite; 87 unchanged golden renders; target budgets;
+115 UI screens across 21 palettes; combined LED/font/monitor/HOLD round trips;
+Studio descriptors/protocol, package/update and backup simulations; rebuilt WASM
+audio; eight languages/479 keys; analytics isolation. Candidate artifact identity:
+`1.0.1-salt1rc1`, `FM-1_910`, 609,849 bytes. See the candidate bundle's
+`VALIDATION.txt` and `SHA256SUMS` for source identity and artifact checksums.
+
+The [feature inventory](FEATURE_INVENTORY.md) records 40 feature groups and
+proposed upstream contribution boundaries; [1.0.1 review](UPSTREAM_1.0.1_REVIEW.md)
+records the pinned update. No new upstream PR is authorized or submitted.
+
+Website follow-up: Install opens the initially collapsed Install Progress
 accordion, scrolls to its output, and confirmed
 success reveals an Edit in Studio link. Desktop/mobile, resumed success, failure,
 retry and translations are tested with a simulated updater. The owner authorized
-porting the UI round to the fork's main, separately from this RC1 stack. The
-published site and draft firmware assets remain unchanged.
+porting the UI round to the fork's main, separately from this RC1 stack. Website PRs #30–33 were merged into fork main `5874362` and published as
+`gh-pages` deployment `f370b0c`, retaining Salt14. The earlier RC1 draft assets
+remain unchanged; this update has a distinct candidate package.
 The header logo also links home from both pages, with its typography preserved
 and keyboard navigation checked on desktop and mobile. The compact hero preview
 stays clear of both buttons. Section links and Install Progress scroll smoothly,
@@ -36,11 +51,12 @@ respecting reduced-motion preferences. These UI features are separate fork PRs.
 
 ## Baseline and release state
 
-- Upstream: [hugelton/Felucca v1.0](https://github.com/hugelton/Felucca/tree/v1.0),
-  commit `727f272015da26eb2d0291bd652eba28ff57cb37`.
+- Integrated upstream: [hugelton/Felucca v1.0.1](https://github.com/hugelton/Felucca/tree/v1.0.1),
+  commit `20c275e39f75fa820978032efaceddfc5283c8cb`.
+- Prior integrated baseline: v1.0, `727f272015da26eb2d0291bd652eba28ff57cb37`.
 - Earlier upstream reference: `1e838e1` (0.9 plus white-key scale changes).
 - Published Salt firmware: **0.9-salt14**. Current website updates retain it.
-- Integration candidate: **1.0-salt1rc1**, hardware validation pending.
+- Integration candidate: **1.0.1-salt1rc1**, hardware validation pending.
 - Foundation: [PR 16](https://github.com/ChanceTheMaker/Felucca/pull/16), a pinned
   source import, not a merge of upstream Git ancestry. The baseline above is
   therefore the authoritative comparison point for the next upstream sync.
@@ -64,7 +80,7 @@ respecting reduced-motion preferences. These UI features are separate fork PRs.
 | MIDI, palettes, favorites already credited in upstream README | Reuse current upstream behavior and test Salt extensions | Do not resubmit already adopted work |
 | Protocol | SONG 33, preferences/favorites 34–38; capability detection | Follow upstream allocation; experimental Salt command 33 retired |
 | Editor and installer | Current protocol, FM6/song/motion, sample trim/recording, backup-first recovery | Upstream functionality integrated into Salt interface |
-| Browser synth | Rebuild from 1.0 DSP; 13 selectable engines, 69 presets, imported FM6 sounds | Fork feature; a contribution needs an independent upstream proposal |
+| Browser synth | Rebuild from 1.0.1 DSP; 13 selectable engines, 69 presets, imported FM6 sounds | Fork feature; a contribution needs an independent upstream proposal |
 | Website, themes, branding, analytics | Maintain independently in the fork | Not selected for upstream submission |
 | Bluetooth experiment | Excluded from integration and release | Not selected for upstream submission |
 

@@ -1,8 +1,8 @@
 # Felucca [Salt]
 
 Felucca [Salt] by Chance Roth (@ChanceTheMaker), based on Felucca by Leo Kuroshita
-and Hügelton Instruments. This branch is the **1.0-salt1rc1 release candidate**,
-based on upstream v1.0 (`727f272`). **Hardware validation is pending.**
+and Hügelton Instruments. This branch is the **1.0.1-salt1rc1 release candidate**,
+based on upstream v1.0.1 (`20c275e`). **Hardware validation is pending.**
 The [published installer](https://chancethemaker.github.io/Felucca/webapp/installer/)
 continues to provide **0.9-salt14** until that validation is complete.
 
@@ -13,7 +13,10 @@ Experimental Bluetooth changes are excluded.
 Development follows the [upstream workflow](docs/UPSTREAM_WORKFLOW.md): receive
 updates in focused PRs, keep Salt differences explicit, and prepare selected
 contributions on clean upstream branches. See [upstream status](docs/UPSTREAM_STATUS.md)
-for the reviewed revision, retained features, and contribution ledger.
+for the reviewed revision, retained features, and contribution ledger. The
+[feature inventory](docs/FEATURE_INVENTORY.md) documents Salt additions and
+contribution choices; [upstream 1.0.1 review](docs/UPSTREAM_1.0.1_REVIEW.md)
+explains the new lighting and sequence-scale features.
 
 ## Studio and website
 
@@ -78,6 +81,8 @@ is not distributed here. Please report Salt issues in
   projects from every earlier version load
 - **Screen:** flat UI with Inter Tight and Fukiai icons, 21 palettes including grayscale and high contrast,
   regular/bold text, and the Salt MIDI monitor
+- **LEDs:** DIM idle glow or INV lighting (MENU > LEDS), green PLAY while running,
+  and selected-track sequencer/ARP note feedback on the keys.
 - **USB:** class-compliant MIDI in and out, and a 44.1 kHz stereo audio input ("Felucca") that
   records the master output on the computer, no driver needed
 - **MIDI:** USB and TRS MIDI in; channels 1–4 play tracks 1–4 (other channels the selected track),
@@ -131,7 +136,9 @@ On the **SCL** page, set **QNT** to WHITE to play the selected scale using only 
 white keys (SNAP keeps every key and rounds it down to the scale). C4 plays **ROOT**; consecutive white keys play consecutive scale notes
 above and below it. Black keys are silent, including during live recording and
 step entry. **TRN** transposes the resulting notes; the octave buttons shift them
-by full octaves. Set QNT to OFF for the normal chromatic keyboard.
+by full octaves. Set QNT to OFF for the normal chromatic keyboard. QNT SEQ snaps
+the keys like SNAP and maps sequenced notes to the current ROOT / SCALE during
+playback without changing stored steps. Drum kits are never quantized.
 
 Available scales: chromatic (CHR), major (MAJ), natural minor (MIN), Dorian (DOR),
 Mixolydian (MIX), major pentatonic (PEN), minor pentatonic (MPEN), harmonic minor

@@ -182,7 +182,7 @@
   "installer.editor": "Toca en el navegador o edita tu FM-1 conectado",
   "installer.direct": "Conecta el cable USB directamente al ordenador. No hace falta un probe ni un Transporter.",
   "installer.brick": "Si la instalación falla y el FM-1 deja de arrancar, se necesita un Transporter para recuperarlo:",
-  "installer.beta": "Aunque se ha probado en el dispositivo, este firmware es una beta.\nEl autor no asume responsabilidad por daños o fallos del FM-1 causados por este firmware personalizado. Úsalo bajo tu responsabilidad.",
+  "installer.beta": "Este firmware es una versión candidata. La validación en un FM-1 está pendiente.\nEl autor no asume responsabilidad por daños o fallos del FM-1 causados por este firmware personalizado. Úsalo bajo tu responsabilidad.",
   "installer.back": "Descarga FM-1 V15 de M-VAVE y selecciona FM-1.fwsc sin modificar. La validación es local; el archivo no se envía a un servidor.",
   "installer.loadfail": "No se pudo cargar: ",
   "installer.start": "Iniciando",

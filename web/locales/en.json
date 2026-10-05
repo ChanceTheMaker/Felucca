@@ -191,7 +191,7 @@
   "installer.editor": "Play in your browser or edit your connected FM-1",
   "installer.direct": "Connect the USB cable directly to the computer. No probe or Transporter is needed.",
   "installer.brick": "If an install fails and the FM-1 no longer starts, recovering it needs a Transporter:",
-  "installer.beta": "Although tested on device, this firmware is a beta.\nThe author accepts no responsibility if your FM-1 is damaged or misbehaves because of this custom firmware. Use it at your own risk.",
+  "installer.beta": "This firmware is a release candidate. Validation on an FM-1 is pending.\nThe author accepts no responsibility if your FM-1 is damaged or misbehaves because of this custom firmware. Use it at your own risk.",
   "installer.back": "Get official FM-1 V15 from M-VAVE and select the unmodified FM-1.fwsc. The browser validates it locally; it is not sent to a server.",
   "installer.nomidi": "This browser cannot do it. Open the page in Chrome or Edge.",
   "installer.loadfail": "Could not load: ",

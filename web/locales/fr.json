@@ -182,7 +182,7 @@
   "installer.editor": "Jouez dans le navigateur ou modifiez votre FM-1 connecté",
   "installer.direct": "Branchez le câble USB directement à l’ordinateur. Aucune sonde ni Transporter n’est nécessaire.",
   "installer.brick": "Si l’installation échoue et que le FM-1 ne démarre plus, un Transporter est nécessaire pour le restaurer :",
-  "installer.beta": "Bien que testé sur l’appareil, ce firmware est une version bêta.\nL’auteur décline toute responsabilité en cas de dommages ou de dysfonctionnement du FM-1 causés par ce firmware personnalisé. Utilisation à vos risques et périls.",
+  "installer.beta": "Ce firmware est une version candidate. La validation sur un FM-1 reste à effectuer.\nL’auteur décline toute responsabilité en cas de dommages ou de dysfonctionnement du FM-1 causés par ce firmware personnalisé. Utilisation à vos risques et périls.",
   "installer.back": "Téléchargez FM-1 V15 chez M-VAVE et sélectionnez le fichier FM-1.fwsc non modifié. La validation est locale, sans envoi à un serveur.",
   "installer.loadfail": "Chargement impossible : ",
   "installer.start": "Démarrage",

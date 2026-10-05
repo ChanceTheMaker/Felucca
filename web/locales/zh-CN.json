@@ -182,7 +182,7 @@
   "installer.editor": "在浏览器中演奏或编辑已连接的 FM-1",
   "installer.direct": "将 USB 线直接连接到电脑。无需调试探针或 Transporter。",
   "installer.brick": "如果安装失败且 FM-1 无法启动，需要使用 Transporter 恢复：",
-  "installer.beta": "虽然已在实机上测试，此固件仍为测试版。\n对于使用此自定义固件造成的 FM-1 损坏或异常，作者不承担责任。使用风险由您自行承担。",
+  "installer.beta": "此固件为候选版本，尚待 FM-1 实机验证。\n对于使用此自定义固件造成的 FM-1 损坏或异常，作者不承担责任。使用风险由您自行承担。",
   "installer.back": "从 M-VAVE 下载 FM-1 V15，选择未经修改的 FM-1.fwsc。浏览器在本地验证，不会上传文件。",
   "installer.loadfail": "无法加载： ",
   "installer.start": "正在开始",

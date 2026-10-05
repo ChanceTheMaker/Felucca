@@ -345,5 +345,6 @@
   "ui.modeTipConnect": "Подключите FM-1",
   "ui.modeTipOr": "или",
   "ui.modeTipPlay": "Играйте на встроенном в браузер {engine}.",
-  "ui.themeThumbnail": "Тема {theme} для Studio"
+  "ui.themeThumbnail": "Тема {theme} для Studio",
+  "ui.clickToPlay": "Нажмите, чтобы играть"
 }

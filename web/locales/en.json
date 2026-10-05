@@ -345,5 +345,6 @@
   "ui.modeTipConnect": "Connect to your FM-1",
   "ui.modeTipOr": "or",
   "ui.modeTipPlay": "Play the {engine} built into the browser.",
-  "ui.themeThumbnail": "{theme} Studio theme"
+  "ui.themeThumbnail": "{theme} Studio theme",
+  "ui.clickToPlay": "Click to Play"
 }

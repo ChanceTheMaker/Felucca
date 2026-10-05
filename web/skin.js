@@ -110,7 +110,7 @@
         const cancel = () => finish(false);
         const escape = e => { if (e.key === 'Escape') { e.preventDefault(); cancel(); } };
         card.addEventListener('pointerdown', e => {
-          if (drag || e.button !== 0 || (e.target.closest('input,select,a,.dial-control,button') && !e.target.closest('.card-grip'))) return;
+          if (drag || e.button !== 0 || (e.target.closest('input,select,a,.dial-control,button,.studio-widget') && !e.target.closest('.card-grip'))) return;
           e.preventDefault(); handle.focus(); card.setPointerCapture(e.pointerId);
           const box = card.getBoundingClientRect();
           drag = { id:e.pointerId, startX:e.clientX, startY:e.clientY, x:e.clientX, y:e.clientY,

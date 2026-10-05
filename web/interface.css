@@ -845,3 +845,60 @@ footer a { text-underline-offset:3px; }
 .installer-page .back-to-top:focus-visible { outline:2px solid var(--fg); outline-offset:3px; }
 .back-to-top svg { width:23px; height:23px; }
 #page-top:focus { outline:none; }
+
+/* Studio signal panels: each functional family moves as one card. */
+#groups.unified-groups { grid-template-columns:repeat(4,minmax(0,1fr)); align-items:start; }
+.groups .unified-card,.groups .unified-card[data-controls=knobs] { display:block; min-width:0; }
+.unified-card>.bank-sections { display:grid; gap:14px; }
+.unified-card .bank-section { min-width:0; }
+.unified-card .bank-section h3 { margin:0 0 8px; padding:0; color:var(--dim); font:650 10px/1.4 var(--ui-font); letter-spacing:.8px; }
+.unified-card .bank-section+.bank-section { border-top:1px solid var(--line); padding-top:12px; }
+.unified-card[data-controls=knobs] .bank-rows { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:5px; }
+.groups .unified-card[data-controls=knobs] .row select { max-width:100%; min-width:0; }
+.groups .unified-card[data-controls=knobs] .row .v { box-sizing:border-box; max-width:100%; overflow-wrap:anywhere; }
+.unified-card .bank-rows+.bank-rows { margin-top:10px; }
+.unified-card[data-section=FX],.unified-card[data-section=MOD] { grid-column:1 / -1; }
+.groups .unified-card .row.modrow { display:grid; grid-template-columns:20px minmax(0,1fr) minmax(0,1fr) minmax(70px,1fr) 64px; align-items:center; gap:10px; }
+.groups .unified-card .modrow select { width:100%; min-width:0; }
+.groups .unified-card[data-controls=knobs] .modrow .dial-control { margin:2px auto; }
+.groups .unified-card .modrow .v { width:auto; }
+.unified-card[data-section=FX]>.bank-sections { grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px; }
+.unified-card[data-section=FX] .bank-section+.bank-section { border-top:0; padding-top:0; }
+.unified-card[data-section=FX] .bank-section h3:not(:first-child) { margin-top:12px; }
+.unified-card[data-section=ARP],.unified-card[data-section=SCL] { grid-column:span 2; }
+.unified-card[data-section=ARP]>.bank-sections,.unified-card[data-section=SCL]>.bank-sections { grid-template-columns:1fr 1fr; }
+.unified-card[data-section=ARP] .bank-section+.bank-section,.unified-card[data-section=SCL] .bank-section+.bank-section { border-top:0; padding-top:0; }
+.studio-widget { margin:0 0 12px; padding:8px; border:1px solid var(--line); border-radius:7px; background:var(--lcd-bg); color:var(--lcd); }
+.widget-caption { display:flex; align-items:baseline; justify-content:space-between; gap:6px; margin-bottom:6px; font:10px/1.4 var(--ui-font); }
+.widget-caption>span:last-child { text-align:right; font-family:var(--display-font); }
+.widget-plot { position:relative; height:92px; }
+.widget-plot[hidden] { display:none; }
+.widget-plot svg { display:block; width:100%; height:100%; overflow:visible; }
+.widget-grid { fill:none; stroke:currentColor; opacity:.15; stroke-width:1; vector-effect:non-scaling-stroke; }
+.widget-line { fill:none; stroke:currentColor; stroke-width:2; stroke-linejoin:round; vector-effect:non-scaling-stroke; }
+.widget-area { fill:currentColor; opacity:.09; }
+.studio-widget .widget-handle { position:absolute; width:22px; height:22px; min-width:0; padding:0; transform:translate(-50%,-50%); border:0; border-radius:50%; background:transparent; box-shadow:none; color:inherit; cursor:ew-resize; touch-action:none; }
+.widget-handle::after { content:''; position:absolute; inset:6px; border:2px solid currentColor; border-radius:50%; background:var(--lcd-bg); }
+.widget-handle[aria-orientation=vertical] { cursor:ns-resize; }
+.studio-widget button:focus-visible { outline:2px solid currentColor; outline-offset:2px; }
+.widget-shortcuts { display:flex; gap:4px; margin-top:7px; }
+.widget-shortcuts:empty { display:none; }
+.studio-widget .widget-shortcuts button { flex:1; min-width:0; min-height:28px; padding:3px; font:600 10px var(--ui-font); color:inherit; border:1px solid var(--line); border-radius:4px; background:transparent; box-shadow:none; }
+.studio-widget .widget-shortcuts button[aria-pressed=true] { background:var(--lcd); color:var(--lcd-bg); border-color:var(--lcd); }
+.widget-scale .widget-shortcuts { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); }
+.widget-scale .widget-shortcuts button.in-scale { border-bottom:3px solid var(--lcd); }
+.widget-scale .widget-shortcuts button:not(.in-scale) { opacity:.45; }
+.widget-off .widget-line,.widget-off .widget-area { opacity:.25; }
+.widget-slicer .widget-plot,.widget-arp .widget-plot { height:58px; }
+@media(max-width:1150px) {
+ #groups.unified-groups { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .unified-card[data-section=FX]>.bank-sections { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .unified-card[data-section=ARP],.unified-card[data-section=SCL] { grid-column:1 / -1; }
+}
+@media(max-width:600px) {
+ .groups .unified-card .row.modrow { grid-template-columns:16px minmax(0,1fr) minmax(0,1fr); gap:6px; }
+ .groups .unified-card .modrow .dial-control { grid-column:2; }
+ #groups.unified-groups { grid-template-columns:minmax(0,1fr); }
+ .unified-card[data-section=FX]>.bank-sections,.unified-card[data-section=ARP]>.bank-sections,.unified-card[data-section=SCL]>.bank-sections { grid-template-columns:minmax(0,1fr); }
+ .unified-card .bank-section+.bank-section { border-top:1px solid var(--line); padding-top:12px; }
+}

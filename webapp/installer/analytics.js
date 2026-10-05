@@ -40,29 +40,57 @@
       } catch (_) { /* Tracking must never interrupt the product. */ }
     }
   });
-  const panel = document.createElement('details');
+  const panel = document.createElement('dialog');
+  panel.id = 'analytics-preferences';
   panel.className = 'analytics-choice';
-  panel.open = false;
+  panel.setAttribute('aria-labelledby', 'analytics-title');
   const ja = (navigator.language || 'en').toLowerCase().startsWith('ja');
   panel.innerHTML = ja
-    ? '<summary>アクセス解析の設定</summary><p>標準では Cookie を使わずに訪問数、ダウンロードのクリック、インストール結果を Google Analytics に送信します。アクセス解析用 Cookie を許可することも、解析を停止することもできます。MIDI ノート、音声、プリセット名は送信しません。どの設定でもすべての機能を使えます。</p><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google のプライバシーポリシー</a> <button type="button" data-choice="basic">Cookie なし</button> <button type="button" data-choice="granted">Cookie を許可</button> <button type="button" data-choice="denied">解析を停止</button>'
-    : '<summary>Analytics preferences</summary><p>By default, we send cookieless visit, download-click, and installation measurements to Google Analytics. You can allow analytics cookies for fuller measurement or turn analytics off. We do not send MIDI notes, audio, or preset names. Every feature works with any choice.</p><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google privacy policy</a> <button type="button" data-choice="basic">Without cookies</button> <button type="button" data-choice="granted">Allow analytics cookies</button> <button type="button" data-choice="denied">Turn analytics off</button>';
+    ? '<div class="analytics-heading"><h2 id="analytics-title">アクセス解析の設定</h2><button type="button" data-close aria-label="閉じる" autofocus>×</button></div><p>標準では Cookie を使わずに訪問数、ダウンロードのクリック、インストール結果を Google Analytics に送信します。アクセス解析用 Cookie を許可することも、解析を停止することもできます。MIDI ノート、音声、プリセット名は送信しません。どの設定でもすべての機能を使えます。</p><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google のプライバシーポリシー</a><div class="analytics-actions"><button type="button" data-choice="basic">Cookie なし</button><button type="button" data-choice="granted">Cookie を許可</button><button type="button" data-choice="denied">解析を停止</button></div>'
+    : '<div class="analytics-heading"><h2 id="analytics-title">Analytics preferences</h2><button type="button" data-close aria-label="Close analytics preferences" autofocus>×</button></div><p>By default, we send cookieless visit, download-click, and installation measurements to Google Analytics. You can allow analytics cookies for fuller measurement or turn analytics off. We do not send MIDI notes, audio, or preset names. Every feature works with any choice.</p><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google privacy policy</a><div class="analytics-actions"><button type="button" data-choice="basic">Without cookies</button><button type="button" data-choice="granted">Allow analytics cookies</button><button type="button" data-choice="denied">Turn analytics off</button></div>';
+  function reflectChoice() {
+    for (const button of panel.querySelectorAll('[data-choice]')) button.setAttribute('aria-pressed', String(button.dataset.choice === (consent || 'basic')));
+  }
   function choose(value) {
     consent = value;
     try { localStorage.setItem(key, consent); } catch (_) {}
     if (consent !== 'denied') enable();
     else { window['ga-disable-' + id] = true; tag('consent', 'update', denied); }
-    panel.open = false;
-    for (const button of panel.querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.dataset.choice === consent));
+    if (panel.open) panel.close();
+    reflectChoice();
   }
   panel.addEventListener('click', event => {
     const choice = event.target.closest('[data-choice]')?.dataset.choice;
     if (choice) choose(choice);
+    if (event.target.closest('[data-close]')) panel.close();
+    if (event.target === panel) {
+      const rect = panel.getBoundingClientRect();
+      if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) panel.close();
+    }
   });
   window.addEventListener('storage', event => {
     if (event.key === key) choose(['granted', 'denied'].includes(event.newValue) ? event.newValue : 'basic');
   });
-  (document.querySelector('main') || document.body).append(panel);
+  function mountPreferences() {
+    document.body.append(panel);
+    const host = document.querySelector('.settings-menu [data-appearance]');
+    if (!host) return;
+    const open = document.createElement('button');
+    open.type = 'button';
+    open.className = 'analytics-menu-button';
+    open.textContent = ja ? 'アクセス解析の設定' : 'Analytics preferences';
+    open.setAttribute('aria-haspopup', 'dialog');
+    open.setAttribute('aria-controls', panel.id);
+    open.addEventListener('click', () => {
+      host.closest('.settings-menu').open = false;
+      reflectChoice();
+      panel.showModal();
+    });
+    panel.addEventListener('close', () => host.closest('.settings-menu').querySelector('summary').focus());
+    host.append(open);
+  }
+  if (document.readyState === 'complete') mountPreferences();
+  else document.addEventListener('DOMContentLoaded', mountPreferences, {once:true});
   document.addEventListener('click', event => {
     const link = event.target.closest('a[href]');
     if (!link) return;

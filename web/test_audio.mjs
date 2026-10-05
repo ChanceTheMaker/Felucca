@@ -4,10 +4,14 @@ import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 const module = await WebAssembly.compile(await readFile(new URL('./audio/engine.wasm', import.meta.url)));
 assert.deepEqual(WebAssembly.Module.imports(module), [], 'No device or host imports');
+const metadata = new WebAssembly.Instance(module).exports;
+assert.equal(metadata.engine_count(),14,'13 selectable engines plus reserved DIGITAL ID');
+assert.equal(metadata.param_count(),91,'Current 1.0 parameter layout');
+assert.equal(metadata.preset_count(1),0,'Retired DIGITAL is not offered');
 function synth(e = 0, preset = 0) {
   const x = new WebAssembly.Instance(module).exports;
   x.synth_init(); x.synth_engine(e);
-  for (let i=0;i<57;i++) x.synth_param(i, x.preset_value(e,preset,i));
+  for (let i=0;i<x.param_count();i++) x.synth_param(i, x.preset_value(e,preset,i));
   // Let engine changes finish before playing.
   for(let i=0;i<100;i++) x.synth_render();
   return x;
@@ -20,18 +24,24 @@ function energy(x, blocks=1000) {
   }
   return {sum,peak};
 }
-for(let e=0;e<9;e++) {
-  const x=synth(e); x.synth_midi(0x90,60,100);
+for(let e=0;e<metadata.engine_count();e++) {
+  if(!metadata.preset_count(e)) continue;
+  const x=synth(e); x.synth_midi(0x90,e===10?36:60,100);
   const out=energy(x); assert(out.sum>10000,`Engine ${e} produces sound`);
   for(let preset=1;preset<x.preset_count(e);preset++) {
-    const voice=synth(e,preset); voice.synth_midi(0x90,e===4 && preset===4 ? 36 : 60,100); // PERC uses GM drum mappings.
+    const voice=synth(e,preset); voice.synth_midi(0x90,e===10 ? 36 : 60,100);
     assert(energy(voice,2000).sum>1000,`Engine ${e}, preset ${preset} produces sound`);
   }
   console.log(`Engine ${e}: peak ${out.peak}, ${x.preset_count(e)} presets`);
 }
 const x=synth();
+const customFm6=synth(12);
+new Uint8Array(customFm6.memory.buffer,customFm6.synth_fm6_buffer(),128).fill(0);
+customFm6.synth_fm6_apply();
+customFm6.synth_midi(0x90,60,100);
+assert.equal(energy(customFm6).sum,0,'An imported silent FM6 patch is applied and not replaced by the factory slot');
 const before=synth(), after=synth();
-after.synth_param(53,10);
+after.synth_param(87,10);
 before.synth_midi(0x90,60,100); after.synth_midi(0x90,60,100);
 assert.notEqual(energy(before).sum,energy(after).sum,'Filter control changes the sound');
 // Sustained organ-like envelope without FX or arp for release testing.
@@ -53,7 +63,7 @@ for(const rate of [44100,48000]) {
     registerProcessor(name,p){Processor=p;}});
   const p=new Processor({processorOptions:{module}});
   const meta=synth();
-  p.port.onmessage({data:{type:'state',engine:0,p:Array.from({length:57},(_,i)=>meta.preset_value(0,0,i)),g:[]}});
+  p.port.onmessage({data:{type:'state',engine:0,p:Array.from({length:meta.param_count()},(_,i)=>meta.preset_value(0,0,i)),g:[]}});
   p.port.onmessage({data:{type:'midi',bytes:[0x90,60,100]}});
   let sum=0;
   for(let n=0;n<200;n++) {

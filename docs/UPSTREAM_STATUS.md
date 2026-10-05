@@ -12,6 +12,8 @@ independently from the RC1 branch; main retains the Salt14 installer protocol.
 Simulated-updater checks cover desktop/mobile, resume, failure, retry and all
 eight languages. No physical device is accessed by those checks.
 Website deployment and the draft RC1 firmware remain unchanged in this round.
+The header logo also links home from both pages, with its typography preserved
+and visible keyboard focus. This is a separate feature PR in the same UI round.
 
 ## Baseline and release state
 

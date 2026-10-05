@@ -798,6 +798,8 @@ footer a { text-underline-offset:3px; }
 }
 
 /* Shared navigation replaces the reciprocal installer/Studio header buttons. */
+.brand-row h1 .brand-home { color:inherit; font:inherit; letter-spacing:inherit; text-decoration:none; }
+.brand-row h1 .brand-home:focus-visible { outline:2px solid currentColor; outline-offset:6px; border-radius:3px; }
 :root[data-skin] .brand-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,auto) auto; align-items:center; gap:6px 12px; padding-right:0; }
 .brand-row>.brand-links { display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:8px; }
 :root[data-skin] .brand-row .settings-menu { position:relative; top:auto; right:auto; transform:none; flex-shrink:0; }

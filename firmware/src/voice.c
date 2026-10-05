@@ -11,6 +11,7 @@
  * over one block (stage 4: the envelope goes to 0, the block's amplitude ramp
  * declicks it); one of the part's own is restarted in place, as before. Extra UNISON
  * voices only start when there is room. */
+#include "monitor.c"
 static uint32_t vage;                                   /* voice ages: one clock for every part */
 static int32_t lfo_wave(track_t *t, uint32_t ph)
 {
@@ -342,6 +343,7 @@ static void trk_note_on(track_t *t, uint32_t note, uint32_t vel)
     uint32_t any = 0, i, mode = trk_vmode(t);
     if (t->p[P_MUTE])
         return;
+    monitor_trigger((uint32_t)(t - trk), note, vel);
     if (t->xf_on || t->eng_req != t->engine) {          /* engine switch under way: after the fade */
         for (i = 0; i < t->xp_n && t->xp_note[i] != note; i++)
             ;
@@ -385,6 +387,7 @@ static void trk_note_on(track_t *t, uint32_t note, uint32_t vel)
 
 static void trk_note_off(track_t *t, uint32_t note)
 {
+    monitor_release((uint32_t)(t - trk), note);
     uint32_t i, k = 0, mode = trk_vmode(t);
     for (i = 0; i < t->xp_n; i++)                       /* not sounding yet (engine switch): forget it */
         if (t->xp_note[i] != note) {
@@ -418,6 +421,7 @@ static void trk_note_off(track_t *t, uint32_t note)
 
 static void trk_all_off(track_t *t)
 {
+    monitor_clear((uint32_t)(t - trk));
     uint32_t i;
     for (i = 0; i < NVOICE; i++) {
         t->v[i].gate = 0;

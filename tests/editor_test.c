@@ -113,7 +113,7 @@ static int preferences(void)
     bad += check("INFO explicitly tags display capabilities after SONG without changing command 33",
         ED_SONG == 33 && ED_UI_STATE == 34 && ED_FAV_SET == 38 &&
         host_wire[n - 16] == CHAIN_ROWS && host_wire[n - 15] == 0x55 &&
-        host_wire[n - 14] == 1 && host_wire[n - 13] == 9 &&
+        host_wire[n - 14] == 1 && host_wire[n - 13] == 15 &&
         host_wire[n - 12] == 0x4d && host_wire[n - 11] == 1 &&
         host_wire[n - 10] == MOTION_MAX && host_wire[n - 9] == 1 &&
         host_wire[n - 8] == 0x42 && host_wire[n - 7] == 1 && host_wire[n - 6] == 3 &&
@@ -125,10 +125,12 @@ static int preferences(void)
     a[1] = NPALETTES; request(ED_UI_SET, a, 2);
     bad += check("out-of-range palette leaves the display unchanged", host_wire[5] == 1 && settings.palette == 7);
     a[0] = 1; a[1] = 1; request(ED_UI_SET, a, 2);
-    bad += check("the retired font weight is not supported (rc 2), UI_STATE says 127",
-        host_wire[5] == 2 && host_wire[8] == 9 && host_wire[10] == 127);
+    bad += check("Salt font weight is applied and echoed in UI_STATE",
+        host_wire[5] == 3 && host_wire[8] == 15 && host_wire[10] == 1 && font_bold);
     a[0] = 2; request(ED_UI_SET, a, 2);
-    bad += check("unsupported preference is reported without applying it", host_wire[5] == 2);
+    bad += check("Salt MIDI event monitor is applied", host_wire[5] == 3 && monitor_mode == MON_EVENTS);
+    a[1] = 3; request(ED_UI_SET, a, 2);
+    bad += check("invalid monitor mode leaves the setting unchanged", host_wire[5] == 1 && monitor_mode == MON_EVENTS);
     a[0] = ENGI_DRUM; a[1] = 0; a[2] = 64; a[3] = 1;
     request(ED_FAV_SET, a, 4);
     bad += check("FAV_SET marks DRUM as a normal engine", host_wire[5] == 3 && favorite_has(ENGI_DRUM, 0));

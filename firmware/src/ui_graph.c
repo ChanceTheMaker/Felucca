@@ -1211,6 +1211,7 @@ static void graph_song(void)
         }
     }
 }
+#include "monitor_draw.c"
 static void draw_graph(void)
 {
     const page_t *pg = cur_page();
@@ -1223,6 +1224,7 @@ static void draw_graph(void)
     }
     if (!ui.home && pg->scope == SC_ENGINE && ENGINES[t->eng_req % NENGINES] == &ENG_SAMPLE) sample_wave_tick(t);
     sig = graph_signature();
+    if (ui.home && monitor_mode) sig ^= fm1_ms / 50u; /* refresh events and held notes even on a silent scope */
     if (!ui.force && sig == ui.graph_sig)
         return;
     ui.graph_sig = sig;
@@ -1312,5 +1314,6 @@ static void draw_graph(void)
         }
     }
     cv_oy = 0;
+    if (ui.home) draw_monitor();
     cv_blit(0, Y_GRAPH);
 }

@@ -6,6 +6,8 @@
 #define __attribute__(x)
 #define NENGINES 9u
 #define UP_SLOTS 32u
+#define NTRK 4u
+#include "../firmware/src/monitor.c"
 static uint8_t fx_lowcut;
 static void fm1_led_key(unsigned k, int on) { (void)k; (void)on; }
 static int fm1_enc_take(unsigned k) { (void)k; return 0; }
@@ -34,7 +36,8 @@ int main(void)
     {   /* every old id maps to a palette; tagged ids round trip; anything else is MONO */
         persist_t q = original;
         for (uint32_t i = 0; i < 20u; i++) assert(palette_from_stored(i) < NPALETTES);
-        assert(palette_from_stored(13) == 6u && palette_from_stored(11) == 7u && palette_from_stored(19) == 7u);
+        assert(palette_from_stored(13) == 6u && palette_from_stored(11) == 7u);
+        assert(!strcmp(UI_PALETTES[palette_from_stored(19)].name, "L-HICON"));
         for (uint32_t i = 0; i < NPALETTES; i++) assert(palette_from_stored(palette_to_stored(i)) == i);
         assert(palette_from_stored(40) == UI_MONO_INDEX && !palette_stored_ok(40) && palette_stored_ok(3));
         q.palette = palette_to_stored(5);
@@ -83,5 +86,13 @@ int main(void)
     }
     assert(settings_import(&p, 3) == 0 && settings_import(&p, -1) == 0);
     assert(settings_import(&p, sizeof p - 1) == 0);
+    p = original;
+    assert(settings_import(&p, sizeof p) == 1);
+    settings_hold = 2; font_set(1); monitor_mode = MON_NOTES; settings_export(&p);
+    assert(hold_stored_ok(p.bold) && (p.bold & ~31u) == SALT_DISPLAY_TAG);
+    settings_hold = 0; font_set(0); monitor_mode = MON_OFF;
+    assert(settings_import(&p, sizeof p) == 1 && font_bold == 1 && settings_hold == 2 && monitor_mode == MON_NOTES);
+    font_set(0); monitor_mode = MON_OFF; settings_export(&p);
+    assert(hold_stored_ok(p.bold) && (p.bold & ~3u) == HOLD_TAG);
     puts("Settings: PER1/PER2/PER3 migration, palette ids, calibration, HOLD and independent feature preservation passed.");
 }

@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: GPL-3.0-only
  * Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments */
-/* Optional device preferences, advertised in INFO. No preset format changes. The font weight
- * (ED_UI_FONT) is gone: one weight; UI_SET of it answers rc 2 (not supported), UI_STATE 127. */
+/* Salt display preferences, advertised through upstream's tagged INFO extension.
+ * Font weight changes coverage, preserving the 1.0 UI's glyph metrics and layout. */
 enum { ED_UI_PALETTE = 1, ED_UI_FONT = 2, ED_UI_MONITOR = 4, ED_UI_FAVORITES = 8 };
 static uint32_t ed_ui_caps(void)
 {
-    uint32_t caps = ED_UI_PALETTE;
+    uint32_t caps = ED_UI_PALETTE | ED_UI_FONT;
 #ifdef FELUCCA_MONITOR
     caps |= ED_UI_MONITOR;
 #endif
@@ -23,9 +23,9 @@ static void ed_ui_state(void)
     uint32_t sig = 0;
     ed_b(ed_ui_caps());
     ed_b(settings.palette);
-    ed_b(127);                                         /* font: not supported */
+    ed_b(font_bold);
 #ifdef FELUCCA_MONITOR
-    ed_b(settings.monitor);
+    ed_b(monitor_mode);
 #else
     ed_b(127);
 #endif
@@ -51,8 +51,9 @@ static uint32_t ed_ui_save(void)
     if (!flash_ok || persist_pending == 2u) return 3;
     if (persist_pending == 1u) return 4;
     if (palette_from_stored(persist_saved.palette) != settings.palette) return 3;
+    if (((persist_saved.bold & ~31u) == SALT_DISPLAY_TAG ? (persist_saved.bold >> 2) & 1u : 0) != font_bold) return 3;
 #ifdef FELUCCA_MONITOR
-    if (persist_saved.monitor != settings.monitor) return 3;
+    if (((persist_saved.bold & ~31u) == SALT_DISPLAY_TAG ? (persist_saved.bold >> 3) & 3u : 0) != monitor_mode) return 3;
 #endif
 #ifdef FELUCCA_FAVORITES
     if (memcmp(&persist_saved.favorites, &favorites, sizeof favorites)) return 3;
@@ -68,12 +69,14 @@ static uint32_t ed_ui_set(const uint8_t *a, uint32_t n)
     if (!(ed_ui_caps() & (1u << a[0]))) return 2;
     if (a[1] >= (a[0] == 0 ? NPALETTES : a[0] == 2 ? 3u : 2u)) return 1;
     switch (a[0]) {
+    case 1:
+        font_set(a[1]); break;
     case 0:
         settings.palette = a[1]; palette_set(a[1]); break;
 #ifdef FELUCCA_MONITOR
     case 2:
         fm1_irq_off();
-        settings.monitor = a[1]; monitor_mode = a[1]; monitor_event.valid = 0;
+        monitor_mode = a[1]; monitor_event.valid = 0;
         fm1_irq_on();
         break;
 #endif

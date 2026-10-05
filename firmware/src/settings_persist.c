@@ -35,6 +35,10 @@ static int settings_import(persist_t *p, int n)
     settings.lowcut = p->lowcut;
     settings.zoom = p->zoom;
     settings_hold = (uint8_t)hold_from_stored(p->bold);
+    font_set((p->bold & ~31u) == SALT_DISPLAY_TAG ? (p->bold >> 2) & 1u : 0);
+#ifdef FELUCCA_MONITOR
+    monitor_mode = (p->bold & ~31u) == SALT_DISPLAY_TAG && ((p->bold >> 3) & 3u) < 3u ? (p->bold >> 3) & 3u : 0;
+#endif
 #ifdef FELUCCA_FAVORITES
     memcpy(&favorites, &p->favorites, sizeof favorites);
     favorites.filter = favorites.filter == 1u;
@@ -62,6 +66,11 @@ static void settings_export(persist_t *p)
     p->zoom = settings.zoom;
     p->panel = panel;
     p->bold = hold_to_stored(p->bold, settings_hold);
+    uint32_t mon = 0;
+#ifdef FELUCCA_MONITOR
+    mon = monitor_mode;
+#endif
+    if (font_bold || mon) p->bold = SALT_DISPLAY_TAG | (settings_hold & 3u) | (font_bold << 2) | (mon << 3);
 #ifdef FELUCCA_FAVORITES
     memcpy(&p->favorites, &favorites, sizeof favorites);
 #endif

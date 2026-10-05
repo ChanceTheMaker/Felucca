@@ -21,9 +21,10 @@ function setup(host = 'chancethemaker.github.io', saved = null, blocked = false)
   return {context, scripts, listeners, choose: choice => handlers.click({target: {closest: () => ({dataset: {choice}})}})};
 }
 const fresh = setup();
-assert.equal(fresh.scripts.length, 0, 'No Google script before opt-in');
+assert.equal(fresh.scripts.length, 1, 'Cookieless measurement starts automatically');
+assert.equal(fresh.context.dataLayer.find(x => x[0] === 'consent' && x[1] === 'update')[2].analytics_storage, 'denied');
 fresh.context.FeluccaAnalytics.track('install_attempt');
-assert.equal(fresh.context.dataLayer.filter(x => x[0] === 'event').length, 0);
+assert.equal(fresh.context.dataLayer.filter(x => x[0] === 'event').length, 1);
 fresh.choose('granted');
 assert.equal(fresh.scripts.length, 1);
 assert.equal(Object.prototype.toString.call(fresh.context.dataLayer[0]), '[object Arguments]', 'Google tag commands use the documented arguments-object queue');
@@ -41,6 +42,11 @@ assert.equal(fresh.context.dataLayer.length, count);
 assert.equal(fresh.context['ga-disable-G-JVF09MZEGD'], true);
 fresh.choose('granted');
 assert.equal(fresh.scripts.length, 1, 'No duplicate tag');
+fresh.choose('basic');
+assert.equal(fresh.context.dataLayer.at(-1)[2].analytics_storage, 'denied');
+assert.equal(fresh.context['ga-disable-G-JVF09MZEGD'], false);
+fresh.context.FeluccaAnalytics.track('download_click', {file_type:'zip'});
+assert.equal(fresh.context.dataLayer.at(-1)[1], 'download_click');
 assert.equal(setup('localhost', 'granted').scripts.length, 0);
 assert.equal(setup('hugelton.github.io', 'granted').scripts.length, 0);
 assert.equal(setup('chancethemaker.github.io', 'denied').scripts.length, 0);

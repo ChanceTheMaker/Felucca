@@ -2,10 +2,16 @@
 
 The Salt installer and Studio use GA4 measurement ID `G-JVF09MZEGD`.
 Only `chancethemaker.github.io/Felucca/` sends analytics. Local previews,
-other forks, and upstream sites do not. The Google script loads only after
-the visitor allows analytics using the preferences section at the bottom
-of the page. Declining leaves all features available. Preferences persist
-in local storage and can be changed in that section at any time.
+other forks, and upstream sites do not. The Google script loads automatically
+with analytics storage denied, sending cookieless measurements. The preferences
+section offers Without cookies, Allow analytics cookies, and Turn analytics off.
+Existing declines remain full opt-outs. All choices leave every feature available.
+Preferences persist in local storage and can be changed at any time.
+
+Cookieless pings support Google's aggregate measurement and modeling; they are
+not equivalent to identified visitors or sessions in standard reports. Modeling
+depends on Google's eligibility thresholds and is not guaranteed for a small site.
+Cookieless does not mean no data is sent to Google or establish legal compliance.
 
 Advertising consent and Google signals remain disabled. Page URLs omit
 query strings; referrers are reduced to their origin. Custom event fields
@@ -30,7 +36,7 @@ In GA4, mark `install_success` as a key event if desired. Register
 `firmware_version`, `stage`, `error_code`, and `file_type` as event-scoped
 custom dimensions to break down these events in reports. Review enhanced
 measurement in the web stream; these explicit custom events are separate
-from Google's automatic download events. Verify receipt in Realtime after
-deployment and consent; local tests deliberately never contact Google.
+from Google's automatic download events. Verify consented visits in Realtime;
+verify cookieless pings in browser network tools. Local unit tests never contact Google.
 
 Run `node web/test_analytics.mjs` for consent, environment, and filtering checks.

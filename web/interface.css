@@ -805,7 +805,13 @@ footer a { text-underline-offset:3px; }
 }
 
 /* Shared navigation replaces the reciprocal installer/Studio header buttons. */
-.brand-row h1 .brand-home { color:inherit; font:inherit; letter-spacing:inherit; text-decoration:none; }
+.brand-row h1 .brand-home { display:inline-flex; align-items:center; gap:.16em; color:inherit; font:inherit; letter-spacing:inherit; text-decoration:none; }
+/* Preserve the generated silhouette; mirror it and tint with the title color. */
+.salt-mark { display:block; background:currentColor; -webkit-mask:url("salt-shaker.png") center / contain no-repeat; mask:url("salt-shaker.png") center / contain no-repeat; transform:scaleX(-1); }
+.brand-home .salt-mark { flex:0 0 1.15em; width:1.15em; height:1.15em; }
+.cabinet-grille .salt-mark { position:absolute; left:50%; top:0; width:24px; height:100%; color:var(--badge-fg,var(--fg)); transform:translateX(-50%) scaleX(-1); }
+@media(max-width:780px) { .cabinet-grille .salt-mark { width:18px; } }
+.brand-home>span:last-child { white-space:nowrap; }
 .brand-row h1 .brand-home:focus-visible { outline:2px solid currentColor; outline-offset:6px; border-radius:3px; }
 :root[data-skin] .brand-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,auto) auto; align-items:center; gap:6px 12px; padding-right:0; }
 .brand-row>.brand-links { display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:8px; }

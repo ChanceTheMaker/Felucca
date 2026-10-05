@@ -316,9 +316,14 @@ def mmio_check():
 def main():
     global PRODUCT, VERSION
     ap = argparse.ArgumentParser()
+    ap.add_argument("--board", choices=("fm1", "smk37"), default="fm1",
+                    help="hardware target (smk37 is reserved for the shared Pro/Elite port)")
     ap.add_argument("--release", metavar="X.Y", help="release build: identity FM-1_9XY, version string vX.Y")
     ap.add_argument("--sdk", type=Path, help="JieLi AC79 SDK checkout (default: $AC79_SDK)")
     a = ap.parse_args()
+    if a.board == "smk37":
+        ap.error("SMK-37 Pro/Elite hardware bring-up is pending; no SMK firmware is generated. "
+                 "See docs/SMK37_PREPARATION.md for the recovery, pinout and memory-map prerequisites.")
     name = "felucca.fwsc"
     if a.release:                   # one digit each: the identity has room for two (X.Y.Z keeps X.Y's)
         m = re.fullmatch(r"(\d)\.(\d)(?:\.\d)?(-[A-Za-z0-9]+)?", a.release)

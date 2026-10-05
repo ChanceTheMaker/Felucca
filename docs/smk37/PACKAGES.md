@@ -21,7 +21,9 @@ with model-specific packages; it does not establish cross-flash compatibility.
 The `USR`, `isd_config.ini`, `script.ver` and `tail.bin` payload hashes also
 match. `blimit.bin` differs. This comparison does not decode the flash payload
 to establish whether application differences are branding, configuration or
-executable logic. The manufacturer's same-circuit declaration remains the
+executable logic. The follow-on [flash inspection](FLASH_LAYOUT.md) confirms
+that the decoded application files themselves differ and records their shared
+boot configuration and storage descriptors. The manufacturer's same-circuit declaration remains the
 strongest evidence for sharing the board implementation.
 
 The Pro v16 wrapper has 36 marker blocks; the FM-1 installer currently handles

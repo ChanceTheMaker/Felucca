@@ -26,6 +26,14 @@ The preparation stack is published as fork draft PRs
 [arrival diagnostics #41](https://github.com/ChanceTheMaker/Felucca/pull/41).
 They are stacked in that order on the RC1 candidate branch, not merged to main.
 
+Follow-on `feat/smk37-flash-layout` adds offline JLFS/application inspection and
+boot-configuration decoding. All 13 archived packages pass the implemented
+checks; 11 additional tests bring the preparation suite to 30. Pro/Elite v16
+share boot settings and region descriptors, but their decoded application
+files differ. FM-1's main store address falls inside the SMK stock application
+span, so the reserved-target build guard remains in place. See
+[flash and boot evidence](smk37/FLASH_LAYOUT.md). No firmware is built or flashed.
+
 Installer follow-up on `feat/rc1-installer-retry`: failed discovery, denied MIDI
 permission, interrupted updates and stopped resumes show Try Again below the
 output. Retrying requests MIDI access and rediscovers the device, hides stale

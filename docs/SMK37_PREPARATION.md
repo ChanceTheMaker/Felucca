@@ -122,6 +122,8 @@ FM-1 host tests do not substitute for SMK hardware validation.
   packages inspected offline; Pro/Elite wrapper and payload differences recorded.
 - [Arrival diagnostics](smk37/DIAGNOSTICS.md): receive-only MIDI recording,
   offline control/event reports, and the stock baseline test sequence.
+- [Flash and boot evidence](smk37/FLASH_LAYOUT.md): decoded directory/boot
+  configuration and the concrete conflict with FM-1 storage addresses.
 - `python -m unittest discover -s tests -p "smk37_*_test.py"` runs the preparation
   tests without a device or SDK. Full firmware rebuilds and hardware tests are
   separate from this preparation round; no firmware source has changed here.

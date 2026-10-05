@@ -349,9 +349,7 @@
   "ui.clickToPlay": "Cliquez pour jouer",
   "ui.clickToPlayEdit": "Cliquez pour jouer/modifier",
   "guide.title": "Découvrez votre FM-1",
-  "guide.version": "Aperçu des commandes 1.0",
   "guide.intro": "Choisissez un groupe pour repérer les commandes et découvrir leurs fonctions.",
-  "guide.note": "Basé sur Felucca 1.0. Le firmware Salt14 publié ne propose pas encore toutes ces commandes.",
   "guide.illustration": "Illustration du panneau de commande du FM-1",
   "guide.groups": "Groupes de commandes",
   "guide.knobs": "Potentiomètres",
@@ -390,5 +388,11 @@
   "guide.menu": "Ouvrir le menu",
   "guide.song": "Ouvrir SONG pour enchaîner les motifs A–D",
   "guide.holdHint": "Maintenez le bouton indiqué pour accéder à ces raccourcis.",
-  "guide.pagesHint": "Appuyez à nouveau sur un bouton de page pour passer à la suivante."
+  "guide.pagesHint": "Appuyez à nouveau sur un bouton de page pour passer à la suivante.",
+  "nav.label": "Navigation principale",
+  "nav.install": "Installer",
+  "nav.manual": "Manuel",
+  "nav.studio": "Studio",
+  "nav.themes": "Thèmes",
+  "nav.features": "Fonctions"
 }

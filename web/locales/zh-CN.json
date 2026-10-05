@@ -349,9 +349,7 @@
   "ui.clickToPlay": "点击演奏",
   "ui.clickToPlayEdit": "点击演奏/编辑",
   "guide.title": "认识你的 FM-1",
-  "guide.version": "1.0 操作预览",
   "guide.intro": "选择一组控件，查看其位置和功能。",
-  "guide.note": "本指南基于 Felucca 1.0。已发布的 Salt14 固件尚未包含全部操作功能。",
   "guide.illustration": "FM-1 控制面板示意图",
   "guide.groups": "控件分组",
   "guide.knobs": "旋钮",
@@ -390,5 +388,11 @@
   "guide.menu": "打开菜单",
   "guide.song": "打开 SONG，将 A–D 模式串联",
   "guide.holdHint": "长按相应按钮即可使用这些快捷操作。",
-  "guide.pagesHint": "再次按下页面按钮可切换到下一页。"
+  "guide.pagesHint": "再次按下页面按钮可切换到下一页。",
+  "nav.label": "主导航",
+  "nav.install": "安装",
+  "nav.manual": "手册",
+  "nav.studio": "Studio",
+  "nav.themes": "主题",
+  "nav.features": "功能"
 }

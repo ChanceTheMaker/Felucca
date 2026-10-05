@@ -349,9 +349,7 @@
   "ui.clickToPlay": "Clique para tocar",
   "ui.clickToPlayEdit": "Clique para tocar/editar",
   "guide.title": "Conheça seu FM-1",
-  "guide.version": "Prévia dos controles 1.0",
   "guide.intro": "Escolha um grupo para destacar os controles e conhecer suas funções.",
-  "guide.note": "Baseado no Felucca 1.0. O firmware Salt14 publicado ainda não inclui todos esses controles.",
   "guide.illustration": "Ilustração do painel de controle do FM-1",
   "guide.groups": "Grupos de controles",
   "guide.knobs": "Botões giratórios",
@@ -390,5 +388,11 @@
   "guide.menu": "Abra o menu",
   "guide.song": "Abra SONG para encadear padrões A–D",
   "guide.holdHint": "Segure o botão indicado para acessar estes atalhos.",
-  "guide.pagesHint": "Pressione novamente um botão de página para ir à próxima."
+  "guide.pagesHint": "Pressione novamente um botão de página para ir à próxima.",
+  "nav.label": "Navegação principal",
+  "nav.install": "Instalar",
+  "nav.manual": "Manual",
+  "nav.studio": "Studio",
+  "nav.themes": "Temas",
+  "nav.features": "Recursos"
 }

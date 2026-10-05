@@ -260,6 +260,7 @@
     <progress id="bar" max="100" value="0" aria-label="Installation progress" data-i18n-aria-label="installer.progress"></progress>
     <p id="status" role="status"></p>
     <pre id="log"></pre>
+    <p id="install-retry" hidden><button type="button" id="retry" data-t="retry">Try Again</button></p>
     <p id="studio-handoff" hidden><a class="hero-link" href="../editor/#sound" data-t="editStudio">Edit in Studio</a></p>
   </details>
   <section class="panel-guide" id="fm1-guide" data-section="knobs" aria-labelledby="panel-heading">
@@ -435,7 +436,11 @@ const log = (t) => {
   output.textContent += t + "\n";
   if (follow) output.scrollTop = output.scrollHeight;
 };
-function beginInstallProgress() {
+let retryTarget = "go";
+$("retry").addEventListener("click", () => $(retryTarget).click());
+function beginInstallProgress(target = "go") {
+  retryTarget = target;
+  $("install-retry").hidden = true;
   $("install-progress").open = true;
   $("studio-handoff").hidden = true;
   $("bar").value = 0;
@@ -448,7 +453,7 @@ const meta = /*META*/;
 I18N.text($('release'), 'ui.version', {version:meta.version});
 
 let writing = false, stock = null, stockFileEpoch = 0;
-const lockInstaller = (on) => { writing = on; $("go").disabled = on || !image; $("stock-go").disabled = on || !stock; $("stock-file").disabled = on; $("stock-recovery").disabled = on; };
+const lockInstaller = (on) => { writing = on; $("go").disabled = on || !image; $("stock-go").disabled = on || !stock; $("stock-file").disabled = on; $("stock-recovery").disabled = on; $("retry").disabled = on || !(retryTarget === "stock-go" ? stock : image); };
 window.addEventListener("beforeunload", (e) => { if (writing) { e.preventDefault(); e.returnValue = t("leave"); } });
 
 (async () => {
@@ -473,7 +478,7 @@ $("go").addEventListener("click", async () => {
   beginInstallProgress();
   let midi;
   try { midi = await navigator.requestMIDIAccess({ sysex: true }); }
-  catch (e) { track('install_failed', {stage, error_code: 'denied'}); sayK("denied"); lockInstaller(false); return; }
+  catch (e) { track('install_failed', {stage, error_code: 'denied'}); sayK("denied"); lockInstaller(false); $("install-retry").hidden = false; return; }
   let completed = false;
   try {
     const up = new Updater(midi, log);
@@ -510,6 +515,7 @@ $("go").addEventListener("click", async () => {
   }
   lockInstaller(false);
   $("studio-handoff").hidden = !completed;
+  $("install-retry").hidden = completed;
 });
 
 $("stock-file").addEventListener("change", async () => {
@@ -540,8 +546,8 @@ function archiveInfo(a) {
 $("stock-go").addEventListener("click", async () => {
   if (!stock || writing) return;
   const selected = stock; lockInstaller(true);
-  beginInstallProgress();
-  let link = null;
+  beginInstallProgress("stock-go");
+  let link = null, completed = false;
   try {
     let midi;
     try { midi = await navigator.requestMIDIAccess({sysex:true}); } catch (e) { sayK("denied"); return; }
@@ -552,7 +558,8 @@ $("stock-go").addEventListener("click", async () => {
       loader.link.close();
       if (!$("stock-recovery").checked) { sayK("stockNeedBackup"); return; }
       if (!confirm(t("stockConfirm"))) return;
-      sayK(await up.resume(selected.image, step, selected.product) ? "done" : "stopped");
+      completed = await up.resume(selected.image, step, selected.product);
+      sayK(completed ? "done" : "stopped");
     } else {
       const device = await up.find(id => id.model === "FM-1");
       if (!device) { sayK("notfound"); return; }
@@ -565,11 +572,12 @@ $("stock-go").addEventListener("click", async () => {
       saveArchive(archive); link.close(); link = null;
       if (!confirm(t("stockConfirm"))) return;
       await up.install(selected.image, selected.product, step);
+      completed = true;
     }
   } catch (e) {
     if (e.code && TEXT[lang][e.code]) sayK(e.code,e.detail || ""); else sayK("error",e.message);
     log(String(e.stack || e));
-  } finally { if (link) link.close(); lockInstaller(false); }
+  } finally { if (link) link.close(); lockInstaller(false); $("install-retry").hidden = completed; }
 });
 </script>
 <button id="back-to-top" class="back-to-top" type="button" hidden aria-label="Back to top" title="Back to top" data-i18n-aria-label="nav.backToTop" data-i18n-title="nav.backToTop"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-7 7 7-7 7 7"/></svg></button>

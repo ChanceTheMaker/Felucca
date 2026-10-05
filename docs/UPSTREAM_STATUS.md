@@ -104,6 +104,14 @@ evidence accompanies the candidate PRs and release artifacts.
 
 ## Contribution ledger
 
+Studio visual panels are prepared separately on `feat/studio-visual-panels`,
+above the RC1 logo branch. Related controls now share cards with editable
+envelope/filter guides and LFO, scale, arpeggiator and slicer widgets. This is an
+original Salt implementation, with no firmware/DSP changes or upstream source
+import. See [STUDIO_VISUAL_PANELS.md](STUDIO_VISUAL_PANELS.md) for behavior,
+validation and visualization limits. It has not been selected for upstream
+submission or published; the upstream baseline and candidate status above remain.
+
 No new upstream PR has been authorized or submitted during this round. Preparing
 and documenting candidates does not imply upstream acceptance. For each future
 contribution, append the following information:

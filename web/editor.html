@@ -176,6 +176,7 @@
 <script src="locales.js"></script>
 <script src="i18n.js"></script>
 <script src="skin.js"></script>
+<script src="studio-widgets.js"></script>
 </head>
 <body class="editor-page">
 <main id="studio">
@@ -2488,6 +2489,7 @@ function applyLang() {
   renderPreferences(true);
   renderPanels();
   renderPlayState();
+  refreshWidgets();
   if (dev?.dump) { renderSlots(); renderStepHead(); renderSamples(); renderTrackbar(); renderMixer(); renderSysinfo(); renderFm6(); }
 }
 I18N.onChange(() => { lang = I18N.language; applyLang(); });
@@ -2897,7 +2899,35 @@ function modDst(d, txt) {
   return e && visible(e) ? e.label : txt;
 }
 
+let studioWidgets = [];
+let widgetsPending = false;
+function refreshWidgets() {
+  if (widgetsPending) return;
+  widgetsPending = true;
+  queueMicrotask(() => { widgetsPending = false; if (dev?.dump) for (const widget of studioWidgets) widget.update(); });
+}
+function addStudioWidget(section, kind, filterIds) {
+  if (!window.FeluccaWidgets) return;
+  const session = dev;
+  const widget = window.FeluccaWidgets.mount(kind, {
+    read: id => session.dump.p[id],
+    format: id => fmtValue(session.pdesc[id], session.dump.p[id]).filter(Boolean).join(" "),
+    t: name => I18N.t('widgets.' + name), filterIds,
+    begin: id => { if (dev === session) dragging = key(0, id); },
+    end: () => { dragging = null; },
+    write: (id, value) => {
+      if (dev !== session) return;
+      const c = ctl.get(key(0, id));
+      if (!c) return;
+      value = Math.max(c.desc.min, Math.min(c.desc.max, Math.round(value)));
+      c.input.value = String(value);
+      userSet(0, id, value, true);
+    },
+  });
+  section.append(widget.element); studioWidgets.push(widget);
+}
 function buildGroups() {
+  studioWidgets = [];
   ctl.clear();
   dev.built = dev.dump.engine;
   /* Sound: the selected track's parameters; Sequencer: its pattern settings; Settings: globals */
@@ -2905,7 +2935,10 @@ function buildGroups() {
   const { info } = dev;
   if (knownLayout(info)) {
     for (const g of LAYOUT(info.pe0)) {
-      const div = el("div", { class: "group" }, el("h2", { ic: HEAD_IC[g.t], text: g.engine ? `EDIT ${info.engines[dev.dump.engine] || ""}` : g.t }));
+      const category = g.engine ? info.engines[dev.dump.engine] || "EDIT" : g.t;
+      const div = el("div", { class: "group control-bank unified-card", "data-section": g.t,
+        "data-card-key": `${g.tab || "groups"}:${g.t}:unified` }, el("h2", { ic: HEAD_IC[g.t], text: category }));
+      const body = el("div", { class: "bank-sections" });
       if (g.mod != null) {                          /* MOD: slot number, SRC, DST, AMT in one row */
         for (let k = 0; k < 4; k++) {
           const r = [0, 1, 2].map((j) => paramRow(0, g.mod + 3 * k + j));
@@ -2918,15 +2951,29 @@ function buildGroups() {
         groups.groups.push(div);
         continue;
       }
-      for (const [title, s, ids] of g.pages) {
-        const rows = ids.map((id) => paramRow(s, id)).filter(Boolean);
+      let effectTail = null;
+      for (const [title, scope, ids] of g.pages) {
+        const rows = ids.map((id) => paramRow(scope, id)).filter(Boolean);
         if (!rows.length) continue;
         const tt = g.engine && (dev.titles[dev.dump.engine] || [])[g.pages.findIndex((x) => x[0] === title)];
-        const category = g.engine ? info.engines[dev.dump.engine] || "EDIT" : g.t;
         const pageTitle = tt || title;
-        const div = el("div", { class: "group control-bank", "data-section": g.t, "data-card-key": `${g.tab || "groups"}:${g.t}:${title}` },
-          el("h2", { ic: PAGE_IC[pageTitle] || HEAD_IC[g.t], text: pageTitle === category ? category : `${category} / ${pageTitle}` }));
-        div.append(...rows);
+        const section = title === "CHORUS" && effectTail ? effectTail : el("section", { class: "bank-section", "data-page": pageTitle });
+        section.append(el("h3", { ic: PAGE_IC[pageTitle], text: pageTitle }));
+        const kind = { ENV: "env", LFO: "lfo", SCL: "scale", ARP: "arp", SLICER: "slicer" }[title];
+        if (kind) addStudioWidget(section, kind);
+        // Only ANALOG's known CUT/RES low-pass gets a response guide. Other
+        // engines retain their complete controls without a misleading LP plot.
+        if (g.engine && category === "ANALOG" && pageTitle === "FLT") {
+          const cut = ids.find(id => dev.pdesc[id]?.label === "CUT" && dev.pdesc[id]?.fmt === F.CUTOFF);
+          const res = ids.find(id => dev.pdesc[id]?.label === "RES");
+          if (cut != null && res != null) addStudioWidget(section, "filter", [cut, res]);
+        }
+        section.append(el("div", { class: "bank-rows" }, ...rows));
+        if (section !== effectTail) body.append(section);
+        if (title === "REVERB") effectTail = section;
+      }
+      if (body.children.length) {
+        div.append(body);
         groups[g.tab || "groups"].push(div);
       }
     }
@@ -2940,10 +2987,16 @@ function buildGroups() {
     groups.groups.push(a, b);
     groups.setgroups.push(c);
   }
-  for (const [id, divs] of Object.entries(groups)) {
-    $(id).replaceChildren(...divs);
-    window.FeluccaSkin?.decorate($(id), `${id}:${dev.dump.engine}`);
+  if (knownLayout(info)) {
+    const order = ["EDIT", "ENV", "VOICE", "LFO", "FX", "ARP", "SCL", "MOD", "OP ENV"];
+    groups.groups.sort((a,b) => order.indexOf(a.dataset.section) - order.indexOf(b.dataset.section));
   }
+  for (const [id, divs] of Object.entries(groups)) {
+    $(id).classList.toggle("unified-groups", knownLayout(info));
+    $(id).replaceChildren(...divs);
+    window.FeluccaSkin?.decorate($(id), `${id}:${dev.dump.engine}:${knownLayout(info) ? "unified-v1" : "legacy"}`);
+  }
+  refreshWidgets();
 }
 
 function paramRow(s, id) {
@@ -2992,7 +3045,7 @@ function paramRow(s, id) {
   input.title = d.label;
   input.setAttribute("aria-label", d.label);
   const out = el("span", { class: "v" });
-  const row = el("div", { class: "row" }, el("span", { text: d.label }), window.FeluccaSkin?.enhance(input) || input, out);
+  const row = el("div", { class: "row", "data-param": k }, el("span", { text: d.label }), window.FeluccaSkin?.enhance(input) || input, out);
   ctl.set(k, { input, out, desc: d, scope: s, id, row });
   showValue(k, s ? dev.dump.g[id] : dev.dump.p[id], true);
   return row;
@@ -3006,6 +3059,7 @@ function showValue(k, v, force) {
   if (c.input.type === "range") c.input.setAttribute("aria-valuetext", c.out.textContent);
   if (force || !touched(k)) c.input.value = String(v);
   window.FeluccaSkin?.sync(c.input);
+  refreshWidgets();
 }
 /* the user is working on this control: polling and pushes must not move it */
 function touched(k) {

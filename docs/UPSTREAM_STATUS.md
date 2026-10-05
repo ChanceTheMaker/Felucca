@@ -16,6 +16,13 @@ The hardware menu scrolls its ninth row into view, retaining readable fonts and
 fixed footer controls. Input, settings, backup, UI behavior and renderer checks
 cover the combined implementation. No MIDI receive or Bluetooth code is imported.
 
+The scale import adds QNT SEQ to firmware and Studio's mock descriptors. It snaps
+melodic sequence playback to the current root/scale without rewriting stored
+steps, deduplicates collapsed pitches, and releases the mapped notes correctly.
+Drum lanes and engines with their own key maps remain unchanged. Upstream scale
+and UI regression coverage travels with the import; the browser DSP is rebuilt
+from the combined source before packaging this candidate.
+
 Local website follow-up: Install opens the initially collapsed Install Progress
 accordion, scrolls to its output, and confirmed
 success reveals an Edit in Studio link. Desktop/mobile, resumed success, failure,

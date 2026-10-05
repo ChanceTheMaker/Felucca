@@ -340,7 +340,7 @@
   "ui.minimizeKeyboard": "Minimize keyboard",
   "ui.studioPreview": "Studio preview",
   "ui.previewAlt": "Felucca [Salt] Studio — {theme}, {mode}",
-  "ui.wireTitle": "FM-1 synthesizer wireframe",
+  "ui.wireTitle": "FM-1 synthesizer",
   "ui.wireDesc": "FM-1 with eight rotary controls, a screen, twelve function buttons, octave buttons, and 27 touch keys.",
   "ui.modeTipConnect": "Connect to your FM-1",
   "ui.modeTipOr": "or select",

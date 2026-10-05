@@ -247,6 +247,79 @@ footer a { text-underline-offset:3px; }
 .hero-instrument .wire-secondary { opacity:.42; }
 .hero-instrument .wire-display { color:var(--lcd); }
 .hero-instrument text { font-family:var(--display-font),monospace; letter-spacing:1px; }
+/* One 42-second cycle: wireframe, then all seven FM-1 product finishes.
+   Matching keyframe stops give each finish a two-and-a-half-second hold and a slow fade. */
+.hero-instrument { position:relative; }
+.hero-wire { animation:hero-wire-fade 42s ease-in-out infinite; }
+.hero-product { opacity:0; color:#d8d9d4; animation:hero-product-fade 42s ease-in-out infinite,hero-ink 42s ease-in-out infinite; }
+.hero-product .product-body { fill:#383a39; stroke:#292c2b; animation:hero-body-color 42s ease-in-out infinite; }
+.hero-product .product-rubber { fill:#242a29; stroke:#0005; animation:hero-rubber-color 42s ease-in-out infinite; }
+.hero-instrument .product-button { fill:#323837; stroke:#0005; animation:hero-button-color 42s ease-in-out infinite; }
+.hero-product .product-detail { opacity:.22; }
+.hero-product .product-bezel { fill:#0c1011; stroke:#000; }
+.hero-product .product-screen { fill:#a8c8cb; stroke:#6c8c90; }
+.hero-product .product-display { color:#264f59; }
+.hero-product .product-screen-label { fill:#264f59; }
+.hero-product .product-labels { font-family:Arial,sans-serif; letter-spacing:.4px; }
+.hero-product .product-control-ink { animation:hero-control-ink 42s ease-in-out infinite; }
+@keyframes hero-wire-fade {
+  0%,4%,100% { opacity:1; }
+  10%,90% { opacity:0; }
+}
+@keyframes hero-product-fade {
+  0%,4%,100% { opacity:0; }
+  10%,90% { opacity:1; }
+}
+@keyframes hero-body-color {
+  0%,16%,100% { fill:#ae80c3; }
+  22%,28% { fill:#c96b47; }
+  34%,40% { fill:#34383a; }
+  46%,52% { fill:#efeae0; }
+  58%,64% { fill:#eee9df; }
+  70%,76% { fill:#ddd7cc; }
+  82%,90% { fill:#383a39; }
+}
+@keyframes hero-rubber-color {
+  0%,16%,100% { fill:#7663a3; }
+  22%,28% { fill:#a44935; }
+  34%,40% { fill:#68baad; }
+  46%,52% { fill:#5b7c98; }
+  58%,64% { fill:#8b493a; }
+  70%,76% { fill:#363e3d; }
+  82%,90% { fill:#242a29; }
+}
+@keyframes hero-button-color {
+  0%,16%,100% { fill:#9580bc; }
+  22%,28% { fill:#bd6147; }
+  34%,40% { fill:#87d1c3; }
+  46%,52% { fill:#7998b2; }
+  58%,64% { fill:#a45c49; }
+  70%,76% { fill:#48514f; }
+  82%,90% { fill:#323837; }
+}
+@keyframes hero-ink {
+  0%,16%,100% { color:#352642; }
+  22%,28% { color:#392a24; }
+  34%,40% { color:#d0d7d4; }
+  46%,52% { color:#344454; }
+  58%,64% { color:#453b32; }
+  70%,76% { color:#3e4441; }
+  82%,90% { color:#d8d9d4; }
+}
+@keyframes hero-control-ink {
+  0%,16%,100% { color:#352642; }
+  22%,28% { color:#392a24; }
+  34%,40% { color:#234d46; }
+  46%,52% { color:#263e51; }
+  58%,64% { color:#3d2923; }
+  70%,76% { color:#d0d7d4; }
+  82%,90% { color:#d8d9d4; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .hero-instrument * { animation:none !important; }
+  .hero-wire { opacity:1; }
+  .hero-product { opacity:0; }
+}
 .installer-hero h2 { font:700 clamp(30px,4vw,48px)/1.13 var(--ui-font); letter-spacing:-1.8px; text-transform:none; border:0; margin:0 0 16px; padding:0; }
 .installer-hero p { max-width:550px; color:var(--dim); font:15px/1.7 var(--ui-font); margin:0; }
 .hero-link { display:inline-block; padding:13px 20px; border-radius:9px; background:var(--accent); color:var(--ink); text-decoration:none; font-weight:650; white-space:nowrap; }

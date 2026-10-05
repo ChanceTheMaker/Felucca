@@ -40,6 +40,11 @@ main { max-width:1560px; margin:24px auto; padding:28px; border:1px solid color-
 .brand-links { gap:18px; }
 .brand-links a, .brand-links button.lang { color:var(--dim); font:12px var(--ui-font); text-decoration:none; }
 .brand-links a:hover, .brand-links button.lang:hover { color:var(--fg); }
+.brand-row .brand-links .installer-button { display:inline-flex; align-items:center; justify-content:center; min-height:38px; box-sizing:border-box; padding:8px 15px; border:1px solid color-mix(in srgb,var(--badge-fg) 35%,transparent); border-radius:8px; color:var(--badge-fg); background:linear-gradient(#ffffff16,#00000012); box-shadow:inset 0 1px #ffffff30,0 2px 4px #0003; font-weight:650; white-space:nowrap; }
+.brand-row .brand-links .installer-button:hover { background:color-mix(in srgb,var(--badge-fg) 15%,transparent); }
+.brand-row .brand-links button.lang { display:grid; place-items:center; flex-shrink:0; float:none; width:42px; height:38px; padding:7px; border:0; border-radius:8px; background:transparent; box-shadow:none; }
+.brand-links button.lang svg { display:block; width:27px; height:18px; border-radius:2px; box-shadow:none; }
+.brand-links :is(.installer-button,button.lang):focus-visible { outline:2px solid var(--badge-fg); outline-offset:3px; }
 .settings-menu { top:24px; }
 .settings-menu > summary { font-size:21px; padding:10px 12px; border-color:var(--line); color:var(--fg); border-radius:10px; background:#ffffff05; }
 .settings-menu[open] > summary { background:var(--accent); color:var(--ink); }
@@ -157,7 +162,13 @@ footer a { text-underline-offset:3px; }
 [data-contrast=high] .brand-row h1 { text-shadow:none; }
 .installer-page main { max-width:1180px; }
 .installer-page .install-console { padding:30px; border-radius:14px; border-color:var(--line); box-shadow:none; }
-.installer-hero { display:grid; grid-template-columns:1fr auto; gap:28px; align-items:center; padding:8px 0 32px; margin-bottom:28px; border-bottom:1px solid var(--line); }
+.installer-hero { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:28px; align-items:center; padding:8px 0 32px; margin-bottom:28px; border-bottom:1px solid var(--line); }
+.installer-hero .hero-link { margin-top:22px; }
+.hero-instrument { min-width:0; color:var(--accent); background:radial-gradient(ellipse,color-mix(in srgb,var(--accent) 7%,transparent),transparent 70%); }
+.hero-instrument svg { display:block; width:100%; height:auto; overflow:visible; transform:rotate(-4deg); filter:drop-shadow(0 5px 12px #0002); }
+.hero-instrument .wire-secondary { opacity:.42; }
+.hero-instrument .wire-display { color:var(--lcd); }
+.hero-instrument text { font-family:var(--display-font),monospace; letter-spacing:1px; }
 .installer-hero h2 { font:700 clamp(30px,4vw,48px)/1.13 var(--ui-font); letter-spacing:-1.8px; text-transform:none; border:0; margin:0 0 16px; padding:0; }
 .installer-hero p { max-width:550px; color:var(--dim); font:15px/1.7 var(--ui-font); margin:0; }
 .hero-link { display:inline-block; padding:13px 20px; border-radius:9px; background:var(--accent); color:var(--ink); text-decoration:none; font-weight:650; white-space:nowrap; }

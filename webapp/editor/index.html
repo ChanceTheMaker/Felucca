@@ -169,8 +169,8 @@
 <body class="editor-page">
 <main>
   <div class="masthead"><div class="brand-row">
-    <div><div class="eyebrow">FM-1 / Sound laboratory</div><h1>Felucca <em>[Salt]</em> Studio</h1><p class="tagline">SYNTHESIZER • SEQUENCER • PERFORMANCE EDITOR</p></div>
-    <div class="brand-links"><a href="../installer/" data-t="installer"></a><button class="lang" id="lang"></button></div>
+    <div><div class="eyebrow">FM-1 / Sound laboratory</div><h1>Felucca <em>[Salt]</em></h1><p class="tagline">SYNTHESIZER • SEQUENCER • PERFORMANCE EDITOR</p></div>
+    <div class="brand-links"><a class="installer-button" href="../installer/" data-t="installer"></a><button class="lang" id="lang" type="button"></button></div>
   </div>
   <div class="appearance" data-appearance aria-label="Website appearance"></div>
   </div>
@@ -1829,7 +1829,7 @@ const TEXT = {
     putDone: "本体に書き込みました: スロット ", storedSlot: "本体に保存しました: スロット ", erasedSlot: "消去しました: スロット ",
     loadedUser: "読み込みました: ", reloaded: "本体で音色が変わったので読み直しました", readingBank: "スロットを読み込み中",
     badEngine: "このファームウェアにないエンジンです: ", flashFail: "書き込みに失敗しました（rc {rc}）",
-    installer: "Felucca インストーラー",
+    installer: "Felucca インストーラー ↗",
     tabSeq: "シーケンサー", tabTracks: "トラック", tabSettings: "設定",
     needDevice: "FM-1 を接続すると編集できます。", smpNone: "このファームウェアにはユーザーサンプルのスロットがありません。",
     bankConnect: "FM-1 を接続すると本体のユーザープリセットも扱えます。", bankNone: "このファームウェアにはユーザープリセットがありません。",
@@ -1914,7 +1914,7 @@ const TEXT = {
     putDone: "Written to the device: slot ", storedSlot: "Stored on the device: slot ", erasedSlot: "Erased slot ",
     loadedUser: "Loaded ", reloaded: "The sound changed on the device: read again", readingBank: "Reading the slots",
     badEngine: "This firmware has no such engine: ", flashFail: "Write failed (rc {rc})",
-    installer: "Felucca installer",
+    installer: "Felucca installer ↗",
     tabSeq: "Sequencer", tabTracks: "Tracks", tabSettings: "Settings",
     needDevice: "Connect the FM-1 to edit.", smpNone: "This firmware has no user sample slots.",
     bankConnect: "Connect the FM-1 to see its user presets too.", bankNone: "This firmware has no user presets.",
@@ -1934,7 +1934,7 @@ function sayK(k, arg = "") { lastKey = k; lastArg = arg; $("status").textContent
 function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-t]").forEach((e) => setLabel(e, t(e.dataset.t)));
-  $("lang").textContent = t("other");
+  window.FeluccaSkin.setLanguageFlag($("lang"), lang);
   setLabel($("connect"), t(dev ? "disconnect" : "connect"));
   if (lastKey) $("status").textContent = t(lastKey) + lastArg;
   $("libq").placeholder = t("libSearch");

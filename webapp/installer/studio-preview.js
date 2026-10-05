@@ -1,19 +1,22 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// Theme-matched, non-interactive preview for Studio links on the installer.
+// Theme-matched hover and keyboard previews for Studio links on the installer.
 (() => {
   const I18N = window.FeluccaI18n;
   const names = {stage:'Stage Red', matrix:'Matrix', dx:'Vintage DX7', modeld:'Model D Walnut',
     chocolate:'Chocolate Factory', vapor:'Vaporwave', midnight:'Midnight Studio', space:'Space Mission',
     bauhaus:'Bauhaus', ocean:'Ocean Lab', arcade:'Arcade ’84', hicon:'High Contrast'};
-  const bubble = document.createElement('div');
+  const bubble = document.createElement('a');
   bubble.id = 'studio-preview';
   bubble.className = 'studio-preview';
-  bubble.setAttribute('role', 'tooltip');
+  bubble.tabIndex = -1;
   bubble.hidden = true;
   const picture = document.createElement('img');
   picture.width = 720; picture.height = 550;
   const caption = document.createElement('div');
-  bubble.append(picture, caption);
+  caption.id = 'studio-preview-caption';
+  const action = document.createElement('strong');
+  action.className = 'studio-preview-action';
+  bubble.append(picture, caption, action);
   document.body.append(bubble);
   let anchor = null, timer, previousDescription = null;
   function position() {
@@ -30,11 +33,15 @@
   function refresh() {
     if (!anchor) return;
     const root = document.documentElement;
-    const skin = Object.hasOwn(names, root.dataset.skin) ? root.dataset.skin : 'stage';
-    const mode = root.dataset.mode === 'light' ? 'light' : 'dark';
+    const params = new URL(anchor.href).searchParams;
+    const requestedSkin = params.get('theme') || root.dataset.skin;
+    const skin = Object.hasOwn(names, requestedSkin) ? requestedSkin : 'stage';
+    const mode = (params.get('mode') || root.dataset.mode) === 'light' ? 'light' : 'dark';
+    bubble.href = anchor.href;
     picture.src = `screenshots/previews/${skin}-${mode}.jpg`;
     picture.alt = I18N.t('ui.previewAlt',{theme:names[skin],mode:I18N.t('ui.'+mode)});
     caption.textContent = I18N.t('ui.previewAlt',{theme:names[skin],mode:I18N.t('ui.'+mode)});
+    action.textContent = I18N.t('ui.clickToPlay');
     position();
   }
   function hide() {
@@ -50,12 +57,12 @@
     if (anchor !== link) {
       hide(); anchor = link;
       previousDescription = link.getAttribute('aria-describedby');
-      link.setAttribute('aria-describedby', [previousDescription, bubble.id].filter(Boolean).join(' '));
+      link.setAttribute('aria-describedby', [previousDescription, caption.id].filter(Boolean).join(' '));
     }
     bubble.hidden = false; refresh();
   }
   const later = () => { clearTimeout(timer); timer = setTimeout(hide, 160); };
-  for (const link of document.querySelectorAll('a[href="../editor/"]')) {
+  for (const link of document.querySelectorAll('a[href="../editor/"], .screenshot-gallery a')) {
     link.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') show(link); });
     link.addEventListener('pointerleave', later);
     link.addEventListener('focus', () => show(link));

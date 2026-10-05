@@ -497,5 +497,8 @@
   "widgets.outScale": "Outside scale",
   "widgets.previousPattern": "Previous pattern",
   "widgets.nextPattern": "Next pattern",
-  "widgets.previewHelp": "Parameter preview, not live audio. Envelope stages use separate time scales."
+  "widgets.previewHelp": "Parameter preview, not live audio. Envelope stages use separate time scales.",
+  "widgets.source": "Source",
+  "widgets.destination": "Destination",
+  "widgets.amount": "Amount"
 }

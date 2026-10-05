@@ -2915,6 +2915,11 @@ function addStudioWidget(section, kind, filterIds) {
     t: name => I18N.t('widgets.' + name), filterIds,
     begin: id => { if (dev === session) dragging = key(0, id); },
     end: () => { dragging = null; },
+    reset: id => {
+      if (dev !== session) return;
+      const c = ctl.get(key(0,id));
+      if (c) { c.input.value = String(c.desc.def); userSet(0,id,c.desc.def,true); }
+    },
     write: (id, value) => {
       if (dev !== session) return;
       const c = ctl.get(key(0, id));
@@ -2940,6 +2945,11 @@ function buildGroups() {
         "data-card-key": `${g.tab || "groups"}:${g.t}:unified` }, el("h2", { ic: HEAD_IC[g.t], text: category }));
       const body = el("div", { class: "bank-sections" });
       if (g.mod != null) {                          /* MOD: slot number, SRC, DST, AMT in one row */
+        const heading = el("div", {class:"mod-head", "aria-hidden":"true"}, el("span"));
+        for (const name of ["source","destination","amount"]) {
+          const text = el("span"); I18N.text(text, "widgets." + name); heading.append(text);
+        }
+        div.append(heading);
         for (let k = 0; k < 4; k++) {
           const r = [0, 1, 2].map((j) => paramRow(0, g.mod + 3 * k + j));
           if (r.some((x) => !x)) continue;

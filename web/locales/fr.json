@@ -497,5 +497,8 @@
   "widgets.outScale": "Hors gamme",
   "widgets.previousPattern": "Motif précédent",
   "widgets.nextPattern": "Motif suivant",
-  "widgets.previewHelp": "Aperçu des paramètres, pas du son en direct. Les étapes de l’enveloppe ont des échelles de temps distinctes."
+  "widgets.previewHelp": "Aperçu des paramètres, pas du son en direct. Les étapes de l’enveloppe ont des échelles de temps distinctes.",
+  "widgets.source": "Source",
+  "widgets.destination": "Destination",
+  "widgets.amount": "Intensité"
 }

@@ -497,5 +497,8 @@
   "widgets.outScale": "音阶外",
   "widgets.previousPattern": "上一个节奏",
   "widgets.nextPattern": "下一个节奏",
-  "widgets.previewHelp": "参数预览，并非实时音频。包络各阶段使用不同的时间比例。"
+  "widgets.previewHelp": "参数预览，并非实时音频。包络各阶段使用不同的时间比例。",
+  "widgets.source": "来源",
+  "widgets.destination": "目标",
+  "widgets.amount": "强度"
 }

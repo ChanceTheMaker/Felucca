@@ -1,10 +1,10 @@
-/* Google Fonts: locally hosted wordmark subsets; see the accompanying license files in fonts/. */
+/* Google Fonts: locally hosted Studio wordmark subsets; see the accompanying license files in fonts/. */
 @font-face {
   font-family: 'Racing Sans One';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url(fonts/racingsansone.ttf) format('truetype');
+  src: url(fonts/racingsansone.ttf?v=studio1) format('truetype');
 }
 
 @font-face {
@@ -12,7 +12,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url(fonts/orbitron.ttf) format('truetype');
+  src: url(fonts/orbitron.ttf?v=studio1) format('truetype');
 }
 
 @font-face {
@@ -20,7 +20,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url(fonts/audiowide.ttf) format('truetype');
+  src: url(fonts/audiowide.ttf?v=studio1) format('truetype');
 }
 
 @font-face {
@@ -28,7 +28,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url(fonts/berkshireswash.ttf) format('truetype');
+  src: url(fonts/berkshireswash.ttf?v=studio1) format('truetype');
 }
 
 @font-face {
@@ -36,7 +36,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url(fonts/righteous.ttf) format('truetype');
+  src: url(fonts/righteous.ttf?v=studio1) format('truetype');
 }
 
 @font-face {
@@ -44,7 +44,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url(fonts/syncopate.ttf) format('truetype');
+  src: url(fonts/syncopate.ttf?v=studio1) format('truetype');
 }
 
 @font-face {
@@ -52,7 +52,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url(fonts/josefinsans.ttf) format('truetype');
+  src: url(fonts/josefinsans.ttf?v=studio1) format('truetype');
 }
 
 @font-face {
@@ -60,7 +60,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url(fonts/sora.ttf) format('truetype');
+  src: url(fonts/sora.ttf?v=studio1) format('truetype');
 }
 
 @font-face {
@@ -68,5 +68,5 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url(fonts/bungee.ttf) format('truetype');
+  src: url(fonts/bungee.ttf?v=studio1) format('truetype');
 }

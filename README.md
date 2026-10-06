@@ -1,44 +1,28 @@
 # Felucca [Salt]
 
 Felucca [Salt] by Chance Roth (@ChanceTheMaker), based on Felucca by Leo Kuroshita
-and Hügelton Instruments. This branch is the **1.0.1-salt1rc1 release candidate**,
-based on upstream v1.0.1 (`20c275e`). **Hardware validation is pending.**
+and Hügelton Instruments. This branch is the **1.0.1-salt1rc1 release candidate**.
+**Hardware validation is pending.**
 The [published installer](https://chancethemaker.github.io/Felucca/webapp/installer/)
 continues to provide **0.9-salt14** until that validation is complete.
 
 Salt adds the content-driven TRS MIDI receive-ring fix, 21 screen palettes,
 regular/bold text, an Events/Notes MIDI monitor, and the themed browser Studio.
-Experimental Bluetooth changes are excluded.
-
-Development follows the [upstream workflow](docs/UPSTREAM_WORKFLOW.md): receive
-updates in focused PRs, keep Salt differences explicit, and prepare selected
-contributions on clean upstream branches. See [upstream status](docs/UPSTREAM_STATUS.md)
-for the reviewed revision, retained features, and contribution ledger. The
-[feature inventory](docs/FEATURE_INVENTORY.md) documents Salt additions and
-contribution choices; [upstream 1.0.1 review](docs/UPSTREAM_1.0.1_REVIEW.md)
-explains the new lighting and sequence-scale features.
 
 ## Studio and website
 
 Select **Browser** to play the Felucca Synth built into the browser, or **FM-1**
 to edit a connected instrument. The candidate's browser engine includes all
 13 selectable 1.0 engines and 69 factory presets, plus imported FM6 sounds.
-It plays one sound; device sequencing, track mixing, projects and sample uploads
-are not connected to browser playback. See [browser engine details](web/audio/README.md).
+Browser mode supports four tracks, sequencing, track mixing, a preset library,
+local projects and workspace backup files. Sample uploads require a connected
+FM-1. See [browser engine details](web/audio/README.md).
 
 The website retains twelve themes, light/dark modes, the live oscilloscope,
 customizable controls, a docked keyboard, and eight interface languages. Its
 installer includes the animated product illustration, interactive FM-1 controls
 guide, compact navigation, theme gallery, and an installer-only back-to-top button.
 The guide describes the 1.0 controls listed below.
-
-The editor follows upstream's protocol: **SONG is command 33; preferences and
-favorites are commands 34–38**. Capability detection supports upstream 1.0 and
-Salt's display extensions. The unshipped experimental Salt command-33 layout
-is intentionally not supported.
-
-Candidate validation and the remaining device checks are recorded in
-[the integration report](docs/SALT-1.0-CANDIDATE.md).
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
 [![Sponsor](https://img.shields.io/badge/Sponsor-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/hugelton)
@@ -53,7 +37,7 @@ is not distributed here. Please report Salt issues in
 
 - Published Salt14 installer: [web installer](https://chancethemaker.github.io/Felucca/webapp/installer/)
 - Published Studio: [web editor](https://chancethemaker.github.io/Felucca/webapp/editor/)
-- Candidate installer: build this branch's site with `web/make_site.py`; see the integration report
+- Candidate installer: build this branch's site with `web/make_site.py`
 - Build: [BUILDING.md](BUILDING.md)
 
 ## Features
@@ -167,8 +151,8 @@ sevenths, or a fixed shape) and VOIC the voicing.
 If Felucca is useful to you, [sponsoring on GitHub](https://github.com/sponsors/hugelton) or a donation
 on [itch.io](https://hugelton.itch.io/felucca) helps keep its development going.
 
-Pull requests are welcome, and so are ideas and requests: post them in
-[Discussions](https://github.com/hugelton/Felucca/discussions) or on X ([@kurogedelic](https://x.com/kurogedelic)).
+For Salt and Studio support, feature requests, and contributions, use
+[ChanceTheMaker/Felucca](https://github.com/ChanceTheMaker/Felucca).
 
 ## Credits
 

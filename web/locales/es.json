@@ -500,5 +500,10 @@
   "widgets.previewHelp": "Vista de parámetros, no audio en vivo. Las etapas de envolvente usan escalas de tiempo distintas.",
   "widgets.source": "Origen",
   "widgets.destination": "Destino",
-  "widgets.amount": "Cantidad"
+  "widgets.amount": "Cantidad",
+  "ui.workspaceSaved": "Guardado en este navegador",
+  "ui.workspaceSaving": "Guardando en este navegador…",
+  "ui.workspaceTemporary": "No se guardó localmente: exporta una copia.",
+  "ui.workspaceHelp": "Los sonidos, cuatro proyectos y bancos se guardan en este navegador. Exporta una copia de seguridad. Aún no incluye archivos de muestras.",
+  "ui.workspaceConfirm": "¿Reemplazar este espacio del navegador con la copia?"
 }

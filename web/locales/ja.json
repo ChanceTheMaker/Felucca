@@ -500,5 +500,10 @@
   "widgets.previewHelp": "設定のプレビューです。実際の音声ではありません。エンベロープの各段階は異なる時間軸で表示されます。",
   "widgets.source": "ソース",
   "widgets.destination": "出力先",
-  "widgets.amount": "深さ"
+  "widgets.amount": "深さ",
+  "ui.workspaceSaved": "このブラウザーに保存済み",
+  "ui.workspaceSaving": "このブラウザーに保存中…",
+  "ui.workspaceTemporary": "ローカル保存できません。バックアップを書き出してください。",
+  "ui.workspaceHelp": "音色、4つのプロジェクトスロット、バンクをこのブラウザーに保存します。別のコピーを残すにはバックアップを書き出してください。サンプルファイルはまだ含まれません。",
+  "ui.workspaceConfirm": "バックアップでこのブラウザーのワークスペースを置き換えますか？"
 }

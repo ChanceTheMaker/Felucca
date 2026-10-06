@@ -500,5 +500,10 @@
   "widgets.previewHelp": "参数预览，并非实时音频。包络各阶段使用不同的时间比例。",
   "widgets.source": "来源",
   "widgets.destination": "目标",
-  "widgets.amount": "强度"
+  "widgets.amount": "强度",
+  "ui.workspaceSaved": "已保存在此浏览器中",
+  "ui.workspaceSaving": "正在保存到此浏览器…",
+  "ui.workspaceTemporary": "未能本地保存，请导出备份。",
+  "ui.workspaceHelp": "音色、四个工程槽和音色库保存在此浏览器中。请导出独立备份。目前不包含采样文件。",
+  "ui.workspaceConfirm": "用备份替换此浏览器工作区？"
 }

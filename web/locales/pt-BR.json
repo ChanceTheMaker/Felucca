@@ -500,5 +500,10 @@
   "widgets.previewHelp": "Prévia dos parâmetros, não do áudio ao vivo. Os estágios do envelope usam escalas de tempo distintas.",
   "widgets.source": "Origem",
   "widgets.destination": "Destino",
-  "widgets.amount": "Intensidade"
+  "widgets.amount": "Intensidade",
+  "ui.workspaceSaved": "Salvo neste navegador",
+  "ui.workspaceSaving": "Salvando neste navegador…",
+  "ui.workspaceTemporary": "Não foi salvo localmente — exporte um backup.",
+  "ui.workspaceHelp": "Sons, quatro projetos e bancos são salvos neste navegador. Exporte um backup separado. Os arquivos de amostras ainda não estão incluídos.",
+  "ui.workspaceConfirm": "Substituir este espaço do navegador pelo backup?"
 }

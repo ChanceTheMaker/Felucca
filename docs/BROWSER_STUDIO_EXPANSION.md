@@ -24,8 +24,10 @@ Progress: FM6 is draft PR #55. The next branch, `feat/browser-tracks-sequencer`,
 adds four-track synchronization, the real DSP sequencer/transport, motion playback,
 selected-track keyboard routing, mixer and browser-relevant global settings.
 Tests cover actual audio on each channel, mute semantics, sequencer clock/stop,
-FM6 live edits and browser navigation. Local persistence, samples and project
-song-chain playback remain separate work below.
+FM6 live edits and browser navigation. `feat/browser-workspace` adds Library and
+Projects tabs, local persistence, validated export/restore, storage status and
+actual song-chain playback. Reload/restore and chain transport pass in Chrome.
+Samples remain separate work below; workspace files do not yet include them.
 
 - Larger browser-only samples versus FM-1-compatible limits. Start with hardware
   limits; no larger format or changed firmware format has been approved.

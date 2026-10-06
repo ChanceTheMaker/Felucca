@@ -64,9 +64,29 @@ API void synth_step(unsigned k,unsigned i,unsigned n,unsigned time,unsigned flag
 API void synth_motion_clear(unsigned k) { if(k<NTRK) motion_clear(&trk[k]); }
 API void synth_motion_event(unsigned k,unsigned step,unsigned id,int value) { if(k<NTRK) motion_set_event(&trk[k],step,id,value); }
 API void synth_motion_on(unsigned k,unsigned on) { if(k<NTRK) motion_set_enabled(&trk[k],on); }
-API void synth_transport(unsigned op) { if(op>=1 && op<=3) transport_req=op; }
+API void synth_transport(unsigned op) { if(op==2){transport_req=0;seq_stop();}else if(op==1||op==3)transport_req=op; }
 API unsigned synth_playing(void) { return song.playing; }
 API unsigned synth_position(unsigned k) { return k<NTRK?trk[k].seq_idx:0; }
+API void synth_chain_begin(void) { seq_stop();memset(&chain.config,0,sizeof chain.config);memset(chain.source,0,sizeof chain.source); }
+API uint8_t *synth_chain_steps(unsigned slot) { return slot<4?(uint8_t*)chain.source[slot].step:0; }
+_Static_assert(sizeof(step_t)==11,"browser chain step layout");
+API void synth_chain_timing(unsigned slot,unsigned k,int len,int div,int swing,int gate) {
+    if(slot>=4||k>=NTRK)return;
+    int16_t *p=chain.source[slot].timing[k];p[0]=clamp(len,1,64);p[1]=clamp(div,0,9);p[2]=clamp(swing,0,100);p[3]=clamp(gate,1,127);
+}
+API void synth_chain_motion(unsigned slot,unsigned k,unsigned on,unsigned step,unsigned id,int value) {
+    if(slot>=4||k>=NTRK)return;
+    motion_store_t *m=&chain.source[slot].motion;
+    if(on)m->on|=1u<<k;
+    if(step>=64||id>=P_COUNT||m->count>=MOTION_MAX)return;
+    m->event[m->count++]=(motion_event_t){(uint8_t)(k<<6|step),(uint8_t)id,(int16_t)value};
+}
+API void synth_chain_row(unsigned row,unsigned slot,unsigned repeat) {
+    if(row>=16||slot>=4||repeat<1||repeat>16)return;
+    chain.config.row[row]=(chain_row_t){slot,repeat};chain.config.count=row+1;
+}
+API void synth_chain_play(void) { if(chain.config.count&&chain_valid(&chain.config)){chain.armed=1;transport_req=1;} }
+API unsigned synth_chain_status(void) {return chain.running|chain.row<<8|chain.remaining<<16;}
 API int32_t *synth_render(void) {
     fm1_ms=(uint32_t)(frames*1000/FS);
     fm6_poll();

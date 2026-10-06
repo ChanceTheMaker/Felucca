@@ -199,6 +199,7 @@
       </div>
       <label id="audio-volume-label" hidden><span data-i18n="site.volume">Volume</span> <input id="audio-volume" type="range" min="0" max="100" value="35" aria-label="Browser audio volume" data-i18n-aria-label="site.browser_audio_volume"></label>
       <span id="audio-status" role="status"></span>
+      <span id="browser-storage" class="dim" role="status" hidden></span>
       <span id="version" class="dim"></span>
       <span id="live" class="dim"></span>
       <span id="mock" class="dim" hidden data-t="mock"></span>
@@ -2255,7 +2256,7 @@ function makeMockDevice(opt = {}) {
       setTimeout(() => {
         busy = false;
         const r = handle(f.cmd, f.a);
-        opt.onState?.(st);
+        opt.onState?.(st,f.cmd,f.a);
         if (r && input.onmidimessage) input.onmidimessage({ data: Uint8Array.from(r) });
         const ra = r ? r.slice(5, -1) : [];
         if (r && ((f.cmd === CMD.SET && f.a[0] === 1 && f.a[1] === G_ENGSEL) || f.cmd === CMD.PRESET
@@ -2515,7 +2516,7 @@ let tab = (() => {
 })();
 const hasTracks = () => !!dev && !!dev.info && !!dev.info.ntrk;
 function showTab(name) {
-  if (new URLSearchParams(location.search).get('audio') === '1' && !['sound','fm6','sequencer','tracks','settings'].includes(name)) name = 'sound';
+  if (new URLSearchParams(location.search).get('audio') === '1' && name==='samples') name = 'sound';
   if (!TABS.includes(name)) name = "sound";
   const prev = tab;
   tab = name;
@@ -2537,7 +2538,7 @@ function renderPanels() {
     b.tabIndex = on ? 0 : -1;
     if (b.dataset.tab === "tracks") b.hidden = !tracksOk;
     if (b.dataset.tab === "fm6") b.hidden = fm6Off;
-    if (BROWSER_AUDIO) b.hidden = !['sound','fm6','sequencer','tracks','settings'].includes(b.dataset.tab) || b.dataset.tab === 'fm6' && fm6Off;
+    if (BROWSER_AUDIO) b.hidden = b.dataset.tab==='samples' || b.dataset.tab === 'fm6' && fm6Off;
   }
   const ready = !!dev && !!dev.dump;
   let hint = "";
@@ -2571,6 +2572,33 @@ let MOCK = QS.get("mock") === "1" || BROWSER_AUDIO;
 $("mock").hidden = !MOCK || BROWSER_AUDIO;
 let browserSynth = null;
 const audioModule = import('./audio/browser.js');
+const browserSessionModule=import('./audio/session.js');
+let browserSaved=null,browserLoaded=false,browserPersistent=false,browserSaveTimer=0,browserSaveQueue=Promise.resolve(),browserSavedSignature='';
+async function flushBrowserWorkspace() {
+  clearTimeout(browserSaveTimer);
+  if(!browserSaved || !browserPersistent)return;
+  const snapshot=browserSaved;
+  browserSaveQueue=browserSaveQueue.then(()=>store.setMeta('browser-workspace-v1',snapshot)).then(()=>{
+    if(snapshot===browserSaved)I18N.text($('browser-storage'),'ui.workspaceSaved');
+  }).catch(()=>{I18N.text($('browser-storage'),'ui.workspaceTemporary');});
+  await browserSaveQueue;
+}
+function saveBrowserWorkspace(state,capture) {
+  const snapshot=capture(state),signature=JSON.stringify(snapshot);
+  if(signature===browserSavedSignature)return;
+  browserSavedSignature=signature;browserSaved=snapshot;
+  if(!browserPersistent)return;
+  I18N.text($('browser-storage'),'ui.workspaceSaving');
+  clearTimeout(browserSaveTimer);browserSaveTimer=setTimeout(flushBrowserWorkspace,150);
+}
+function browserWorkspaceChanged(cmd,a) {
+  return [CMD.PRESET,CMD.STEP_SET,CMD.FM6_PUT,CMD.FM6_ERASE,CMD.UP_PUT,CMD.UP_STORE,CMD.UP_ERASE,CMD.UI_SET,CMD.FAV_SET,CMD.SMP_END,CMD.SMP_ERASE].includes(cmd)
+    || cmd===CMD.SET && a.length>=4 || cmd===CMD.TRACK && a.length>0
+    || [CMD.TRACK_MIX,CMD.TRACK_PARAM].includes(cmd) && a.length>=4
+    || cmd===CMD.TRACK_STEP && a.length>=10 || cmd===CMD.PROJECT && a[0]<2
+    || cmd===CMD.MOTION && a.length>1 || cmd===CMD.SONG && a[0]===1;
+}
+window.addEventListener('pagehide',()=>{void flushBrowserWorkspace();});
 const deviceText = Object.fromEntries(I18N.languages.map(({code:l}) => [l, {...TEXT[l]}]));
 function renderAudioMode() {
   for (const {code:l} of I18N.languages) Object.assign(TEXT[l], deviceText[l]);
@@ -2583,6 +2611,7 @@ function renderAudioMode() {
   document.documentElement.classList.toggle('browser-audio', BROWSER_AUDIO);
   $('audio-volume-label').hidden = !BROWSER_AUDIO;
   $('audio-scope').hidden = !BROWSER_AUDIO;
+  $('browser-storage').hidden = !BROWSER_AUDIO;
   $('browser-transport').hidden = !BROWSER_AUDIO;
   $('mode-fm1').setAttribute('aria-pressed', String(!BROWSER_AUDIO));
   $('mode-browser').setAttribute('aria-pressed', String(BROWSER_AUDIO));
@@ -2675,10 +2704,18 @@ async function connect() {
   sayK("connecting");
   try {
     if (BROWSER_AUDIO) {
+      if(!browserLoaded) {
+        const {readSession}=await browserSessionModule;
+        browserPersistent=await store.ok();
+        const saved=browserPersistent?await store.getMeta('browser-workspace-v1'):null;
+        browserSaved=saved?readSession(saved):null;browserLoaded=true;
+      }
+      I18N.text($('browser-storage'),browserPersistent?'ui.workspaceSaved':'ui.workspaceTemporary');
       if (!browserSynth) { const {BrowserSynth} = await audioModule; browserSynth = new BrowserSynth(); }
       await browserSynth.start();
       window.FeluccaAnalytics?.track('browser_audio_started');
       browserSynth.onTransport=state=>{
+        if(mock)Object.assign(mock.state,{chainPlaying:state.chainPlaying,chainRow:state.chainRow,chainRemaining:state.chainRemaining});
         $('browser-seq-play').setAttribute('aria-pressed',String(state.playing));
         $('browser-seq-position').textContent=state.playing?state.positions.map((p,k)=>`${k+1}: ${p+1}`).join(' · '):'';
       };
@@ -2687,8 +2724,19 @@ async function connect() {
       I18N.text($('audio-status'), 'ui.audioOneSound');
     }
     if (!access) {
-      if (MOCK) { mock = makeMockDevice(BROWSER_AUDIO ? {auto: false, browser: true, uiCaps: 8, presets: browserSynth.presets,
-        onMidi: (bytes,selected) => browserSynth.midi([(bytes[0]&0xf0)|selected,bytes[1],bytes[2]]), onState: state => browserSynth.sync(state)} : { legacy: QS.get("legacy") === "1" }); access = mock.access; }
+      if (MOCK) {
+        const session=BROWSER_AUDIO?await browserSessionModule:null;
+        mock = makeMockDevice(BROWSER_AUDIO ? {auto: false, browser: true, uiCaps: 8, presets: browserSynth.presets,
+          onMidi: (bytes,selected) => browserSynth.midi([(bytes[0]&0xf0)|selected,bytes[1],bytes[2]]),
+          onState: (state,cmd,args) => {
+            if(cmd===CMD.SONG && args[0]===3 || cmd===CMD.PROJECT && args[0]<2)browserSynth.transport(2);
+            browserSynth.sync(state);
+            if(!browserSaved || browserWorkspaceChanged(cmd,args))saveBrowserWorkspace(state,session.captureSession);
+            if(cmd===CMD.SONG && args[0]===2 && state.chainPlaying)browserSynth.playChain(state);
+          }} : { legacy: QS.get("legacy") === "1" });
+        if(BROWSER_AUDIO && browserSaved)Object.assign(mock.state,session.readSession(browserSaved).state);
+        access = mock.access;
+      }
       else {
         try { access = await navigator.requestMIDIAccess({ sysex: true }); }
         catch (e) { sayK("denied"); return; }
@@ -3241,6 +3289,10 @@ setInterval(async () => {
 
 /* Complete archives remain on this computer; no project or sample is uploaded to a server. */
 function renderBackup() {
+  if(BROWSER_AUDIO) {
+    $('backup-export').disabled=!dev;$('backup-import').disabled=!dev;
+    $('backup-help').textContent=I18N.t('ui.workspaceHelp');return;
+  }
   const caps = dev?.info?.backupCaps || 0;
   $("backup-export").disabled = !(caps & 1);
   $("backup-import").disabled = !(caps & 2);
@@ -3250,6 +3302,10 @@ const backupModule = () => import("./fm1backup.js");
 const backupProgress = (done, total) => sayK("backupWorking", `${Math.round(done / Math.max(1, total) * 100)}%`);
 $("backup-export").addEventListener("click", () => op(async () => {
   const d = dev;
+  if(BROWSER_AUDIO && d) {
+    const {captureSession}=await browserSessionModule;assertSession(d);
+    download(`Felucca-browser-workspace-${today()}.json`,captureSession(mock.state));return;
+  }
   if (!(d?.info?.backupCaps & 1)) return;
   const { captureBackup } = await backupModule();
   assertSession(d);
@@ -3258,10 +3314,23 @@ $("backup-export").addEventListener("click", () => op(async () => {
   download(`Felucca-backup-${new Date().toISOString().slice(0, 10)}.json`, file);
   sayK("backupDone");
 }));
-$("backup-import").addEventListener("click", () => { if (dev?.info?.backupCaps & 2) $("backup-file").click(); });
+$("backup-import").addEventListener("click", () => { if (BROWSER_AUDIO && dev || dev?.info?.backupCaps & 2) $("backup-file").click(); });
 $("backup-file").addEventListener("change", () => {
   const file = $("backup-file").files[0], d = dev; $("backup-file").value = "";
-  if (!file || !(d?.info?.backupCaps & 2)) return;
+  if(!file || !d)return;
+  if(BROWSER_AUDIO) {
+    op(async()=>{
+      if(file.size>2000000)throw Error('Browser workspace file too large');
+      const {readSession,captureSession}=await browserSessionModule;
+      const restored=readSession(JSON.parse(await file.text()));assertSession(d);
+      if(!confirm(I18N.t('ui.workspaceConfirm')))return;
+      releasePlayKeys();browserSynth.transport(2);
+      Object.assign(mock.state,restored.state,{chainPlaying:false});
+      browserSynth.sync(mock.state);saveBrowserWorkspace(mock.state,captureSession);
+      await flushBrowserWorkspace();await load(d);sayK('backupRestored');
+    });return;
+  }
+  if (!(d?.info?.backupCaps & 2)) return;
   op(async () => {
     if (file.size > 600000) throw new Error("Backup file too large");
     const { readBackup, restoreBackup } = await backupModule();
@@ -5072,6 +5141,7 @@ async function switchAudioMode(browser) {
     disconnect();
     if (access) access.onstatechange = null;
     if (BROWSER_AUDIO) await browserSynth?.stop();
+    if (BROWSER_AUDIO) await flushBrowserWorkspace();
     mock?.stop(); mock = null; access = null;
     sets.clear();
     BROWSER_AUDIO = browser;

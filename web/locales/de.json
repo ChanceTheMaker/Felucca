@@ -500,5 +500,10 @@
   "widgets.previewHelp": "Parametervorschau, kein Live-Audio. Hüllkurvenphasen verwenden getrennte Zeitmaßstäbe.",
   "widgets.source": "Quelle",
   "widgets.destination": "Ziel",
-  "widgets.amount": "Stärke"
+  "widgets.amount": "Stärke",
+  "ui.workspaceSaved": "In diesem Browser gespeichert",
+  "ui.workspaceSaving": "Wird in diesem Browser gespeichert…",
+  "ui.workspaceTemporary": "Nicht lokal gespeichert – bitte Sicherung exportieren.",
+  "ui.workspaceHelp": "Klänge, vier Projekte und Bänke werden in diesem Browser gespeichert. Exportieren Sie eine separate Sicherung. Sample-Dateien sind noch nicht enthalten.",
+  "ui.workspaceConfirm": "Diesen Browser-Arbeitsbereich durch die Sicherung ersetzen?"
 }

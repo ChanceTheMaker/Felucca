@@ -111,7 +111,7 @@ preview connection failures; it does not mock the UI, select behavior or DSP.
 `feat/studio-hardware-fillers` fills only unused space inside the unified Sound
 cards with understated brushed-aluminum panels and small corner screws. Most
 panels are plain. Perforated grilles are limited to the spare VOICE level cells
-and the first FX section, so there are at most two grilles in the layout.
+and the FX, Delay and ARP spare sections, giving four grille accents in the layout.
 The neutral metal finish follows the theme's panel tone. Jack sockets and
 circular speaker drivers remain removed. All artwork is CSS, with no external
 image assets.

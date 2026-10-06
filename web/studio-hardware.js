@@ -32,8 +32,11 @@
       const last=section.lastElementChild;
       if(!last)continue;
       const extra=filler('bank-hardware-gap');extra.hidden=true;
-      // One vent in the effects strip; other spare areas are quiet blank plates.
-      extra.append(panel(section.closest('.unified-card').dataset.section==='FX' && section===section.parentElement.firstElementChild));
+      // Spread grille accents across Voice, FX, Delay and ARP; keep other plates plain.
+      const card=section.closest('.unified-card').dataset.section;
+      const vented=card==='FX' && (section===section.parentElement.firstElementChild || section.dataset.page==='DLY')
+        || card==='ARP' && section===section.parentElement.lastElementChild;
+      extra.append(panel(vented));
       section.append(extra);sections.push({section,last,extra});
     }
     const state={frame:0};

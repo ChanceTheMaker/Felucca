@@ -505,5 +505,10 @@
   "ui.workspaceSaving": "正在保存到此浏览器…",
   "ui.workspaceTemporary": "未能本地保存，请导出备份。",
   "ui.workspaceHelp": "音色、四个工程槽和音色库保存在此浏览器中。请导出独立备份。目前不包含采样文件。",
-  "ui.workspaceConfirm": "用备份替换此浏览器工作区？"
+  "ui.workspaceConfirm": "用备份替换此浏览器工作区？",
+  "site.accessory_label": "来自 Felucca [Salt] 的创作者",
+  "site.accessory_title": "打造专属风格",
+  "site.accessory_body": "为你的 FM-1 配备定制外壳和八个旋钮扩展环。",
+  "site.accessory_link": "在 eBay 上查看",
+  "site.accessory_alt": "黑色 FM-1 外壳和八个中空旋钮扩展环的插图"
 }

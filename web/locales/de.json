@@ -505,5 +505,10 @@
   "ui.workspaceSaving": "Wird in diesem Browser gespeichert…",
   "ui.workspaceTemporary": "Nicht lokal gespeichert – bitte Sicherung exportieren.",
   "ui.workspaceHelp": "Klänge, vier Projekte und Bänke werden in diesem Browser gespeichert. Exportieren Sie eine separate Sicherung. Sample-Dateien sind noch nicht enthalten.",
-  "ui.workspaceConfirm": "Diesen Browser-Arbeitsbereich durch die Sicherung ersetzen?"
+  "ui.workspaceConfirm": "Diesen Browser-Arbeitsbereich durch die Sicherung ersetzen?",
+  "site.accessory_label": "Vom Entwickler von Felucca [Salt]",
+  "site.accessory_title": "Mach es zu deinem",
+  "site.accessory_body": "Individuelles Gehäuse + acht Drehknopf-Erweiterungen für dein FM-1.",
+  "site.accessory_link": "Auf eBay ansehen",
+  "site.accessory_alt": "Illustration des schwarzen FM-1-Gehäuses und acht hohler Drehknopf-Erweiterungen"
 }

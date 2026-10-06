@@ -179,6 +179,12 @@ chain playback. Chrome verifies reload and archive round trips, chain transport
 and navigation. Malformed archive rejection and DSP tests pass. Samples are a
 separate follow-up; this archive version does not yet include their data.
 
+The installer accessories card on `feat/installer-accessories` is a separate,
+Salt-only website change: owner-photo-based illustration, eight-language copy,
+and a direct link to the owner's eBay listing beneath the feature sections.
+It introduces no firmware or protocol changes. Locale validation and site build
+pass; desktop/mobile checks cover all eight languages. Publication remains pending.
+
 No new upstream PR has been authorized or submitted during this round. Preparing
 and documenting candidates does not imply upstream acceptance. For each future
 contribution, append the following information:

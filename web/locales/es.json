@@ -505,5 +505,10 @@
   "ui.workspaceSaving": "Guardando en este navegador…",
   "ui.workspaceTemporary": "No se guardó localmente: exporta una copia.",
   "ui.workspaceHelp": "Los sonidos, cuatro proyectos y bancos se guardan en este navegador. Exporta una copia de seguridad. Aún no incluye archivos de muestras.",
-  "ui.workspaceConfirm": "¿Reemplazar este espacio del navegador con la copia?"
+  "ui.workspaceConfirm": "¿Reemplazar este espacio del navegador con la copia?",
+  "site.accessory_label": "Del creador de Felucca [Salt]",
+  "site.accessory_title": "Dale tu toque",
+  "site.accessory_body": "Carcasa personalizada + ocho extensores de perilla para tu FM-1.",
+  "site.accessory_link": "Ver en eBay",
+  "site.accessory_alt": "Ilustración de la carcasa negra para FM-1 y ocho extensores huecos de perilla"
 }

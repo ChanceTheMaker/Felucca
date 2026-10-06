@@ -505,5 +505,10 @@
   "ui.workspaceSaving": "Saving in this browser…",
   "ui.workspaceTemporary": "Not saved locally — export a backup.",
   "ui.workspaceHelp": "Browser workspace: sounds, four project slots and banks are saved on this browser. Export a backup to keep a separate copy. Sample files are not included yet.",
-  "ui.workspaceConfirm": "Replace this browser workspace with the backup?"
+  "ui.workspaceConfirm": "Replace this browser workspace with the backup?",
+  "site.accessory_label": "From the Felucca [Salt] creator",
+  "site.accessory_title": "Make it yours",
+  "site.accessory_body": "Custom case + eight knob extenders for your FM-1.",
+  "site.accessory_link": "View on eBay",
+  "site.accessory_alt": "Illustration of the black FM-1 case and eight hollow knob extenders"
 }

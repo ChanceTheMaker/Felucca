@@ -505,5 +505,10 @@
   "ui.workspaceSaving": "Enregistrement dans ce navigateur…",
   "ui.workspaceTemporary": "Non enregistré localement : exportez une sauvegarde.",
   "ui.workspaceHelp": "Les sons, quatre projets et banques sont enregistrés dans ce navigateur. Exportez une sauvegarde séparée. Les fichiers d’échantillons ne sont pas encore inclus.",
-  "ui.workspaceConfirm": "Remplacer cet espace du navigateur par la sauvegarde ?"
+  "ui.workspaceConfirm": "Remplacer cet espace du navigateur par la sauvegarde ?",
+  "site.accessory_label": "Par le créateur de Felucca [Salt]",
+  "site.accessory_title": "À votre image",
+  "site.accessory_body": "Coque personnalisée + huit extensions de boutons pour votre FM-1.",
+  "site.accessory_link": "Voir sur eBay",
+  "site.accessory_alt": "Illustration de la coque noire pour FM-1 et de huit extensions de boutons creuses"
 }

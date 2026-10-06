@@ -25,7 +25,7 @@ try {
   await page.getByRole('button',{name:'Browser',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('#status').textContent==='Audio ready');
   assert.equal(await page.locator('#trackbar').isVisible(),false);
-  assert.equal(await page.locator('#tabs').isVisible(),false);
+  assert.equal(await page.locator('#tabs').isVisible(),true);
   assert.equal(await page.locator('#mode-fm1').isVisible(),true);
   assert.equal(await page.locator('#mode-browser').getAttribute('aria-pressed'),'true');
   assert.equal(await page.locator('#audio-scope').isVisible(),true);

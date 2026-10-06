@@ -158,6 +158,13 @@ Desktop/mobile tests cover expanded/collapsed keyboard clearance, focus and tab
 preservation. This is a separate fork presentation PR above #53; no firmware or
 publication changes are included.
 
+Browser expansion starts on `feat/browser-studio-foundation` above Studio
+navigation PR #54. The FM6 editor now controls actual browser DSP, with automatic
+engine selection and the existing patch import/export/bank workflows. Its bank
+is session-local at this stage. Chrome verifies send/read, live editing and real
+audio without MIDI access. See [BROWSER_STUDIO_EXPANSION.md](BROWSER_STUDIO_EXPANSION.md)
+for the remaining track, storage, sample and settings work and pending choices.
+
 No new upstream PR has been authorized or submitted during this round. Preparing
 and documenting candidates does not imply upstream acceptance. For each future
 contribution, append the following information:

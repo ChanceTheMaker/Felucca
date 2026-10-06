@@ -3,7 +3,7 @@
 Select **Browser** in the **FM-1 / Browser** switch to start audio automatically.
 Both modes remain visible; switching back to FM-1 stops browser playback. If opening
 `?audio=1#sound` directly, click **Browser** or **Enable audio** to unlock audio playback.
-The live oscilloscope shows browser output in place of the redundant single Sound tab.
+The live oscilloscope shows browser output above the Sound and 6-OP FM tabs.
 This runs the existing GPL-3.0 Felucca C DSP in an AudioWorklet through WebAssembly.
 It does not open Web MIDI, send firmware, or require an FM-1.
 
@@ -13,7 +13,10 @@ and a separate browser volume. The preview plays one sound; the MIDI channel sel
 device storage, sample uploads, sequencer, and other hardware tabs are hidden.
 Patch files referencing user sample slots cannot reproduce those samples here.
 FM6 factory patches and imported patches embedded in sound files are carried into
-the audio engine. The full FM6 patch editor, banks and sequencing remain device workflows.
+the audio engine. The 6-OP FM editor supports live editing, import/export and a
+session-local patch bank. Sending a patch selects the FM6 engine automatically.
+Bank contents are temporary until persistent browser storage is added; export
+patches to keep them. Sequencing remains a separate implementation step.
 The retired DIGITAL engine ID is hidden; imported DIGITAL sounds use the editor's
 upstream DIGITAL-to-FM6 conversion.
 Browser edits are temporary unless exported with the Sound page's save-file button.

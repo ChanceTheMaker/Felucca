@@ -17,10 +17,6 @@ firmware installation. Select **FM-1** to edit your connected instrument.
 Current device firmware is **0.9-salt14 beta**. Website updates do not require
 reflashing the device.
 
-Salt14 includes keremimo's TRS MIDI receive-buffer fix: note-off messages are
-processed from the bytes actually received, avoiding stuck notes caused by a
-hardware byte-count mismatch. Install the new firmware to receive this fix.
-
 ![Felucca Salt Studio in Stage Red, with browser audio and oscilloscope](web/screenshots/stage.jpg)
 
 ## Install on an FM-1

@@ -105,3 +105,32 @@ hidden/disabled options, Escape, waveform updates, and keyboard navigation via
 Set `STUDIO_FIXTURE_DIR` to a built `webapp/editor` directory to serve its static
 assets directly to an isolated test browser. This avoids intermittent shared
 preview connection failures; it does not mock the UI, select behavior or DSP.
+
+## Decorative hardware panels
+
+`feat/studio-hardware-fillers` fills only unused space inside the unified Sound
+cards with understated brushed-aluminum panels and small corner screws. Most
+panels are plain. Perforated grilles are limited to the spare VOICE level cells
+and the FX, Delay and ARP spare sections, giving four grille accents in the layout.
+The neutral metal finish follows the theme's panel tone. Jack sockets and
+circular speaker drivers remain removed. All artwork is CSS, with no external
+image assets except the existing Salt logo mask. Three additional accents occupy
+separate unused areas: narrow vents beside Reverb, an engraved Salt badge beside
+Chorus, and an etched serial-style plate beneath the Scale/Chord controls.
+The static STUDIO 001 inscription is decoration, not a device identifier.
+
+In knob mode, panels occupy spare cells in the existing four-control rows.
+Other panels fit blank space beneath shorter sections of a shared card. They
+hide when that space is too small, including when responsive columns stack.
+They never create extra rows, enlarge cards or occupy gaps between cards.
+Decoration is inert, hidden from assistive technology and ignores pointer input;
+it has no audio or routing behavior.
+
+`web/test_studio_hardware.mjs` passes 48 theme, light/dark, control-mode and
+viewport combinations. It checks bounds, control overlap, noninteraction and
+rebuilds, verifies that plain panels outnumber grilles and no sockets or drivers remain, and compares
+card/control geometry with decoration removed. Desktop and mobile screenshots
+were inspected. The earlier complete Studio regression passed thirteen engines,
+eight languages, 192 layout/theme combinations and actual browser DSP output.
+These browser checks used built-site fixtures because the shared preview server
+intermittently resets asset requests.

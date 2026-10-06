@@ -178,6 +178,7 @@
 <script src="skin.js"></script>
 <script src="studio-widgets.js"></script>
 <script src="select-wheel.js"></script>
+<script src="studio-hardware.js"></script>
 </head>
 <body class="editor-page">
 <main id="studio">
@@ -3006,6 +3007,7 @@ function buildGroups() {
     $(id).classList.toggle("unified-groups", knownLayout(info));
     $(id).replaceChildren(...divs);
     window.FeluccaSkin?.decorate($(id), `${id}:${dev.dump.engine}:${knownLayout(info) ? "unified-v1" : "legacy"}`);
+    if (id === "groups") window.FeluccaHardware?.decorate($(id));
   }
   refreshWidgets();
 }

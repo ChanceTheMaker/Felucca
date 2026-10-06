@@ -139,6 +139,19 @@ normal menus in unsupported browsers. Wheel and keyboard behavior, live graph
 updates and the full Studio layout/audio matrix pass against isolated built-site
 assets. Firmware and publication remain unchanged.
 
+Wheel selection is [PR #52](https://github.com/ChanceTheMaker/Felucca/pull/52).
+Its follow-up [PR #53](https://github.com/ChanceTheMaker/Felucca/pull/53),
+`feat/studio-hardware-fillers`, fills unused Sound-card space with decorative
+brushed-aluminum panels with small corner screws. Most panels are plain; four
+areas have grille perforations (Voice, FX, Delay and ARP). Patch sockets and circular drivers remain
+removed. Separate blank areas add a Salt badge, narrow vents and an etched
+serial-style inscription. Dedicated browser checks pass
+48 combinations, including unchanged card/control geometry and no overlap or
+interaction. The preceding full Studio regression passed 192 layout/theme
+combinations, thirteen engines, eight languages and browser audio. See
+[STUDIO_VISUAL_PANELS.md](STUDIO_VISUAL_PANELS.md). This remains a fork-only
+presentation change, with no upstream import, firmware change or publication.
+
 No new upstream PR has been authorized or submitted during this round. Preparing
 and documenting candidates does not imply upstream acceptance. For each future
 contribution, append the following information:

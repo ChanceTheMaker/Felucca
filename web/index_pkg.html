@@ -44,11 +44,14 @@
   .accessory-card img { display: block; grid-area: 1 / 1; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 1s ease-in-out; }
   .accessory-card img.is-current { opacity: 1; }
   @media (prefers-reduced-motion: reduce) { .accessory-card img { transition: none; } }
-  .accessory-card .accessory-art { padding: 12px; border-radius: 12px; background: #eae9e5; }
+  .accessory-card .accessory-art { padding: 12px; border-radius: 12px; background: #eae9e5; transition: background-color 1s ease-in-out; }
+  .accessory-card .accessory-art.is-glow { background: #000; }
+  @media (prefers-reduced-motion: reduce) { .accessory-card .accessory-art { transition: none; } }
   .accessory-card .accessory-label { font-size: 12px; margin: 0 0 6px; color: var(--dim); }
   .accessory-card h2 { font-size: 22px; line-height: 1.25; margin: 0 0 10px; }
   .accessory-card p { margin-bottom: 14px; }
-  .accessory-card .accessory-link { display: inline-flex; align-items: center; gap: 8px; color: inherit; font-weight: 600; text-underline-offset: 4px; padding: 8px 0; }
+  .accessory-card .accessory-link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--fg); color: var(--bg); border: 1px solid var(--fg); border-radius: 8px; font-weight: 600; text-decoration: none; padding: 10px 18px; min-height: 44px; box-sizing: border-box; }
+  .accessory-card .accessory-link:hover { filter: brightness(.85); }
   .accessory-card .accessory-link svg { width: 16px; height: 16px; flex: none; }
   .accessory-card .accessory-link:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; border-radius: 3px; }
   @media (max-width: 580px) { .accessory-card { grid-template-columns: 1fr; gap: 18px; padding: 20px; } .accessory-card .accessory-art { width: min(100%, 320px); box-sizing: border-box; justify-self: center; } }
@@ -426,8 +429,8 @@
     <div>
       <p class="accessory-label" data-i18n="site.accessory_label">From the Felucca [Salt] creator</p>
       <h2 id="accessory-title" data-i18n="site.accessory_title">Make it yours</h2>
-      <p data-i18n="site.accessory_body">Custom case + eight knob extenders for your FM-1.</p>
-      <a class="accessory-link" href="https://www.ebay.com/itm/128108187687" target="_blank" rel="noopener sponsored"><span data-i18n="site.accessory_link">View on eBay</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3h7v7m0-7L10 14M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/></svg></a>
+      <p data-i18n="site.accessory_body">Get your custom case + eight knob enhancers for your FM-1.</p>
+      <a class="accessory-link" href="https://www.ebay.com/itm/128108187687" target="_blank" rel="noopener sponsored"><span data-i18n="site.accessory_link">Buy on eBay</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3h7v7m0-7L10 14M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/></svg></a>
     </div>
   </aside>
   <p class="small">Felucca [Salt] by Chance Roth (<a href="https://github.com/ChanceTheMaker" target="_blank" rel="noopener" style="color:inherit">@ChanceTheMaker</a>).<br>

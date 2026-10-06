@@ -19,8 +19,12 @@ White and silver show a black FM-1 inside, using IMG_3148.JPEG as the fitted-dev
 reference; the other views show the empty case. Exact variant prompts are in
 `color-prompts.json`. The first purple-device draft was discarded.
 The white and silver illustrations were corrected against IMG_3145.JPEG so the
-device top sits flush with the tray rim, with no deep recess or hidden keys.
-Their final edit prompts are recorded in `fit-correction-prompts.json`.
+device top sits slightly proud of the tray rim, showing its black beveled edge
+above the protective case, with no deep recess or hidden keys. Initial fit edit
+prompts are in `fit-correction-prompts.json`; final raised-fit and enhanced-glow
+prompts are in `final-refinement-prompts.json`. The glow image intentionally has
+an opaque black background and exaggerated green emission. Its entire rounded
+image tile, including padding, transitions to black for that slide.
 
 `rotate.js` crossfades every four seconds while the card is in view. It loads
 the next image before transitioning, preserves the current image on load failure,

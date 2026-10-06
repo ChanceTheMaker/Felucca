@@ -21,6 +21,7 @@
     try {
       await frames[back].decode();
       if (canRotate()) {
+        gallery.closest('.accessory-art').classList.toggle('is-glow', sources[next] === 'fm1-case-glow.png');
         frames[back].classList.add('is-current');
         frames[front].classList.remove('is-current');
         front = back; index = next;

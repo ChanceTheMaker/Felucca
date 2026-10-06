@@ -187,6 +187,10 @@ pass; desktop/mobile checks cover all eight languages. Publication remains pendi
 The accessory card now rotates through the listing's six colors; white and silver
 include a black FM-1 fitted inside. Rotation pauses offscreen and for reduced
 motion. Both existing local installer previews include the card.
+The fitted device now sits slightly proud of the case rim, matching the owner's
+fit correction. Glow uses an exaggerated green emission on a full black image
+tile. The call to action reads "Buy on eBay" as a button; copy says "Get your
+custom case + eight knob enhancers for your FM-1", translated in all locales.
 
 No new upstream PR has been authorized or submitted during this round. Preparing
 and documenting candidates does not imply upstream acceptance. For each future

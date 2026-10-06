@@ -1,5 +1,10 @@
 # Upstream integration status
 
+README presentation (2026-10-05): removed integration plans, protocol history,
+workflow links and discussion routing from the product README at the owner's
+request. Product usage, release status, authorship and license credits remain.
+This is documentation-only; checked the diff and retained local links.
+
 Last reviewed: **2026-10-05**. Update this record when importing or offering a
 feature; follow [UPSTREAM_WORKFLOW.md](UPSTREAM_WORKFLOW.md).
 

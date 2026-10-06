@@ -500,5 +500,10 @@
   "widgets.previewHelp": "Aperçu des paramètres, pas du son en direct. Les étapes de l’enveloppe ont des échelles de temps distinctes.",
   "widgets.source": "Source",
   "widgets.destination": "Destination",
-  "widgets.amount": "Intensité"
+  "widgets.amount": "Intensité",
+  "ui.workspaceSaved": "Enregistré dans ce navigateur",
+  "ui.workspaceSaving": "Enregistrement dans ce navigateur…",
+  "ui.workspaceTemporary": "Non enregistré localement : exportez une sauvegarde.",
+  "ui.workspaceHelp": "Les sons, quatre projets et banques sont enregistrés dans ce navigateur. Exportez une sauvegarde séparée. Les fichiers d’échantillons ne sont pas encore inclus.",
+  "ui.workspaceConfirm": "Remplacer cet espace du navigateur par la sauvegarde ?"
 }

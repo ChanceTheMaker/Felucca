@@ -15,16 +15,20 @@ the audio engine's sample clock, and the transport reports actual step positions
 The keyboard plays the selected track. Mute retains firmware semantics (blocks
 new notes; existing releases/effects can finish). Browser settings expose tempo,
 swing and tuning; external clock and physical MIDI routing are omitted.
-Device storage and sample uploads are a separate implementation step.
+Library patches use the existing IndexedDB library. Current tracks, four project
+slots, FM6 banks and favorites persist locally in the browser workspace. The
+save-status label reports saving or failure. Projects backup export/restore uses
+a validated browser-specific format, distinct from FM-1 device backups. Workspace
+files currently exclude sample data. Song chains play using the audio clock.
 Patch files referencing user sample slots cannot reproduce those samples here.
 FM6 factory patches and imported patches embedded in sound files are carried into
 the audio engine. The 6-OP FM editor supports live editing, import/export and a
-session-local patch bank. Sending a patch selects the FM6 engine automatically.
-Bank contents are temporary until persistent browser storage is added; export
-patches to keep them. Pattern editing and playback work without an FM-1.
+persistent browser patch bank. Sending a patch selects the FM6 engine automatically.
+Export patches or a workspace backup to keep a separate copy.
 The retired DIGITAL engine ID is hidden; imported DIGITAL sounds use the editor's
 upstream DIGITAL-to-FM6 conversion.
-Browser edits are temporary unless exported with the Sound page's save-file button.
+Browser storage is local to this browser/site and can be cleared; exported files
+provide independent copies. Playback never starts automatically after a reload.
 
 DSP renders at its native 44,100 Hz in 32-frame blocks. The worklet linearly resamples
 when the audio device uses a different rate. This is a preview, not a measured claim

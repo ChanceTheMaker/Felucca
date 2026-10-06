@@ -45,6 +45,7 @@ export class BrowserSynth {
     this.node.port.postMessage(data);
   }
   transport(op) { this.node?.port.postMessage({type:'transport',op}); }
+  playChain(state) { this.node?.port.postMessage({type:'chain',rows:state.songRows,slots:state.slots}); }
   midi(bytes) { this.node?.port.postMessage({type: 'midi', bytes: Array.from(bytes)}); }
   volume(value) { this.gain?.gain.setTargetAtTime(value, this.context.currentTime, 0.015); }
   showScope(canvas) {

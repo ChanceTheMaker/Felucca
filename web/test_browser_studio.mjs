@@ -43,6 +43,22 @@ try {
  await page.locator('#trackbtns [data-i="2"]').click();await page.waitForFunction(()=>window.dev.sel===2 && !window.busy);
  await page.locator('#tabs [data-tab=settings]').click();await page.locator('#p-settings').waitFor();
  assert.equal(await page.locator('#setgroups [data-param="1:2"]').count(),0);
+ await page.locator('#tabs [data-tab=library]').click();await page.locator('#p-library').waitFor();
+ await page.locator('#tabs [data-tab=projects]').click();await page.locator('#p-projects').waitFor();
+ await page.locator('#songadd').click();await page.waitForFunction(()=>window.dev.song?.rows.length===1 && !window.busy);
+ await page.locator('#songplay').click();await page.waitForFunction(()=>window.mock.state.chainPlaying && window.browserSynth.playing);
+ await page.locator('#songplay').click();await page.waitForFunction(()=>!window.browserSynth.playing);
+ await page.waitForFunction(()=>document.querySelector('#browser-storage').textContent==='Saved in this browser');
+ const before=await page.evaluate(()=>JSON.stringify(window.mock.state.tracks));
+ await page.reload();await page.locator('#connect').click();await page.waitForFunction(()=>window.dev?.dump && !window.busy);
+ assert.deepEqual(JSON.parse(await page.evaluate(()=>JSON.stringify(window.mock.state.tracks))),JSON.parse(before),'workspace survives reload');
+ await page.locator('#tabs [data-tab=projects]').click();
+ const download=page.waitForEvent('download');await page.locator('#backup-export').click();
+ const file=await download;assert.match(file.suggestedFilename(),/browser-workspace/);
+ const path=await file.path();
+ page.once('dialog',d=>d.accept());await page.locator('#backup-file').setInputFiles(path);
+ await page.waitForFunction(()=>!window.busy && document.querySelector('#status').textContent.includes('restored'));
+ assert.deepEqual(JSON.parse(await page.evaluate(()=>JSON.stringify(window.mock.state.tracks))),JSON.parse(before),'workspace export/import round trip');
  assert.deepEqual(errors,[]);
  console.log('Browser Studio: FM6 tab, send/read, automatic engine selection, live editing and real audio pass without MIDI access.');
 }finally{await browser.close();}

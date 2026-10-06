@@ -172,6 +172,13 @@ browser global settings. Audio tests cover all thirteen engines, four channels,
 mute and sequencer start/stop; Chrome covers tabs, FM6 and playback status.
 All eight locale catalogs pass. Hardware firmware remains unchanged.
 
+Tracks/sequencer are [PR #56](https://github.com/ChanceTheMaker/Felucca/pull/56).
+`feat/browser-workspace` adds Library/Projects tabs, local IndexedDB workspace
+persistence, validated file export/restore, storage-failure status and DSP song
+chain playback. Chrome verifies reload and archive round trips, chain transport
+and navigation. Malformed archive rejection and DSP tests pass. Samples are a
+separate follow-up; this archive version does not yet include their data.
+
 No new upstream PR has been authorized or submitted during this round. Preparing
 and documenting candidates does not imply upstream acceptance. For each future
 contribution, append the following information:

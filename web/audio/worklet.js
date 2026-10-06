@@ -30,6 +30,21 @@ class FeluccaProcessor extends AudioWorkletProcessor {
         this.engine.synth_select(data.sel || 0);this.state={tracks,g:data.g};
       } else if (data.type === 'midi') this.engine.synth_midi(...data.bytes);
       else if(data.type==='transport') this.engine.synth_transport(data.op);
+      else if(data.type==='chain') {
+        this.engine.synth_chain_begin();
+        data.slots.forEach((p,slot)=>{
+          if(!p)return;
+          const buffer=new Uint8Array(this.engine.memory.buffer,this.engine.synth_chain_steps(slot),4*64*11);
+          p.tracks.forEach((t,k)=>{
+            t.step.forEach((s,i)=>buffer.set([...s.notes,s.n,s.time,s.flags,s.vel,s.hit,s.acc,s.chance>=100?0:s.chance||101],(k*64+i)*11));
+            this.engine.synth_chain_timing(slot,k,...t.p.slice(29,33));
+            this.engine.synth_chain_motion(slot,k,+t.motion.on,255,0,0);
+            t.motion.events.forEach(e=>this.engine.synth_chain_motion(slot,k,0,e.step,e.param,e.value));
+          });
+        });
+        data.rows.forEach((r,i)=>this.engine.synth_chain_row(i,r.slot,r.repeat));
+        this.engine.synth_chain_play();
+      }
     };
   }
   next() {
@@ -55,7 +70,8 @@ class FeluccaProcessor extends AudioWorkletProcessor {
     this.statusFrames+=channels[0].length;
     if(this.statusFrames>=sampleRate/20) {
       this.statusFrames=0;
-      this.port.postMessage?.({type:'transport',playing:!!this.engine.synth_playing(),positions:[0,1,2,3].map(k=>this.engine.synth_position(k))});
+      const chain=this.engine.synth_chain_status();
+      this.port.postMessage?.({type:'transport',playing:!!this.engine.synth_playing(),positions:[0,1,2,3].map(k=>this.engine.synth_position(k)),chainPlaying:!!(chain&1),chainRow:(chain>>8)&255,chainRemaining:(chain>>16)&255});
     }
     return true;
   }

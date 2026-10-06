@@ -303,7 +303,7 @@
   "ui.audioReady": "Audio ready",
   "ui.audioNeed": "Enable audio to play and edit a sound in your browser.",
   "ui.audioNoHardware": "Browser sound · No hardware needed",
-  "ui.audioOneSound": "Browser audio · One sound · Built-in samples",
+  "ui.audioOneSound": "Browser audio · Four tracks",
   "ui.audioStopped": "Browser audio stopped · Enable audio to resume",
   "ui.audioPlayHelp": "Playing in your browser · Sustain and polyphonic chords supported · No FM-1 required",
   "ui.audioStartHelp": "Click Enable audio to play in your browser.",

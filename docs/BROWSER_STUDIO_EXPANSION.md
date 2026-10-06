@@ -20,6 +20,13 @@ firmware release or website publication.
 
 ## Decisions to revisit with the owner
 
+Progress: FM6 is draft PR #55. The next branch, `feat/browser-tracks-sequencer`,
+adds four-track synchronization, the real DSP sequencer/transport, motion playback,
+selected-track keyboard routing, mixer and browser-relevant global settings.
+Tests cover actual audio on each channel, mute semantics, sequencer clock/stop,
+FM6 live edits and browser navigation. Local persistence, samples and project
+song-chain playback remain separate work below.
+
 - Larger browser-only samples versus FM-1-compatible limits. Start with hardware
   limits; no larger format or changed firmware format has been approved.
 - Whether project exports should embed samples or reference shared sample slots.

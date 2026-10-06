@@ -208,6 +208,11 @@
       <span class="scope-label"><span data-i18n="site.oscilloscope">OSCILLOSCOPE</span> <span><span data-i18n="site.output">OUTPUT</span></span></span>
       <canvas id="scope-canvas" role="img" aria-label="Live browser audio waveform" data-i18n-aria-label="site.live_browser_audio_waveform"></canvas>
     </div>
+    <div id="browser-transport" class="bar" hidden>
+      <button id="browser-seq-play" type="button" data-t="songPlay" aria-pressed="false"></button>
+      <button id="browser-seq-stop" type="button" data-t="songStop"></button>
+      <span id="browser-seq-position" class="dim"></span>
+    </div>
     <nav class="tabs" id="tabs" role="tablist">
       <button role="tab" data-tab="sound" data-t="sound" data-ic="symbol_audio"></button>
       <button role="tab" data-tab="fm6" data-t="tabFm6" data-ic="ui_knob"></button>
@@ -2024,7 +2029,7 @@ function makeMockDevice(opt = {}) {
         break;
       }
       case CMD.INFO:
-        s(opt.legacy ? "FELUCCA 0.4 BETA (MOCK)" : "FELUCCA v1.0 (MOCK)"); b(ENG.length); b(P_COUNT); b(G_COUNT); b(NSTEP); b(P_E0);
+        s(opt.browser ? "Felucca Browser Studio" : opt.legacy ? "FELUCCA 0.4 BETA (MOCK)" : "FELUCCA v1.0 (MOCK)"); b(ENG.length); b(P_COUNT); b(G_COUNT); b(NSTEP); b(P_E0);
         ENG.forEach((e) => s(e.name));
         if (!opt.legacy) b(NTRK);
         if (!opt.legacy && !opt.v3 && !opt.v5) {
@@ -2238,7 +2243,7 @@ function makeMockDevice(opt = {}) {
     id: "mock-out", name: "Felucca", type: "output", state: "connected",
     send(data) {
       if (data.length === 3 && [0x80, 0x90, 0xB0].includes(data[0] & 0xF0)) {
-        st.lastMidi = Array.from(data); opt.onMidi?.(data); return;
+        st.lastMidi = Array.from(data); opt.onMidi?.(data,st.sel); return;
       }
       const f = unframe(data);
       if (!f) { console.error("mock: refused a frame that is not F0 7D 46 4C ... F7", data); return; }
@@ -2510,7 +2515,7 @@ let tab = (() => {
 })();
 const hasTracks = () => !!dev && !!dev.info && !!dev.info.ntrk;
 function showTab(name) {
-  if (new URLSearchParams(location.search).get('audio') === '1' && !['sound','fm6'].includes(name)) name = 'sound';
+  if (new URLSearchParams(location.search).get('audio') === '1' && !['sound','fm6','sequencer','tracks','settings'].includes(name)) name = 'sound';
   if (!TABS.includes(name)) name = "sound";
   const prev = tab;
   tab = name;
@@ -2532,7 +2537,7 @@ function renderPanels() {
     b.tabIndex = on ? 0 : -1;
     if (b.dataset.tab === "tracks") b.hidden = !tracksOk;
     if (b.dataset.tab === "fm6") b.hidden = fm6Off;
-    if (BROWSER_AUDIO) b.hidden = !['sound','fm6'].includes(b.dataset.tab) || b.dataset.tab === 'fm6' && fm6Off;
+    if (BROWSER_AUDIO) b.hidden = !['sound','fm6','sequencer','tracks','settings'].includes(b.dataset.tab) || b.dataset.tab === 'fm6' && fm6Off;
   }
   const ready = !!dev && !!dev.dump;
   let hint = "";
@@ -2578,6 +2583,7 @@ function renderAudioMode() {
   document.documentElement.classList.toggle('browser-audio', BROWSER_AUDIO);
   $('audio-volume-label').hidden = !BROWSER_AUDIO;
   $('audio-scope').hidden = !BROWSER_AUDIO;
+  $('browser-transport').hidden = !BROWSER_AUDIO;
   $('mode-fm1').setAttribute('aria-pressed', String(!BROWSER_AUDIO));
   $('mode-browser').setAttribute('aria-pressed', String(BROWSER_AUDIO));
   $('mock').hidden = !MOCK || BROWSER_AUDIO;
@@ -2585,6 +2591,8 @@ function renderAudioMode() {
   else { delete $('audio-status').dataset.i18n; $('audio-status').textContent = ''; }
 }
 renderAudioMode();
+$('browser-seq-play').onclick=()=>{if(dev)browserSynth?.transport(3);};
+$('browser-seq-stop').onclick=()=>browserSynth?.transport(2);
 $('audio-volume').oninput = e => browserSynth?.volume(Number(e.target.value) / 100);
 let mock = null;
 
@@ -2670,13 +2678,17 @@ async function connect() {
       if (!browserSynth) { const {BrowserSynth} = await audioModule; browserSynth = new BrowserSynth(); }
       await browserSynth.start();
       window.FeluccaAnalytics?.track('browser_audio_started');
+      browserSynth.onTransport=state=>{
+        $('browser-seq-play').setAttribute('aria-pressed',String(state.playing));
+        $('browser-seq-position').textContent=state.playing?state.positions.map((p,k)=>`${k+1}: ${p+1}`).join(' · '):'';
+      };
       browserSynth.showScope($('scope-canvas'));
       browserSynth.volume(Number($('audio-volume').value) / 100);
       I18N.text($('audio-status'), 'ui.audioOneSound');
     }
     if (!access) {
       if (MOCK) { mock = makeMockDevice(BROWSER_AUDIO ? {auto: false, browser: true, uiCaps: 8, presets: browserSynth.presets,
-        onMidi: bytes => browserSynth.midi(bytes), onState: state => browserSynth.sync(state)} : { legacy: QS.get("legacy") === "1" }); access = mock.access; }
+        onMidi: (bytes,selected) => browserSynth.midi([(bytes[0]&0xf0)|selected,bytes[1],bytes[2]]), onState: state => browserSynth.sync(state)} : { legacy: QS.get("legacy") === "1" }); access = mock.access; }
       else {
         try { access = await navigator.requestMIDIAccess({ sysex: true }); }
         catch (e) { sayK("denied"); return; }
@@ -2861,6 +2873,7 @@ function renderTrackbar() {
 }
 function selectTrack(i) {
   if (!dev || !hasTracks() || i === dev.sel) return;
+  if (BROWSER_AUDIO) releasePlayKeys();
   op(async () => {
     dev.sel = parse[CMD.TRACK](await rq(req.track(i))).sel;
     await afterSoundChange();
@@ -2967,7 +2980,7 @@ function buildGroups() {
       }
       let effectTail = null;
       for (const [title, scope, ids] of g.pages) {
-        const rows = ids.map((id) => paramRow(scope, id)).filter(Boolean);
+        const rows = ids.filter(id=>!(BROWSER_AUDIO && scope===1 && [2,14].includes(id))).map((id) => paramRow(scope, id)).filter(Boolean);
         if (!rows.length) continue;
         const tt = g.engine && (dev.titles[dev.dump.engine] || [])[g.pages.findIndex((x) => x[0] === title)];
         const pageTitle = tt || title;
@@ -4944,7 +4957,7 @@ function renderFm6Imported() {
 function renderFm6() {
   if (!fm6Ok()) return;
   const ts = $("fm6trk"), keepT = ts.value, ss = $("fm6slot"), keepS = ss.value;
-  ts.replaceChildren(...Array.from({ length: BROWSER_AUDIO ? 1 : dev.info.ntrk || 1 }, (_, i) => el("option", { value: i, text: String(i + 1) })));
+  ts.replaceChildren(...Array.from({ length: dev.info.ntrk || 1 }, (_, i) => el("option", { value: i, text: String(i + 1) })));
   ts.value = keepT || (dev.sel ?? 0);
   const n = dev.info.fm6.factory + dev.info.fm6.bank;
   ss.replaceChildren(...Array.from({ length: n }, (_, i) => {
@@ -4961,6 +4974,10 @@ async function fm6Refresh(d = dev) {
   renderFm6();
 }
 async function fm6Send(quiet) {
+  if(BROWSER_AUDIO && fm6Track()!==dev.sel) {
+    releasePlayKeys();dev.sel=parse[CMD.TRACK](await rq(req.track(fm6Track()))).sel;
+    await afterSoundChange();
+  }
   const fmEngine=dev.info.engines.indexOf('FM6');
   if (BROWSER_AUDIO && dev.dump.engine !== fmEngine) {
     selfLoad();await rq(req.set(1,gEng(),fmEngine));await afterSoundChange();

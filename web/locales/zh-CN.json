@@ -210,7 +210,7 @@
   "ui.audioReady": "音频就绪",
   "ui.audioNeed": "启用音频即可在浏览器中演奏和编辑音色。",
   "ui.audioNoHardware": "浏览器音源 · 无需硬件",
-  "ui.audioOneSound": "浏览器音频 · 单一音色 · 内置采样",
+  "ui.audioOneSound": "浏览器音频 · 四轨",
   "ui.audioStopped": "浏览器音频已停止 · 启用音频以继续",
   "ui.audioPlayHelp": "浏览器演奏 · 支持延音和复音和弦 · 无需 FM-1",
   "ui.audioStartHelp": "点击“启用音频”即可在浏览器中演奏。",

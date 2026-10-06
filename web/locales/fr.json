@@ -210,7 +210,7 @@
   "ui.audioReady": "Audio prêt",
   "ui.audioNeed": "Activez l’audio pour jouer et modifier un son dans le navigateur.",
   "ui.audioNoHardware": "Son du navigateur · Sans matériel",
-  "ui.audioOneSound": "Audio navigateur · Un son · Échantillons intégrés",
+  "ui.audioOneSound": "Audio du navigateur · Quatre pistes",
   "ui.audioStopped": "Audio arrêté · Activez l’audio pour reprendre",
   "ui.audioPlayHelp": "Jeu dans le navigateur · Sustain et accords polyphoniques · Sans FM-1",
   "ui.audioStartHelp": "Cliquez sur Activer l’audio pour jouer dans le navigateur.",

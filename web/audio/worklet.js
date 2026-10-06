@@ -8,16 +8,28 @@ class FeluccaProcessor extends AudioWorkletProcessor {
     this.index = 32;
     this.position = 0;
     this.a = [0, 0]; this.b = [0, 0];
+    this.state={tracks:[],g:[]};this.statusFrames=0;
     this.port.onmessage = ({data}) => {
       if (data.type === 'state') {
-        this.engine.synth_engine(data.engine);
-        data.p.forEach((v, i) => this.engine.synth_param(i, v));
-        data.g.forEach((v, i) => this.engine.synth_global(i, v));
-        if (data.engine === 12 && data.fm6?.length === 128 && data.fm6.every(v => Number.isInteger(v) && v >= 0 && v < 128)) {
-          new Uint8Array(this.engine.memory.buffer, this.engine.synth_fm6_buffer(),128).set(data.fm6);
-          this.engine.synth_fm6_apply();
-        }
+        const tracks=data.tracks || [data];
+        tracks.forEach((t,k)=>{
+          const old=this.state.tracks[k];this.engine.synth_target(k);
+          if(old?.engine!==t.engine)this.engine.synth_engine(t.engine);
+          t.p.forEach((v,i)=>{if(old?.engine!==t.engine || old?.p[i]!==v)this.engine.synth_param(i,v);});
+          if(t.engine===12 && t.fm6?.length===128 && JSON.stringify(t.fm6)!==JSON.stringify(old?.fm6)) {
+            new Uint8Array(this.engine.memory.buffer,this.engine.synth_fm6_buffer(),128).set(t.fm6);this.engine.synth_fm6_apply();
+          }
+          t.step?.forEach((s,i)=>{if(JSON.stringify(s)!==JSON.stringify(old?.step?.[i]))this.engine.synth_step(k,i,s.n,s.time,s.flags,s.vel,s.hit,s.acc,s.chance,...s.notes);});
+          if(t.motion && JSON.stringify(t.motion)!==JSON.stringify(old?.motion)) {
+            this.engine.synth_motion_clear(k);
+            t.motion.events.forEach(e=>this.engine.synth_motion_event(k,e.step,e.param,e.value));
+            this.engine.synth_motion_on(k,+t.motion.on);
+          }
+        });
+        data.g.forEach((v,i)=>{if(this.state.g[i]!==v)this.engine.synth_global(i,v);});
+        this.engine.synth_select(data.sel || 0);this.state={tracks,g:data.g};
       } else if (data.type === 'midi') this.engine.synth_midi(...data.bytes);
+      else if(data.type==='transport') this.engine.synth_transport(data.op);
     };
   }
   next() {
@@ -39,6 +51,11 @@ class FeluccaProcessor extends AudioWorkletProcessor {
       }
       for (let c = 0; c < channels.length; c++) channels[c][i] = this.a[c % 2] + (this.b[c % 2] - this.a[c % 2]) * this.position;
       this.position += 44100 / sampleRate;
+    }
+    this.statusFrames+=channels[0].length;
+    if(this.statusFrames>=sampleRate/20) {
+      this.statusFrames=0;
+      this.port.postMessage?.({type:'transport',playing:!!this.engine.synth_playing(),positions:[0,1,2,3].map(k=>this.engine.synth_position(k))});
     }
     return true;
   }

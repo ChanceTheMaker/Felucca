@@ -2510,7 +2510,7 @@ let tab = (() => {
 })();
 const hasTracks = () => !!dev && !!dev.info && !!dev.info.ntrk;
 function showTab(name) {
-  if (new URLSearchParams(location.search).get('audio') === '1') name = 'sound';
+  if (new URLSearchParams(location.search).get('audio') === '1' && !['sound','fm6'].includes(name)) name = 'sound';
   if (!TABS.includes(name)) name = "sound";
   const prev = tab;
   tab = name;
@@ -2532,6 +2532,7 @@ function renderPanels() {
     b.tabIndex = on ? 0 : -1;
     if (b.dataset.tab === "tracks") b.hidden = !tracksOk;
     if (b.dataset.tab === "fm6") b.hidden = fm6Off;
+    if (BROWSER_AUDIO) b.hidden = !['sound','fm6'].includes(b.dataset.tab) || b.dataset.tab === 'fm6' && fm6Off;
   }
   const ready = !!dev && !!dev.dump;
   let hint = "";
@@ -2674,7 +2675,7 @@ async function connect() {
       I18N.text($('audio-status'), 'ui.audioOneSound');
     }
     if (!access) {
-      if (MOCK) { mock = makeMockDevice(BROWSER_AUDIO ? {auto: false, uiCaps: 0, presets: browserSynth.presets,
+      if (MOCK) { mock = makeMockDevice(BROWSER_AUDIO ? {auto: false, browser: true, uiCaps: 8, presets: browserSynth.presets,
         onMidi: bytes => browserSynth.midi(bytes), onState: state => browserSynth.sync(state)} : { legacy: QS.get("legacy") === "1" }); access = mock.access; }
       else {
         try { access = await navigator.requestMIDIAccess({ sysex: true }); }
@@ -4943,7 +4944,7 @@ function renderFm6Imported() {
 function renderFm6() {
   if (!fm6Ok()) return;
   const ts = $("fm6trk"), keepT = ts.value, ss = $("fm6slot"), keepS = ss.value;
-  ts.replaceChildren(...Array.from({ length: dev.info.ntrk || 1 }, (_, i) => el("option", { value: i, text: String(i + 1) })));
+  ts.replaceChildren(...Array.from({ length: BROWSER_AUDIO ? 1 : dev.info.ntrk || 1 }, (_, i) => el("option", { value: i, text: String(i + 1) })));
   ts.value = keepT || (dev.sel ?? 0);
   const n = dev.info.fm6.factory + dev.info.fm6.bank;
   ss.replaceChildren(...Array.from({ length: n }, (_, i) => {
@@ -4960,6 +4961,10 @@ async function fm6Refresh(d = dev) {
   renderFm6();
 }
 async function fm6Send(quiet) {
+  const fmEngine=dev.info.engines.indexOf('FM6');
+  if (BROWSER_AUDIO && dev.dump.engine !== fmEngine) {
+    selfLoad();await rq(req.set(1,gEng(),fmEngine));await afterSoundChange();
+  }
   const r = parse[CMD.FM6_PUT](await sessionRequest(dev, req.fm6Put(FM6.TARGET.TRACK, fm6Track(), FM6.pack(fm6v))));
   checkRc(r.rc);
   if (!quiet) sayK("fm6Sent", ` ${fm6Track() + 1}`);

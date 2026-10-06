@@ -919,6 +919,10 @@ footer a { text-underline-offset:3px; }
 .hardware-fastener:nth-child(2) { right:5px; top:5px; }
 .hardware-fastener:nth-child(3) { left:5px; bottom:5px; }
 .hardware-fastener:nth-child(4) { right:5px; bottom:5px; }
+.hardware-vents::after { content:''; position:absolute; inset:14px 25%; border-radius:2px; background:repeating-linear-gradient(0deg,transparent 0 7px,#080b0c99 7px 9px,#ffffff18 9px 10px); }
+.hardware-badge .salt-mark { position:absolute; width:26px; height:30px; left:50%; top:50%; color:color-mix(in srgb,var(--dim) 50%,var(--panel)); transform:translate(-50%,-50%) scaleX(-1); filter:drop-shadow(0 1px 0 #ffffff18); }
+.hardware-engraving { position:absolute; inset:0 12px; display:flex; align-items:center; justify-content:center; white-space:pre; color:color-mix(in srgb,var(--dim) 65%,var(--panel)); font:8px/1.8 var(--ui-font); letter-spacing:1px; text-align:center; text-shadow:0 1px #ffffff12; }
+.hardware-serial::after { content:''; position:absolute; left:15%; right:15%; bottom:18%; height:1px; background:#0002; box-shadow:0 1px #ffffff12,0 -3px #0000000a; }
 [data-contrast=high] .hardware-panel { opacity:.5; box-shadow:none; }
 @media(max-width:1150px) {
  #groups.unified-groups { grid-template-columns:repeat(2,minmax(0,1fr)); }

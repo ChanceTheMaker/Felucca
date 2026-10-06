@@ -114,7 +114,10 @@ panels are plain. Perforated grilles are limited to the spare VOICE level cells
 and the FX, Delay and ARP spare sections, giving four grille accents in the layout.
 The neutral metal finish follows the theme's panel tone. Jack sockets and
 circular speaker drivers remain removed. All artwork is CSS, with no external
-image assets.
+image assets except the existing Salt logo mask. Three additional accents occupy
+separate unused areas: narrow vents beside Reverb, an engraved Salt badge beside
+Chorus, and an etched serial-style plate beneath the Scale/Chord controls.
+The static STUDIO 001 inscription is decoration, not a device identifier.
 
 In knob mode, panels occupy spare cells in the existing four-control rows.
 Other panels fit blank space beneath shorter sections of a shared card. They

@@ -2,12 +2,19 @@
 // Decorative rack hardware occupies existing blank space; never sound controls.
 (() => {
   const states=new WeakMap();
-  function panel(vented=false) {
+  function panel(vented=false,detail='') {
     const item=document.createElement('span');
-    item.className=`hardware-panel${vented?' hardware-grille':''}`;
+    item.className=`hardware-panel${vented?' hardware-grille':''}${detail?' hardware-'+detail:''}`;
     for(let i=0;i<4;i++) {
       const screw=document.createElement('span');
       screw.className='hardware-fastener';item.append(screw);
+    }
+    if(detail==='badge') {
+      const mark=document.createElement('span');mark.className='salt-mark';item.append(mark);
+    }
+    if(detail==='serial') {
+      const label=document.createElement('span');label.className='hardware-engraving';
+      label.textContent='FELUCCA / SALT\nSTUDIO · 001';item.append(label);
     }
     return item;
   }
@@ -25,7 +32,10 @@
       if(!spare)continue;
       const extra=filler('bank-hardware');extra.style.setProperty('--spare-columns',spare);
       // These use only the unused cells in the existing four-control grid row.
-      extra.append(panel(count===1 && bank.closest('.unified-card').dataset.section==='VOICE'));
+      const card=bank.closest('.unified-card').dataset.section;
+      const detail=card==='FX' && bank.closest('.bank-section').dataset.page==='REVERB'
+        ? (count===3?'vents':count===2?'badge':'') : '';
+      extra.append(panel(count===1 && card==='VOICE',detail));
       bank.append(extra);
     }
     for(const section of container.querySelectorAll('.unified-card .bank-section')) {
@@ -36,7 +46,8 @@
       const card=section.closest('.unified-card').dataset.section;
       const vented=card==='FX' && (section===section.parentElement.firstElementChild || section.dataset.page==='DLY')
         || card==='ARP' && section===section.parentElement.lastElementChild;
-      extra.append(panel(vented));
+      const detail=card==='SCL' && section===section.parentElement.lastElementChild?'serial':'';
+      extra.append(panel(vented,detail));
       section.append(extra);sections.push({section,last,extra});
     }
     const state={frame:0};

@@ -51,6 +51,7 @@ try {
  assert((await page.locator('.hardware-grille').count())>0);
  assert((await page.locator('.hardware-panel:not(.hardware-grille)').count())>(await page.locator('.hardware-grille').count()));
  assert.equal(await page.locator('.hardware-grille').count(),4);
+ for(const detail of ['badge','vents','serial'])assert.equal(await page.locator(`.hardware-${detail}`).count(),1);
  assert.equal(await page.locator('.hardware-plate,.hardware-cone,.hardware-jack-rim,.bank-hardware svg,.bank-hardware-gap svg').count(),0);
  await mkdir('build/screenshots',{recursive:true});
  await page.screenshot({path:'build/screenshots/studio-hardware-desktop.png',fullPage:true,animations:'disabled'});

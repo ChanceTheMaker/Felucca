@@ -398,5 +398,10 @@
   "nav.backToTop": "Nach oben",
   "installer.progress": "Installationsfortschritt",
   "installer.editStudio": "In Studio bearbeiten",
-  "installer.retry": "Erneut versuchen"
+  "installer.retry": "Erneut versuchen",
+  "site.accessory_label": "Vom Entwickler von Felucca [Salt]",
+  "site.accessory_title": "Mach es zu deinem",
+  "site.accessory_body": "Hol dir dein individuelles Gehäuse + acht Drehknopf-Erweiterungen für dein FM-1.",
+  "site.accessory_link": "Auf eBay kaufen",
+  "site.accessory_alt": "FM-1-Gehäuse und Drehknopf-Erweiterungen in sechs Farben; Weiß und Silber mit eingesetztem schwarzem FM-1"
 }

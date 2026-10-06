@@ -398,5 +398,10 @@
   "nav.backToTop": "Retour en haut",
   "installer.progress": "Progression de l’installation",
   "installer.editStudio": "Modifier dans Studio",
-  "installer.retry": "Réessayer"
+  "installer.retry": "Réessayer",
+  "site.accessory_label": "Par le créateur de Felucca [Salt]",
+  "site.accessory_title": "À votre image",
+  "site.accessory_body": "Offrez-vous une coque personnalisée + huit extensions pour améliorer les boutons de votre FM-1.",
+  "site.accessory_link": "Acheter sur eBay",
+  "site.accessory_alt": "Coque et extensions de boutons pour FM-1 en six couleurs ; modèles blanc et argent avec un FM-1 noir à l’intérieur"
 }

@@ -398,5 +398,10 @@
   "nav.backToTop": "Volver arriba",
   "installer.progress": "Progreso de la instalación",
   "installer.editStudio": "Editar en Studio",
-  "installer.retry": "Volver a intentar"
+  "installer.retry": "Volver a intentar",
+  "site.accessory_label": "Del creador de Felucca [Salt]",
+  "site.accessory_title": "Dale tu toque",
+  "site.accessory_body": "Consigue tu carcasa personalizada + ocho extensores para mejorar las perillas de tu FM-1.",
+  "site.accessory_link": "Comprar en eBay",
+  "site.accessory_alt": "Carcasa y extensores de perilla para FM-1 en seis colores; blanco y plateado con un FM-1 negro dentro"
 }

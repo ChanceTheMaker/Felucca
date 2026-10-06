@@ -73,3 +73,12 @@ contribution, append the following information:
 
 After upstream merges a contribution, record the merge SHA and the Salt PR that
 removes or reconciles the duplicate implementation.
+
+## Installer accessories card (2026-10-05)
+
+Prepared independently from fork main on `feat/installer-accessories-main`.
+Ports only the six-color product illustration, localized accessory copy,
+rotation and eBay purchase button from the candidate website PR. No firmware,
+protocol, Studio or release-version changes. Salt14 site build and all eight
+locale checks pass; browser checks cover the rotation, glow background, purchase
+button, reduced motion and desktop/mobile layouts. Salt-only presentation.

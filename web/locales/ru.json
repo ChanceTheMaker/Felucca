@@ -398,5 +398,10 @@
   "nav.backToTop": "Наверх",
   "installer.progress": "Ход установки",
   "installer.editStudio": "Редактировать в Studio",
-  "installer.retry": "Попробовать снова"
+  "installer.retry": "Попробовать снова",
+  "site.accessory_label": "От создателя Felucca [Salt]",
+  "site.accessory_title": "Добавьте свой стиль",
+  "site.accessory_body": "Приобретите индивидуальный корпус и восемь насадок для удобного управления ручками вашего FM-1.",
+  "site.accessory_link": "Купить на eBay",
+  "site.accessory_alt": "Корпус и насадки на ручки FM-1 в шести цветах; белый и серебристый варианты показаны с чёрным FM-1 внутри"
 }

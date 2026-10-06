@@ -398,5 +398,10 @@
   "nav.backToTop": "Voltar ao topo",
   "installer.progress": "Progresso da instalação",
   "installer.editStudio": "Editar no Studio",
-  "installer.retry": "Tentar novamente"
+  "installer.retry": "Tentar novamente",
+  "site.accessory_label": "Do criador do Felucca [Salt]",
+  "site.accessory_title": "Deixe com a sua cara",
+  "site.accessory_body": "Garanta seu case personalizado + oito extensores para melhorar os knobs do seu FM-1.",
+  "site.accessory_link": "Comprar no eBay",
+  "site.accessory_alt": "Case e extensores de knobs para FM-1 em seis cores; branco e prata com um FM-1 preto dentro"
 }

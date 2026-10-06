@@ -398,5 +398,10 @@
   "nav.backToTop": "返回顶部",
   "installer.progress": "安装进度",
   "installer.editStudio": "在 Studio 中编辑",
-  "installer.retry": "重试"
+  "installer.retry": "重试",
+  "site.accessory_label": "来自 Felucca [Salt] 的创作者",
+  "site.accessory_title": "打造专属风格",
+  "site.accessory_body": "为你的 FM-1 选购定制外壳和八个提升操控手感的旋钮扩展环。",
+  "site.accessory_link": "在 eBay 上购买",
+  "site.accessory_alt": "六种颜色的 FM-1 外壳与旋钮扩展环；白色和银色款展示了装入黑色 FM-1 的效果"
 }

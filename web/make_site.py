@@ -63,6 +63,7 @@ def main(pkg, version, out):
     shutil.copy(HERE / "editor.html", ed / "index.html")
     shutil.copytree(HERE / "audio", ed / "audio", dirs_exist_ok=True)
     shutil.copytree(HERE / "screenshots", inst / "screenshots", dirs_exist_ok=True)
+    shutil.copytree(HERE / "accessories", inst / "accessories", dirs_exist_ok=True)
     shutil.copy(HERE / "studio-preview.js", inst / "studio-preview.js")
     shutil.copy(HERE / "panel-guide.js", inst / "panel-guide.js")
     for target in (inst, ed):

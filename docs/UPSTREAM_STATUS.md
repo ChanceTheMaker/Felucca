@@ -184,6 +184,9 @@ Salt-only website change: owner-photo-based illustration, eight-language copy,
 and a direct link to the owner's eBay listing beneath the feature sections.
 It introduces no firmware or protocol changes. Locale validation and site build
 pass; desktop/mobile checks cover all eight languages. Publication remains pending.
+The accessory card now rotates through the listing's six colors; white and silver
+include a black FM-1 fitted inside. Rotation pauses offscreen and for reduced
+motion. Both existing local installer previews include the card.
 
 No new upstream PR has been authorized or submitted during this round. Preparing
 and documenting candidates does not imply upstream acceptance. For each future

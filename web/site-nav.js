@@ -14,14 +14,14 @@
   window.addEventListener('hashchange', update);
   update();
   const topButton = document.getElementById('back-to-top');
-  if (!studio && topButton) {
+  if (topButton) {
     const showTop = () => { topButton.hidden = window.scrollY < 300; };
     window.addEventListener('scroll', showTop, {passive:true});
     window.addEventListener('pageshow', showTop);
     topButton.addEventListener('click', () => {
-      history.replaceState(null, '', location.pathname + location.search);
+      if (!studio) history.replaceState(null, '', location.pathname + location.search);
       update();
-      document.getElementById('page-top')?.focus({preventScroll:true});
+      document.getElementById(studio ? 'studio' : 'page-top')?.focus({preventScroll:true});
       window.scrollTo({top:0, behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
     });
     showTop();

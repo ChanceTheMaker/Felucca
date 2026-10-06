@@ -839,12 +839,13 @@ footer a { text-underline-offset:3px; }
  .brand-row .settings-menu>summary { padding:6px; }
  .brand-row .brand-links button.lang { width:30px; height:32px; padding:3px; }
 }
-.installer-page .back-to-top { position:fixed; z-index:1100; right:max(18px,env(safe-area-inset-right)); bottom:max(18px,env(safe-area-inset-bottom)); display:grid; place-items:center; width:46px; height:46px; padding:0; border:1px solid var(--line); border-radius:50%; background:var(--accent); color:var(--ink); box-shadow:0 4px 16px #0005; }
-.installer-page .back-to-top[hidden] { display:none; }
-.installer-page .back-to-top:hover { background:var(--accent); color:var(--ink); filter:brightness(1.08); }
-.installer-page .back-to-top:focus-visible { outline:2px solid var(--fg); outline-offset:3px; }
+.back-to-top { position:fixed; z-index:1100; right:max(18px,env(safe-area-inset-right)); bottom:max(18px,env(safe-area-inset-bottom)); display:grid; place-items:center; width:46px; height:46px; padding:0; border:1px solid var(--line); border-radius:50%; background:var(--accent); color:var(--ink); box-shadow:0 4px 16px #0005; }
+.back-to-top[hidden] { display:none; }
+.back-to-top:hover { background:var(--accent); color:var(--ink); filter:brightness(1.08); }
+.back-to-top:focus-visible { outline:2px solid var(--fg); outline-offset:3px; }
+.editor-page .back-to-top { z-index:21; bottom:calc(var(--keyboard-height,0px) + 12px); }
 .back-to-top svg { width:23px; height:23px; }
-#page-top:focus { outline:none; }
+#page-top:focus,#studio:focus { outline:none; }
 
 /* Studio signal panels: each functional family moves as one card. */
 /* DOM pickers let wheel input preview choices while the menu stays open.

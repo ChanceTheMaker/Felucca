@@ -134,3 +134,13 @@ were inspected. The earlier complete Studio regression passed thirteen engines,
 eight languages, 192 layout/theme combinations and actual browser DSP output.
 These browser checks used built-site fixtures because the shared preview server
 intermittently resets asset requests.
+
+## Floating back-to-top control
+
+`feat/studio-back-to-top` adds a right-side circular arrow above the keyboard,
+using its measured height for both expanded and collapsed states. It appears
+after 300 pixels of scrolling. Activation smoothly scrolls to the top (instantly
+with reduced motion), moves focus to the Studio main area and preserves the
+selected tab's URL hash. The existing translated back-to-top label is reused.
+`web/test_studio_scroll.mjs` verifies desktop/mobile placement, keyboard states,
+scrolling, reduced motion, focus and tab preservation against the built preview.

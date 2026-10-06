@@ -152,6 +152,12 @@ combinations, thirteen engines, eight languages and browser audio. See
 [STUDIO_VISUAL_PANELS.md](STUDIO_VISUAL_PANELS.md). This remains a fork-only
 presentation change, with no upstream import, firmware change or publication.
 
+Studio navigation follow-up `feat/studio-back-to-top` adds a floating arrow above
+the keyboard on the right, with smooth scrolling and reduced-motion support.
+Desktop/mobile tests cover expanded/collapsed keyboard clearance, focus and tab
+preservation. This is a separate fork presentation PR above #53; no firmware or
+publication changes are included.
+
 No new upstream PR has been authorized or submitted during this round. Preparing
 and documenting candidates does not imply upstream acceptance. For each future
 contribution, append the following information:

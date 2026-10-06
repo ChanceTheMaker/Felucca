@@ -165,6 +165,13 @@ is session-local at this stage. Chrome verifies send/read, live editing and real
 audio without MIDI access. See [BROWSER_STUDIO_EXPANSION.md](BROWSER_STUDIO_EXPANSION.md)
 for the remaining track, storage, sample and settings work and pending choices.
 
+FM6 is [PR #55](https://github.com/ChanceTheMaker/Felucca/pull/55). Follow-up
+`feat/browser-tracks-sequencer` connects all four parts and their patterns/motion
+to browser WASM, adds sample-clock transport and enables Tracks, Sequencer and
+browser global settings. Audio tests cover all thirteen engines, four channels,
+mute and sequencer start/stop; Chrome covers tabs, FM6 and playback status.
+All eight locale catalogs pass. Hardware firmware remains unchanged.
+
 No new upstream PR has been authorized or submitted during this round. Preparing
 and documenting candidates does not imply upstream acceptance. For each future
 contribution, append the following information:

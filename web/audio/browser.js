@@ -26,6 +26,7 @@ export class BrowserSynth {
       this.analyser = context.createAnalyser();
       this.analyser.fftSize = 2048;
       this.gain.connect(this.analyser);
+      this.node.port.onmessage = ({data}) => { if(data.type==='transport') {this.playing=data.playing;this.positions=data.positions;this.onTransport?.(data);} };
       this.node.onprocessorerror = () => {
         this.gain.gain.value = 0;
         window.FeluccaI18n.text(document.getElementById('audio-status'), 'ui.audioFailed');
@@ -35,13 +36,15 @@ export class BrowserSynth {
     }
   }
   sync(state) {
-    const data = {type: 'state', engine: state.engine, p: Array.from(state.p), g: Array.from(state.g),
-      fm6: state.engine === 12 ? Array.from(state.tracks[state.sel].fm6) : null};
+    const data = {type: 'state', sel: state.sel, g: Array.from(state.g),
+      tracks: state.tracks.map(t=>({engine:t.engine,p:Array.from(t.p),step:t.step,motion:t.motion,
+        fm6:t.engine===12?Array.from(t.fm6):null}))};
     const signature = JSON.stringify(data);
     if (signature === this.signature) return;
     this.signature = signature;
     this.node.port.postMessage(data);
   }
+  transport(op) { this.node?.port.postMessage({type:'transport',op}); }
   midi(bytes) { this.node?.port.postMessage({type: 'midi', bytes: Array.from(bytes)}); }
   volume(value) { this.gain?.gain.setTargetAtTime(value, this.context.currentTime, 0.015); }
   showScope(canvas) {
@@ -80,7 +83,8 @@ export class BrowserSynth {
     draw();
   }
   async stop() {
-    this.midi([0xb0, 120, 0]); this.midi([0xb0, 64, 0]);
+    this.transport(2);
+    for(let ch=0;ch<4;ch++){this.midi([0xb0|ch,120,0]);this.midi([0xb0|ch,64,0]);}
     if (this.context?.state === 'running') await this.context.suspend();
   }
 }

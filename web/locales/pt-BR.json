@@ -210,7 +210,7 @@
   "ui.audioReady": "Áudio pronto",
   "ui.audioNeed": "Ative o áudio para tocar e editar um som no navegador.",
   "ui.audioNoHardware": "Som no navegador · Sem hardware",
-  "ui.audioOneSound": "Áudio do navegador · Um som · Samples integrados",
+  "ui.audioOneSound": "Áudio no navegador · Quatro faixas",
   "ui.audioStopped": "Áudio parado · Ative para continuar",
   "ui.audioPlayHelp": "Tocando no navegador · Sustain e acordes polifônicos · Sem FM-1",
   "ui.audioStartHelp": "Clique em Ativar áudio para tocar no navegador.",

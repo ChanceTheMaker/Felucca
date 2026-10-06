@@ -22,13 +22,16 @@ static void midi_out_event(uint32_t p) { (void)p; }
 #define API __attribute__((visibility("default")))
 static int32_t output[CTL * 2];
 static uint64_t frames;
+static unsigned browser_target;
+API void synth_target(unsigned k) { if(k<NTRK) browser_target=k; }
+API void synth_select(unsigned k) { if(k<NTRK) song.sel=k; }
 static uint8_t browser_fm6[FM6_PACKED];
 API uint8_t *synth_fm6_buffer(void) { return browser_fm6; }
 API void synth_fm6_apply(void) {
     uint8_t voice[FP_SIZE + 1u];
     fm6_unpack(browser_fm6, voice);
-    fm6_set_patch(0, voice);
-    fm6_slot[0] = (uint8_t)trk[0].p[P_E7];
+    fm6_set_patch(browser_target, voice);
+    fm6_slot[browser_target] = (uint8_t)trk[browser_target].p[P_E7];
 }
 API void synth_init(void) {
     for (unsigned i=0;i<G_COUNT;i++) song.g[i]=GP[i].def;
@@ -39,19 +42,31 @@ API void synth_init(void) {
     song.master_q12=4096;
     fm6_init();
 }
-API void synth_engine(unsigned e) { if(e<NENGINES && eng_ok(e)) trk[0].eng_req=e; }
+API void synth_engine(unsigned e) { if(e<NENGINES && eng_ok(e)) trk[browser_target].eng_req=e; }
 API void synth_param(unsigned i,int v) {
     if(i>=P_COUNT) return;
-    const param_desc_t *d=i<P_E0 ? &TP[i] : &ENGINES[trk[0].eng_req]->edit[i-P_E0];
-    trk[0].p[i]=v<d->min?d->min:v>d->max?d->max:v;
+    const param_desc_t *d=i<P_E0 ? &TP[i] : &ENGINES[trk[browser_target].eng_req]->edit[i-P_E0];
+    trk[browser_target].p[i]=v<d->min?d->min:v>d->max?d->max:v;
 }
 API void synth_global(unsigned i,int v) {
     if(i<G_COUNT && i!=G_CLOCK) song.g[i]=v<GP[i].min?GP[i].min:v>GP[i].max?GP[i].max:v;
 }
 API void synth_midi(unsigned status,unsigned d1,unsigned d2) {
-    /* This preview is one selected sound, regardless of the keyboard channel. */
-    midi_event(status&0xf0u,0,d1&127,d2&127);
+    midi_event(status&0xf0u,status&15u,d1&127,d2&127);
 }
+API void synth_step(unsigned k,unsigned i,unsigned n,unsigned time,unsigned flags,unsigned vel,unsigned hit,unsigned acc,unsigned chance,unsigned n0,unsigned n1,unsigned n2,unsigned n3) {
+    if(k>=NTRK || i>=NSTEP) return;
+    step_t *s=&trk[k].step[i];
+    s->n=n>4?4:n;s->time=time>2?2:time;s->flags=flags&3;s->vel=vel&127;
+    s->hit=hit&255;s->acc=acc&s->hit;step_set_chance(s,chance>100?100:chance);
+    s->note[0]=n0&127;s->note[1]=n1&127;s->note[2]=n2&127;s->note[3]=n3&127;
+}
+API void synth_motion_clear(unsigned k) { if(k<NTRK) motion_clear(&trk[k]); }
+API void synth_motion_event(unsigned k,unsigned step,unsigned id,int value) { if(k<NTRK) motion_set_event(&trk[k],step,id,value); }
+API void synth_motion_on(unsigned k,unsigned on) { if(k<NTRK) motion_set_enabled(&trk[k],on); }
+API void synth_transport(unsigned op) { if(op>=1 && op<=3) transport_req=op; }
+API unsigned synth_playing(void) { return song.playing; }
+API unsigned synth_position(unsigned k) { return k<NTRK?trk[k].seq_idx:0; }
 API int32_t *synth_render(void) {
     fm1_ms=(uint32_t)(frames*1000/FS);
     fm6_poll();

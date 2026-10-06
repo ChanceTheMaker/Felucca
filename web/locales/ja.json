@@ -221,7 +221,7 @@
   "ui.audioReady": "音声準備完了",
   "ui.audioNeed": "音声を有効にしてブラウザーで演奏・編集できます。",
   "ui.audioNoHardware": "ブラウザー音源 · 実機不要",
-  "ui.audioOneSound": "ブラウザー音源 · 1 音色 · 内蔵サンプル",
+  "ui.audioOneSound": "ブラウザー音源 · 4トラック",
   "ui.audioStopped": "音声停止中 · 有効にして再開",
   "ui.audioPlayHelp": "ブラウザーで演奏中 · サステインと和音に対応 · FM-1 不要",
   "ui.audioStartHelp": "「音声を有効にする」で演奏できます。",

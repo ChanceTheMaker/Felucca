@@ -3,20 +3,25 @@
 Select **Browser** in the **FM-1 / Browser** switch to start audio automatically.
 Both modes remain visible; switching back to FM-1 stops browser playback. If opening
 `?audio=1#sound` directly, click **Browser** or **Enable audio** to unlock audio playback.
-The live oscilloscope shows browser output above the Sound and 6-OP FM tabs.
+The live oscilloscope shows browser output above the Studio tabs.
 This runs the existing GPL-3.0 Felucca C DSP in an AudioWorklet through WebAssembly.
 It does not open Web MIDI, send firmware, or require an FM-1.
 
 Supported: all thirteen sound engines, their 69 factory presets, Sound controls, built-in
 samples, patch file loading/saving, the on-screen/computer keyboard, sustain, chords,
-and a separate browser volume. The preview plays one sound; the MIDI channel selector,
-device storage, sample uploads, sequencer, and other hardware tabs are hidden.
+and a separate browser volume. Four tracks, mixer controls, step patterns and
+motion events are synchronized to the browser DSP. Play from start and Stop use
+the audio engine's sample clock, and the transport reports actual step positions.
+The keyboard plays the selected track. Mute retains firmware semantics (blocks
+new notes; existing releases/effects can finish). Browser settings expose tempo,
+swing and tuning; external clock and physical MIDI routing are omitted.
+Device storage and sample uploads are a separate implementation step.
 Patch files referencing user sample slots cannot reproduce those samples here.
 FM6 factory patches and imported patches embedded in sound files are carried into
 the audio engine. The 6-OP FM editor supports live editing, import/export and a
 session-local patch bank. Sending a patch selects the FM6 engine automatically.
 Bank contents are temporary until persistent browser storage is added; export
-patches to keep them. Sequencing remains a separate implementation step.
+patches to keep them. Pattern editing and playback work without an FM-1.
 The retired DIGITAL engine ID is hidden; imported DIGITAL sounds use the editor's
 upstream DIGITAL-to-FM6 conversion.
 Browser edits are temporary unless exported with the Sound page's save-file button.

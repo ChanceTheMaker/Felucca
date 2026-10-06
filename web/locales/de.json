@@ -210,7 +210,7 @@
   "ui.audioReady": "Audio bereit",
   "ui.audioNeed": "Aktiviere Audio, um im Browser einen Klang zu spielen und zu bearbeiten.",
   "ui.audioNoHardware": "Browserklang · Keine Hardware nötig",
-  "ui.audioOneSound": "Browseraudio · Ein Klang · Integrierte Samples",
+  "ui.audioOneSound": "Browser-Audio · Vier Spuren",
   "ui.audioStopped": "Browseraudio gestoppt · Zum Fortsetzen aktivieren",
   "ui.audioPlayHelp": "Im Browser spielen · Sustain und mehrstimmige Akkorde · Kein FM-1 nötig",
   "ui.audioStartHelp": "Klicke auf Audio aktivieren, um im Browser zu spielen.",

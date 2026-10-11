@@ -168,6 +168,7 @@ void smk37_scanner_irq(void)
 }
 static void smk37_consume_keys(void)
 {
+    smk37_performance_poll();
     if (smk37_button_events.overflow) {
         fm1_irq_off(); smk37_events_discard(&smk37_button_events); fm1_irq_on();
         song.rec=0; transport_req=2;
@@ -441,6 +442,12 @@ static void smk37_sound_status(void)
         values[i] = v ? *v : 0;
     }
     unsigned custom=smk37_page;
+    if(custom==SMK37_PERFORM_PAGE)for(unsigned i=0;i<4;++i)values[i]=perf_k[i];
+    if(custom==SMK37_AUTOMATION_PAGE){values[0]=smk37_edit_step+1;values[1]=smk37_auto_param;values[2]=smk37_auto_value;values[3]=smk37_auto_lock;}
+    if(custom==SMK37_DETAIL_PAGE){step_t *s=&TSEL->step[smk37_edit_step];values[0]=step_chance(s);values[1]=step_ratchet(s);values[2]=step_nudge(s);values[3]=s->vel;}
+    if(custom==SMK37_LEARN_PAGE){values[0]=smk37_learn_on;values[1]=smk37_learn_track+1;values[2]=smk37_learn_param;values[3]=ml_arm;}
+    if(custom==SMK37_CLICK_PAGE){values[0]=click_mode;values[1]=click_lvl;values[2]=cin_bars;values[3]=seq_counting();}
+    if(custom==SMK37_DISPLAY_PAGE){values[0]=smk37_palette;values[1]=smk37_bold;values[2]=0;values[3]=0;}
     if(custom==SMK37_STEP_PAGE){step_t *s=&TSEL->step[smk37_edit_step];values[0]=smk37_edit_step+1;values[1]=s->note[0];values[2]=s->vel;values[3]=s->time;}
     if(custom==SMK37_SETTINGS_PAGE){values[0]=smk37_velocity_mode;values[1]=smk37_pad_bank+1;values[2]=smk37_last_velocity;values[3]=smk37_pedal_down;}
     if(custom==SMK37_PROJECT_PAGE){values[0]=smk37_project_slot+1;values[1]=smk37_storage_ready;values[2]=smk37_storage_writable;values[3]=0;}
@@ -448,10 +455,10 @@ static void smk37_sound_status(void)
     char text[32], value[24];
     str_cpy(text, "TRACK ", sizeof text);
     fmt_int(text+6, track+1);
-    draw_text_line(12, 44, 216, &AF_S, text, 0x07ff, 0, 0);
-    draw_text_line(12, 62, 216, &AF_S, engine, 0xffff, 0, 0);
-    draw_text_line(12, 80, 216, &AF_S, preset, 0xffff, 0, 0);
-    draw_text_line(12, 102, 216, &AF_S, page, 0x07ff, 0, 0);
+    draw_text_line(12, 44, 216, &AF_S, text, T_THEME, T_BG, 0);
+    draw_text_line(12, 62, 216, &AF_S, engine, T_TEXT, T_BG, 0);
+    draw_text_line(12, 80, 216, &AF_S, preset, T_TEXT, T_BG, 0);
+    draw_text_line(12, 102, 216, &AF_S, page, T_THEME, T_BG, 0);
     for (unsigned i = 0; i < 4; ++i) {
         const char *unit = "";
         const char *label=desc[i] ? desc[i]->label : "";
@@ -459,28 +466,46 @@ static void smk37_sound_status(void)
         static const char *const control_labels[]={"VELOCITY","PAD BANK","LAST VEL","SUSTAIN"};
         static const char *const project_labels[]={"SLOT","READ OK","SAVE READY",""};
         if(custom==SMK37_STEP_PAGE)label=step_labels[i];
+        if(custom==SMK37_PERFORM_PAGE)label=(const char *const[]){"FILTER","CRUSH","THROW","DEPTH"}[i];
+        if(custom==SMK37_AUTOMATION_PAGE)label=(const char *const[]){"STEP","PARAMETER","VALUE","LOCK"}[i];
+        if(custom==SMK37_DETAIL_PAGE)label=(const char *const[]){"CHANCE","RATCHET","NUDGE","VELOCITY"}[i];
+        if(custom==SMK37_LEARN_PAGE)label=(const char *const[]){"LEARN","TRACK","PARAMETER","WAITING CC"}[i];
+        if(custom==SMK37_CLICK_PAGE)label=(const char *const[]){"CLICK","LEVEL","COUNT-IN","COUNTING"}[i];
+        if(custom==SMK37_DISPLAY_PAGE)label=(const char *const[]){"PALETTE","BOLD","",""}[i];
         if(custom==SMK37_SETTINGS_PAGE)label=control_labels[i];
         if(custom==SMK37_PROJECT_PAGE)label=project_labels[i];
-        draw_text_line(12, 124+i*18, 90, &AF_S, label, 0xffff, 0, 0);
+        draw_text_line(12, 124+i*18, 90, &AF_S, label, T_TEXT, T_BG, 0);
         value[0] = 0;
         if (desc[i]) param_format(desc[i], values[i], value, &unit);
-        if(custom>=SMK37_STEP_PAGE && custom<=SMK37_PROJECT_PAGE)fmt_int(value,values[i]);
+        if((custom>=SMK37_STEP_PAGE && custom<=SMK37_PROJECT_PAGE) || custom==SMK37_DETAIL_PAGE || custom==SMK37_LEARN_PAGE || custom==SMK37_CLICK_PAGE || custom==SMK37_DISPLAY_PAGE || custom==SMK37_PERFORM_PAGE || custom==SMK37_AUTOMATION_PAGE)fmt_int(value,values[i]);
+        if(custom==SMK37_LEARN_PAGE && i==2)str_cpy(value,param_desc_of(trk[smk37_learn_track].eng_req,values[i])->label,sizeof value);
+        if(custom==SMK37_AUTOMATION_PAGE && i==1)str_cpy(value,track_desc(TSEL,values[i])->label,sizeof value);
+        if(custom==SMK37_DISPLAY_PAGE){if(!i)str_cpy(value,UI_PALETTES[values[i]%NPALETTES].name,sizeof value);else if(i>1)value[0]=0;}
+        if(custom==SMK37_CLICK_PAGE && !i)str_cpy(value,(const char *const[]){"OFF","REC","ON"}[values[i]%3],sizeof value);
         if(custom==SMK37_SETTINGS_PAGE && !i){static const char *const curves[]={"LINEAR","SOFT","HARD","FIXED 100"};str_cpy(value,curves[values[i]],sizeof value);}
         if(custom==SMK37_STEP_PAGE && i==3){static const char *const types[]={"NOTE","TIE","REST"};str_cpy(value,types[values[i]%3],sizeof value);}
         if(custom==SMK37_PROJECT_PAGE && i==3)value[0]=0;
-        draw_text_line(104, 124+i*18, 124, &AF_S, value, 0xffff, 0, 0);
+        draw_text_line(104, 124+i*18, 124, &AF_S, value, T_TEXT, T_BG, 0);
     }
-    draw_text_line(0, 202, 240, &AF_S, smk37_knob_bank ? "E1-4 EDIT / E5-8 NAV" : "E1-4 NAV / E5-8 EDIT", 0xffff, 0, 1);
-    if(custom==SMK37_PROJECT_PAGE)draw_text_line(0,202,240,&AF_S,"< LOAD / > SAVE",0xffff,0,1);
-    if(custom==SMK37_STEP_PAGE)draw_text_line(0,202,240,&AF_S,"PADS: STEPS / < >: BANK",0xffff,0,1);
+    draw_text_line(0, 202, 240, &AF_S, smk37_knob_bank ? "E1-4 EDIT / E5-8 NAV" : "E1-4 NAV / E5-8 EDIT", T_TEXT, T_BG, 1);
+    if(custom==SMK37_PERFORM_PAGE)draw_text_line(0,202,240,&AF_S,"HOLD PADS: FX / THROWS",T_THEME,T_BG,1);
+    if(custom==SMK37_AUTOMATION_PAGE)draw_text_line(0,202,240,&AF_S,"< DELETE / > SET",T_THEME,T_BG,1);
+    if(custom==SMK37_PROJECT_PAGE)draw_text_line(0,202,240,&AF_S,"< LOAD / > SAVE",T_TEXT,T_BG,1);
+    if(custom==SMK37_DETAIL_PAGE){str_cpy(text,"STEP ",sizeof text);fmt_int(text+5,smk37_edit_step+1);draw_text_line(0,202,240,&AF_S,text,T_THEME,T_BG,1);}
+    if(custom==SMK37_LEARN_PAGE)draw_text_line(0,202,240,&AF_S,"TURN PARAM / SEND MIDI CC",T_THEME,T_BG,1);
+    if(custom==SMK37_STEP_PAGE)draw_text_line(0,202,240,&AF_S,"PADS: STEPS / < >: BANK",T_TEXT,T_BG,1);
 }
 static void smk37_status(void)
 {
     if (!smk37_display_ok) return;
     static unsigned shown_page = UINT32_MAX;
+    static unsigned shown_palette=UINT32_MAX,shown_bold=UINT32_MAX;
+    if(shown_palette!=smk37_palette || shown_bold!=smk37_bold){
+        palette_set(smk37_palette);font_set(smk37_bold);shown_palette=smk37_palette;shown_bold=smk37_bold;shown_page=UINT32_MAX;
+    }
     unsigned page = smk37_page;
     if (shown_page != page) {
-        cv_begin(240, 100, 0); cv_blit(0, 40); cv_blit(0, 140);
+        cv_begin(240, 100, page<SMK37_SOUND_PAGES ? T_BG : 0); cv_blit(0, 40); cv_blit(0, 140);
         shown_page = page;
     }
     if (page == SMK37_BUTTON_PAGE) { smk37_button_status(); return; }
@@ -569,8 +594,10 @@ void smk37_audio_irq(void)
         int32_t *out = smk37_dma + half * HALF_FRAMES * 2u;
         smk37_consume_keys();
         fm6_poll();
-        for (b = 0; b < HALF_FRAMES; b += CTL)
+        for (b = 0; b < HALF_FRAMES; b += CTL) {
             mix_block(out + b * 2u, CTL);
+            click_render(out + b * 2u, CTL);
+        }
         for (i = 0; i < HALF_FRAMES * 2u; ++i) out[i] *= 128;
         smk37_audio_ack_half();
         ++smk37_rendered;

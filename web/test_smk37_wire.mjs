@@ -16,6 +16,9 @@ for (const frame of frames) {
   if (cmd === CMD.INFO) {
     info=result; assert.match(info.version,/SMK37 TEST10/);
     assert.equal(info.ntrk,4); assert.equal(info.nstep,64); assert.equal(info.uiCaps,0);
+    assert.equal(info.motionMax,128); assert.equal(info.learnMax,16);
+    assert(info.chance && info.ratchet && info.nudge && info.locks);
+    assert.equal(info.fm6.factory,8); assert.equal(info.fm6.bank,0);
   }
   if (cmd === CMD.DUMP || cmd === CMD.TRACK_DUMP) assert.equal(result.p.length,info.pcount);
   if (cmd === CMD.NAMES) { names++; assert.equal(result.names.length,frame[6]); assert.equal(result.titles.length,2); }

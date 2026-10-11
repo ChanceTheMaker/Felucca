@@ -7,7 +7,7 @@ The live oscilloscope shows browser output in place of the redundant single Soun
 This runs the existing GPL-3.0 Felucca C DSP in an AudioWorklet through WebAssembly.
 It does not open Web MIDI, send firmware, or require an FM-1.
 
-Supported: all thirteen sound engines, their 69 factory presets, Sound controls, built-in
+Supported: all thirteen sound engines, their upstream 1.5.1 factory presets, Sound controls, built-in
 samples, patch file loading/saving, the on-screen/computer keyboard, sustain, chords,
 and a separate browser volume. The preview plays one sound; the MIDI channel selector,
 device storage, sample uploads, sequencer, and other hardware tabs are hidden.

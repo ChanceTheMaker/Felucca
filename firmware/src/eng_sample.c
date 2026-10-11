@@ -4,7 +4,8 @@
 static const char *const N_ONOFF_E[] = {"OFF", "ON"};
 /* IMA ADPCM sample sets (tools/gen_samples.py), native rates, zones across
  * the keyboard, loops with the ADPCM state stored at the loop start.
- * SET is P_E0 (EDIT 1, KNOB 1). */
+ * SET is P_E0 (EDIT 1, KNOB 1). SET 4 was PERC, the GM drum kit: retired, an alias of PIANO; its sounds
+ * load as the DRUM engine (core.h drum_from_perc). */
 typedef struct {
     uint32_t off, n, ls, le;     /* byte offset, samples, loop start / end (sample index) */
     uint32_t rate;               /* source rate / 44100, Q16 */
@@ -17,6 +18,9 @@ typedef struct {
     uint16_t z0, nz;
 } smp_set_t;
 #include "felucca_samples.h"
+#if defined(SMP_PERC_SLOT) && SMP_PERC_SLOT != SMP_SET_PERC
+#error "tools/gen_samples.py PERC_SLOT != core.h SMP_SET_PERC"
+#endif
 
 static const int16_t IMA_STEP[89] = {
     7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 19, 21, 23, 25, 28, 31, 34, 37, 41, 45, 50, 55, 60, 66, 73, 80, 88, 97,
@@ -68,28 +72,60 @@ static void slc_user_scan(uint32_t k, int valid);   /* eng_slice.c: SLICE's slic
 static uint32_t smp_user_gen;                       /* + 1 per slot scan (GRAIN: its seek index follows uploads) */
 
 /* (re)read slot k from flash: valid header -> zones usable; call after boot and after an upload
- * (main loop: SLICE scans the slot's audio here) */
+ * (main loop: SLICE scans the slot's audio here). The zones are checked in a copy: an unusable slot leaves
+ * every zone of it empty (n 0: a voice still on it ends), never a half-checked one */
 static void smp_user_scan(uint32_t k)
 {
     const smp_user_hdr_t *h = (const smp_user_hdr_t *)smp_user_xip(k);
-    uint32_t i, base;
+    smp_zone_t zt[16];
+    uint32_t i, base, nz = 0;
     smp_user_gen++;
     usr_nz[k] = 0;
     slc_user_scan(k, 0);
-    if (h->magic != SMP_USER_MAGIC || h->version != 1 || !h->nz || h->nz > 16u ||
-        h->data_len > SMP_USER_SIZE - SMP_USER_DATA)
-        return;
-    base = (uint32_t)(uintptr_t)(smp_user_xip(k) + SMP_USER_DATA) - (uint32_t)(uintptr_t)SMP_DATA;
-    for (i = 0; i < h->nz; i++) {
-        smp_zone_t *z = &usr_zone[k][i];
-        *z = h->zone[i];
-        if (z->off > h->data_len || z->n > 2u * SMP_USER_SIZE || z->off + (z->n + 1u) / 2u > h->data_len ||
-            z->idx > 88u || !z->rate || z->rate > 4u << 16 || z->ls > z->le || z->le >= z->n || z->lo > z->hi)
-            return;                                 /* zone outside the data or malformed: slot unusable */
-        z->off += base;
+    if (h->magic == SMP_USER_MAGIC && h->version == 1 && h->nz && h->nz <= 16u &&
+        h->data_len <= SMP_USER_SIZE - SMP_USER_DATA) {
+        base = (uint32_t)(uintptr_t)(smp_user_xip(k) + SMP_USER_DATA) - (uint32_t)(uintptr_t)SMP_DATA;
+        for (nz = h->nz, i = 0; i < nz; i++) {
+            smp_zone_t *z = &zt[i];
+            *z = h->zone[i];
+            if (z->off > h->data_len || z->n > 2u * SMP_USER_SIZE || z->off + (z->n + 1u) / 2u > h->data_len ||
+                z->idx > 88u || !z->rate || z->rate > 4u << 16 || z->ls > z->le || z->le >= z->n || z->lo > z->hi) {
+                nz = 0;                             /* zone outside the data or malformed: slot unusable */
+                break;
+            }
+            z->off += base;
+        }
     }
-    usr_nz[k] = h->nz;
+    for (i = 0; i < 16u; i++)
+        usr_zone[k][i] = i < nz ? zt[i] : (smp_zone_t){0};
+    if (!nz)
+        return;
+    usr_nz[k] = (uint8_t)nz;
     slc_user_scan(k, 1);
+}
+
+/* A missing sample (SAMPLE, GRAIN, SLICE: an empty or invalid user slot, a set this build has no data for) plays
+ * this instead, like a hardware sampler with its sample gone: a plain sine at the note's pitch (+ d16, 1/16
+ * semitones), at half the peak of a full sample, through the engine's one-pole low-pass (lp Q15, state *y) and the
+ * voice's amp (the ADSR: no click at the start, phase 0, or the end). *ph its phase. The UI says so once
+ * (engines.c snd_missing, ui_input.c sample_notice). */
+static void smp_sine(int32_t *out, uint32_t n, const vmod_t *m, int32_t d16, int32_t lp, uint32_t *ph, int32_t *y)
+{
+    uint32_t i, p = *ph, inc = pitch_inc((uint32_t)clamp(m->pitch16 + d16, 0, 2047));
+    int32_t s = *y;
+    for (i = 0; i < n; i++, p += inc) {
+        s += mulq15((sine_i(p) >> 1) - s, lp);
+        out[i] += voice_amp(s, m, i) << 1;
+    }
+    *ph = p;
+    *y = s;
+}
+/* SET / SRC si (0..SMP_NALL - 1) has no sample data: an empty or invalid user slot, a built-in set without data */
+static int smp_set_missing(uint32_t si)
+{
+    if (si < SMP_NSETS)
+        return !SMP_ZONES[SMP_SETS[si].z0].n;
+    return !usr_nz[(si - SMP_NSETS) % SMP_USER_SLOTS];
 }
 
 /* zone index in a voice: < 0x8000 built-in, else 0x8000 | slot << 5 | zone */
@@ -126,18 +162,15 @@ static inline int32_t sample_next(const smp_zone_t *z, voice_t *v, int loop)
 static void sample_note_on(track_t *t, voice_t *v)
 {
     uint32_t si = (uint32_t)t->p[P_E0] % SMP_NALL, i, zi = 0xFFFFu, width = 128u;
-    if (si < SMP_NSETS) {
+    if (si < SMP_NSETS) {                           /* a built-in set: its zones split the keyboard */
         const smp_set_t *set = &SMP_SETS[si];
-        for (i = 0; i < set->nz; i++) {
-            const smp_zone_t *z = &SMP_ZONES[set->z0 + i];
-            /* A single-note hat/cymbal takes precedence over a broad tom zone. */
-            if (v->note >= z->lo && v->note <= z->hi && z->hi - z->lo <= width) {
+        for (i = 0; i < set->nz; i++)
+            if (v->note >= SMP_ZONES[set->z0 + i].lo && v->note <= SMP_ZONES[set->z0 + i].hi) {
                 zi = set->z0 + i;
-                width = z->hi - z->lo;
+                break;
             }
-        }
         v->s[4] = (int32_t)(zi == 0xFFFFu ? set->z0 : zi);
-    } else {                                        /* user slot: silent if empty */
+    } else {                                        /* user slot: silent if empty; the narrowest zone plays */
         uint32_t k = si - SMP_NSETS;
         for (i = 0; i < usr_nz[k]; i++) {
             const smp_zone_t *z = &usr_zone[k][i];
@@ -155,6 +188,8 @@ static void sample_note_on(track_t *t, voice_t *v)
     v->s[2] = v->s[3] = 0;
     v->s[6] = zi == 0xFFFFu;     /* 1 = sample ended (one-shot); a kit key with no sound stays silent */
     v->s[7] = 0;                 /* lo-pass state */
+    if (smp_set_missing(si))
+        v->s[6] = 2;             /* 2 = no sample data: the sine (smp_sine; ph[0] its phase) */
 }
 
 static void sample_render(track_t *t, voice_t *v, int32_t *out, uint32_t n, const vmod_t *m)
@@ -166,6 +201,10 @@ static void sample_render(track_t *t, voice_t *v, int32_t *out, uint32_t n, cons
     uint32_t r = pow2_q16(d16), stepq = (r >> 8) * (z->rate >> 8);   /* Q16 samples per output */
     int32_t bits = p[P_E2], lp = 4000 + ((clamp((p[P_E4] << 8) + m->cutoff, 0, 127 << 8) * 28767) >> 15);
     int32_t drv = p[P_E6], sh = bits / 10;
+    if (v->s[6] == 2) {                               /* no sample data: the sine at the note's pitch + TUNE */
+        smp_sine(out, n, m, p[P_E1] * 16, lp, &v->ph[0], &v->s[7]);
+        return;
+    }
     if (v->s[6] || !z->n) {
         v->active = 0;
         return;
@@ -202,28 +241,6 @@ static void sample_render(track_t *t, voice_t *v, int32_t *out, uint32_t n, cons
     v->ph[1] = frac;
 }
 
-/* SMP_SETS index of "PERC", the GM-mapped kit (tools/gen_samples.py GM_KIT), -1 = none */
-static int32_t smp_perc_set(void)
-{
-    static int16_t set = -2;
-    uint32_t i;
-    if (set == -2) {
-        set = -1;
-        for (i = 0; i < SMP_NSETS; i++)
-            if (str_eq(SMP_SETS[i].name, "PERC"))
-                set = (int16_t)i;
-    }
-    return set;
-}
-
-/* the GM kit (PERC): the first C (key 7) is the kick (C2), no scale */
-static int32_t sample_keys(const track_t *t, uint32_t k)
-{
-    if (smp_perc_set() < 0 || (uint32_t)t->p[P_E0] % SMP_NALL != (uint32_t)smp_perc_set())
-        return -1;
-    return clamp(29 + 12 * song.octave + (int32_t)k, 0, 127);
-}
-
 static const engine_t ENG_SAMPLE = {
     .name = "SAMPLE",
     .page_title = {"SET", "TONE"},
@@ -243,5 +260,4 @@ static const engine_t ENG_SAMPLE = {
     .render = sample_render,
     .knob = {P_E0, P_E4, P_ATK, P_REL},
     .sampled = 1,
-    .keys = sample_keys,
 };

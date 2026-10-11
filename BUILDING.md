@@ -30,6 +30,7 @@ The build makes three files in `build/`:
   ```
 
 - Node.js (optional, for the web tests).
+- Emscripten (optional, `emcc`: the browser emulator, `web/emu/`).
 
 On Linux x86-64 the toolchain runs natively and Docker is not needed.
 
@@ -55,18 +56,39 @@ Build options (environment, `0` or `1`; defaults in `firmware/src/felucca.c`, `c
 | `FELUCCA_FLASH` | 1 | settings, presets and projects in flash |
 | `FELUCCA_OTA` | 1 | update entry (needs `FELUCCA_FLASH`) |
 | `FELUCCA_CDC` | 1 | USB serial console |
-| `FELUCCA_UAC` | 1 | USB audio input (the master output, 44.1 kHz stereo) |
+| `FELUCCA_CDC_DEFAULT` | 1 | `0`: the console is built in but left out of USB from boot (as MENU > USB SERIAL OFF) |
+| `FELUCCA_UAC` | 1 | USB audio input (the master output, stereo, 44.1 or 48 kHz) |
+| `FELUCCA_UAC_48K` | 1 | `0`: the USB audio input at 44.1 kHz only, as up to 1.0.5.2 (`firmware/src/usb.c`) |
+| `FELUCCA_UAC_AS_FIRST` | 1 | the audio control header lists the audio streaming interface before the MIDI one, so the USB audio driver of older macOS (up to 15) finds it; `0`: 1.0 to 1.5's order, byte for byte (`firmware/src/usb.c`) |
 | `FELUCCA_UART` | 1 | TRS MIDI IN |
 | `FELUCCA_SLICE` | 1 | the SLICE engine |
 | `FELUCCA_ICONS` | 1 | parameter icons on the knob cards |
 | `FELUCCA_FM4` | 0 | the retired DIGITAL engine (4-operator FM) instead of its FM6 conversion |
 
+`FELUCCA_USB_LAYOUT` (`0` to `3`, default `0`) picks other USB descriptor layouts for testing; see
+`firmware/src/usb.c`.
+
 ## Samples
 
 The CC0 instrument samples that the SAMPLE engine uses are in `assets/samples-cc0/`
 (Versilian Studios, see `ATTRIBUTION.txt` there). `tools/fetch_cc0.py` downloads them
-again from the source repositories. Without that folder the build still works and the
-SAMPLE engine has only the generated drum kit.
+again from the source repositories. Without that folder the build still works, with no
+instrument sets in the SAMPLE engine and no PIANO in SLICE (the PIANO set's middle C): they play a plain sine
+at the note's pitch instead, and the screen says NO SAMPLE.
+
+## Browser emulator
+
+```
+./build.sh
+web/emu/build.sh
+python3 -m http.server -d build/emu 8790     # open http://localhost:8790/
+```
+
+`web/emu/felucca_web.c` builds the firmware's sources as the host tests do, against a simulated FM-1, and
+Emscripten compiles it to WebAssembly (`build/emu/felucca.wasm`, with `index.html`, `worklet.js` and the font in `fonts/`). The page
+keeps the flash's storage sectors (projects, user presets, settings) in the browser. Not emulated: USB (audio,
+MIDI out, the editor, updates), TRS MIDI and the user sample slots. A build of it is on the site:
+<https://hugelton.github.io/Felucca/webapp/try/>.
 
 ## Tests
 
@@ -74,7 +96,7 @@ SAMPLE engine has only the generated drum kit.
 tests/run_tests.sh
 ```
 
-Runs the host tests and, with Node.js, the web page tests. Run it after `./build.sh`
+Runs the host tests and, with Node.js, the web page tests (and, with Emscripten too, the browser emulator's). Run it after `./build.sh`
 (it uses `build/` and needs `AC79_SDK` set as for the build). The suites cover flash storage,
 user presets, projects of every format, backup, the keys and knobs, MIDI (USB, TRS, clock,
 control), USB audio, the update entry and loader, the command-line installer, the UI (the real

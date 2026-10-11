@@ -56,9 +56,13 @@ static uint32_t panel_btn_of(uint32_t matrix_id)        /* label of a matrix but
 }
 
 /* steps of a role, + = clockwise */
+static uint8_t panel_moved;                     /* a knob turned since ui.c scr_input last looked (SCREEN OFF) */
 static int32_t panel_enc(uint32_t role)
 {
-    return fm1_enc_take(panel.enc[role]) * panel.dir[role];
+    int32_t s = fm1_enc_take(panel.enc[role]) * panel.dir[role];
+    if (s)
+        panel_moved = 1;
+    return s;
 }
 
 /* Keep the retained settings layout fixed. palette: the index into UI_PALETTES (SET3 held an index
@@ -83,11 +87,16 @@ static uint32_t hold_to_stored(uint32_t old, uint32_t i)
 }
 static int hold_stored_ok(uint32_t v) { return v <= 1u || (v & ~3u) == HOLD_TAG || ((v & ~31u) == SALT_DISPLAY_TAG && ((v >> 3) & 3u) < 3u); }
 
-/* LEDS (menu): DIM, the idle buttons and keys glow dim and the active ones are lit (#35); INV, the idle ones
- * lit and the active ones dark, as the stock firmware (ui_input.c ui_leds). Saved in the settings record's retired zoom field
- * as LEDS_TAG | mode; any other value there (0 or 1 from older firmware) is DIM */
+/* LEDS (menu): OFF, DIM LO, DIM HI, INV. DIM HI (the default), the idle buttons and keys glow dim (~1/30) and the
+ * active ones are lit (#35); DIM LO the same, darker (~1/60, hal/fm1_input.h FM1_LED_DIM_LO_NS); OFF no glow,
+ * the active ones lit (as 1.0); INV the idle ones lit and the active ones dark, as the stock firmware (ui_input.c
+ * ui_leds). Saved in the settings record's retired zoom field as LEDS_TAG | mode, the modes append-only: DIM 0
+ * (now DIM HI) and INV 1 keep their values, OFF 2 and DIM LO 3 are new; any other value there (0 or 1 from older
+ * firmware) is DIM HI. LEDS_MENU: the menu's order, darkest first */
 #define LEDS_TAG 0x4C454400u                    /* "LED" */
-enum { LEDS_DIM, LEDS_INV, LEDS_COUNT };
+enum { LEDS_DIM, LEDS_INV, LEDS_OFF, LEDS_DIM_LO, LEDS_COUNT };
+static const uint8_t LEDS_MENU[LEDS_COUNT] = {LEDS_OFF, LEDS_DIM_LO, LEDS_DIM, LEDS_INV};
+static const char *const LEDS_NAME[LEDS_COUNT] = {"DIM HI", "INV", "OFF", "DIM LO"};
 static uint8_t settings_leds = LEDS_DIM;
 static uint32_t leds_from_stored(uint32_t v) { return (v & ~3u) == LEDS_TAG && (v & 3u) < LEDS_COUNT ? v & 3u : LEDS_DIM; }
 static uint32_t leds_to_stored(uint32_t old, uint32_t m)
@@ -95,6 +104,15 @@ static uint32_t leds_to_stored(uint32_t old, uint32_t m)
     return m != LEDS_DIM && m < LEDS_COUNT ? LEDS_TAG | m : old > 1u ? 0u : old;
 }
 static int leds_stored_ok(uint32_t v) { return v <= 1u || ((v & ~3u) == LEDS_TAG && (v & 3u) < LEDS_COUNT); }
+/* the menu's next / previous mode (KNOB 1 stops at the ends, OCT+ (s 0) cycles) */
+static uint32_t leds_step(uint32_t m, int32_t s)
+{
+    uint32_t i = 0;
+    while (i + 1u < LEDS_COUNT && LEDS_MENU[i] != m)
+        i++;
+    i = s > 0 ? (i + 1u < LEDS_COUNT ? i + 1u : i) : s < 0 ? (i ? i - 1u : 0u) : (i + 1u) % LEDS_COUNT;
+    return LEDS_MENU[i];
+}
 
 static void settings_init(void)
 {
@@ -104,7 +122,7 @@ static void settings_init(void)
     }
     if (settings.magic != SETTINGS_MAGIC || settings.palette >= NPALETTES) {
         settings.magic = SETTINGS_MAGIC;
-        settings.palette = UI_MONO_INDEX;      /* MONO (default) */
+        settings.palette = UI_GREY_INDEX;      /* GREY (default; named MONO before 1.0.2) */
         settings.lowcut = 0;
         settings.zoom = 0;                     /* (retired: the LEDS setting, settings_persist.c) */
     }

@@ -1,14 +1,18 @@
 # Felucca [Salt]
 
 Felucca [Salt] by Chance Roth (@ChanceTheMaker), based on Felucca by Leo Kuroshita
-and Hügelton Instruments. This branch is the **1.0.1-salt1rc1 release candidate**,
-based on upstream v1.0.1 (`20c275e`). **Hardware validation is pending.**
-The [published installer](https://chancethemaker.github.io/Felucca/webapp/installer/)
-continues to provide **0.9-salt14** until that validation is complete.
+and Hügelton Instruments. This branch integrates **Felucca 1.5.1 into the SMK-37
+Pro & Elite project**, based on upstream `a4d7ca2`.
 
-Salt adds the content-driven TRS MIDI receive-ring fix, 21 screen palettes,
-regular/bold text, an Events/Notes MIDI monitor, and the themed browser Studio.
-Experimental Bluetooth changes are excluded.
+**Test13 is a local hardware-test candidate.** The owner's Pro passed Test12's
+normal-USB update, controls, sound, sustain and project-save checks. Test13 adds
+the newer sound engine, effects, sequencing details, automation and MIDI control
+features. See [integration and testing notes](docs/smk37/UPSTREAM_1.5.1.md).
+
+The private installer package remains matched to the backed-up Pro test device.
+It is not a stock-first-install image or a public firmware release. Public-site
+publishing and hardware flashing are separate from this source integration.
+Experimental Bluetooth changes remain excluded.
 
 Development follows the [upstream workflow](docs/UPSTREAM_WORKFLOW.md): receive
 updates in focused PRs, keep Salt differences explicit, and prepare selected
@@ -22,7 +26,7 @@ explains the new lighting and sequence-scale features.
 
 Select **Browser** to play the Felucca Synth built into the browser, or **FM-1**
 to edit a connected instrument. The candidate's browser engine includes all
-13 selectable 1.0 engines and 69 factory presets, plus imported FM6 sounds.
+13 selectable 1.5.1 engines and their factory presets, plus imported FM6 sounds.
 It plays one sound; device sequencing, track mixing, projects and sample uploads
 are not connected to browser playback. See [browser engine details](web/audio/README.md).
 

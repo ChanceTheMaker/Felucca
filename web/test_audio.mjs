@@ -6,7 +6,7 @@ const module = await WebAssembly.compile(await readFile(new URL('./audio/engine.
 assert.deepEqual(WebAssembly.Module.imports(module), [], 'No device or host imports');
 const metadata = new WebAssembly.Instance(module).exports;
 assert.equal(metadata.engine_count(),14,'13 selectable engines plus reserved DIGITAL ID');
-assert.equal(metadata.param_count(),91,'Current 1.0 parameter layout');
+assert.equal(metadata.param_count(),111,'Current 1.5.1 parameter layout');
 assert.equal(metadata.preset_count(1),0,'Retired DIGITAL is not offered');
 function synth(e = 0, preset = 0) {
   const x = new WebAssembly.Instance(module).exports;
@@ -41,7 +41,7 @@ customFm6.synth_fm6_apply();
 customFm6.synth_midi(0x90,60,100);
 assert.equal(energy(customFm6).sum,0,'An imported silent FM6 patch is applied and not replaced by the factory slot');
 const before=synth(), after=synth();
-after.synth_param(87,10);
+after.synth_param(107,10);
 before.synth_midi(0x90,60,100); after.synth_midi(0x90,60,100);
 assert.notEqual(energy(before).sum,energy(after).sum,'Filter control changes the sound');
 // Sustained organ-like envelope without FX or arp for release testing.

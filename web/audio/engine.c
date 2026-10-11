@@ -28,7 +28,7 @@ API void synth_fm6_apply(void) {
     uint8_t voice[FP_SIZE + 1u];
     fm6_unpack(browser_fm6, voice);
     fm6_set_patch(0, voice);
-    fm6_slot[0] = (uint8_t)trk[0].p[P_E7];
+    fm6_adopt(0);
 }
 API void synth_init(void) {
     for (unsigned i=0;i<G_COUNT;i++) song.g[i]=GP[i].def;

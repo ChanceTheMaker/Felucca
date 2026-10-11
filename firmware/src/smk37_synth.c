@@ -3,6 +3,8 @@
  * test. All note/chord ownership and synthesis reuse Felucca's actual engine.
  * The hardware scanner must call smk37_key_event from the audio consumer,
  * never from a nested scanner IRQ. */
+#define FELUCCA_KEY_BASE 48
+#define FELUCCA_PIANO_KEYS 37u
 #define FELUCCA_KEY_COUNT 53u /* 37 piano keys plus 16 independent pad owners */
 #include "felucca_tables.h"
 #ifdef SMK37_SYNTH_HOST_TEST
@@ -39,7 +41,39 @@ static void midi_out_event(uint32_t packet);
 /* SMK keys use per-key events, not the FM-1's 27-bit GPIO mask. */
 #define FELUCCA_KEYBOARD_BLOCK() ((void)0)
 #include "seq.c"
+static uint8_t smk37_learn_map[32];
+static volatile uint8_t smk37_learn_io[2], smk37_program_io[NTRK];
+static uint8_t *const ml_tab=smk37_learn_map;
+static volatile uint8_t *const ml_io=smk37_learn_io;
+static volatile uint8_t *const mpc_io=smk37_program_io;
+static unsigned smk37_learn_set(unsigned cc,unsigned track,unsigned id) {
+    if(!ml_free_cc(cc) || track>=NTRK || id>=P_COUNT)return 1;
+    unsigned code=id>=P_E0 ? ML_E0+id-P_E0 : id+1u;
+    for(unsigned i=0;i<ML_N;++i){unsigned e=ml_tab[i*2]|ml_tab[i*2+1]<<8;
+        if((e>>9) && ((e&127)==cc || ((e>>9)==code && ((e>>7)&3)==track)))ml_tab[i*2]=ml_tab[i*2+1]=0;
+    }
+    for(unsigned i=0;i<ML_N;++i)if(!(ml_tab[i*2+1]&254u)){
+        unsigned e=cc|(track<<7)|(code<<9);ml_tab[i*2]=e;ml_tab[i*2+1]=e>>8;return 0;
+    }
+    return 5;
+}
 #include "smk37_ui.c"
+static void smk37_performance_poll(void) {
+    for(unsigned k=0;k<NTRK;++k)if(mpc_io[k]){
+        unsigned n=mpc_io[k]&127u;mpc_io[k]=0;track_t *t=&trk[k];
+        if(t->eng_req==ENGI_DRUM){const param_desc_t *d=param_desc_of(ENGI_DRUM,P_E0);
+            for(int v=d->min;v<=d->max;++v)if(enum_orig(d,v)==v && n--==0){t->p[P_E0]=v;break;}
+        }else for(unsigned i=0;i<ENGINES[t->eng_req]->npresets;++i){
+            if(ENGINES[t->eng_req]->presets==SMP_PRESET_TABLE && i<SMP_NSETS && SMP_SET_ORIG[i]!=i)continue;
+            if(n--==0){smk37_load_preset(t,i);break;}
+        }
+    }
+    if(ml_heard && smk37_learn_on){
+        unsigned cc=ml_heard-1u;ml_heard=ml_arm=0;
+        smk37_notice=smk37_learn_set(cc,smk37_learn_track,smk37_learn_param) ? "LEARN MAP FULL" : "CC LEARNED / SAVE PROJECT";
+        smk37_notice_at=fm1_ms;
+    }
+}
 #include "smk37_analog_controls.h"
 
 static void smk37_synth_init(void)
@@ -126,12 +160,17 @@ static void smk37_play_key_event(unsigned key, unsigned velocity)
 /* Pads reuse local ownership so overlapping keyboard/MIDI notes release safely.
  * Provisional notes match the owner's stock bank-1 capture, on selected part. */
 static uint32_t smk37_pad_hit_at[16];
-static uint16_t smk37_pad_seen;
+static uint16_t smk37_pad_seen,smk37_perf_pads;
 static void smk37_pad_event(unsigned pad, unsigned velocity)
 {
     static const uint8_t notes[16] = {40,41,42,43,48,49,50,51,36,37,38,39,44,45,46,47};
     if (pad >= 16 || velocity > 127) return;
     unsigned key = 37u+pad;
+    if(!velocity && (smk37_perf_pads&(1u<<pad))){smk37_perf_pads&=~(1u<<pad);perf_press(pad<PF_NFX?pad:PF_M1+pad-14,0);return;}
+    if(velocity && smk37_page==SMK37_PERFORM_PAGE){
+        if(!(smk37_perf_pads&(1u<<pad))){smk37_perf_pads|=1u<<pad;perf_press(pad<PF_NFX?pad:PF_M1+pad-14,1);}return;
+    }
+    if(velocity && smk37_page==SMK37_DETAIL_PAGE){smk37_edit_step=(smk37_edit_step/16u)*16u+pad;return;}
     if(velocity && smk37_page==SMK37_STEP_PAGE) {
         unsigned step=(smk37_edit_step/16u)*16u+pad;
         step_t *s=&TSEL->step[step];

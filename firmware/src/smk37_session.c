@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
-/* Reuse the versioned FUN8 wire format, without FM-1 runtime storage/UI. */
+/* Reuse the versioned FUN10 (and import Test10-12 FUN8) wire format, without FM-1 runtime storage/UI. */
 #define PROJ_HOST 1
 #include "project.c"
 #undef PROJ_HOST
@@ -9,9 +9,9 @@ typedef struct {
     uint32_t generation;
     uint8_t version,octave,velocity,pad_bank,knob_bank,fader_bank,selected_slot,reserved[53];
 } smk37_session_t;
-_Static_assert(sizeof(smk37_session_t)==3648,"SMK session wire size");
-static smk37_session_t smk37_session,smk37_session_previous;
-static project_t smk37_project_work;
+_Static_assert(sizeof(smk37_session_t)==3904,"SMK session wire size");
+static smk37_session_t smk37_session __attribute__((section(".pool"))),smk37_session_previous __attribute__((section(".pool")));
+static project_t smk37_project_work __attribute__((section(".pool")));
 static uint8_t smk37_storage_ready,smk37_storage_writable;
 static uint32_t smk37_save_generation;
 static int smk37_storage_read(uint32_t,void *,uint32_t);
@@ -32,17 +32,20 @@ static void smk37_session_capture(void) {
     p->sum=proj_sum(p);
     memset(&smk37_session,0,sizeof smk37_session);
     proj_pack(&smk37_session.project,p);
-    smk37_session.version=1;smk37_session.octave=(uint8_t)(song.octave+3);
+    smk37_session.version=2;smk37_session.octave=(uint8_t)(song.octave+3);
     smk37_session.generation=smk37_save_generation+1u;
     smk37_session.velocity=smk37_velocity_mode;smk37_session.pad_bank=smk37_pad_bank;
     smk37_session.knob_bank=smk37_knob_bank;smk37_session.fader_bank=smk37_fader_bank;
     smk37_session.selected_slot=smk37_project_slot;
+    memcpy(smk37_session.reserved,smk37_learn_map,32);
+    smk37_session.reserved[32]=click_mode;smk37_session.reserved[33]=click_lvl;smk37_session.reserved[34]=cin_bars;
+    smk37_session.reserved[35]=smk37_palette;smk37_session.reserved[36]=smk37_bold;
 }
 static int smk37_session_valid(void) {
-    return smk37_session.version==1 && smk37_session.octave<=6 && smk37_session.velocity<=3 &&
+    return (smk37_session.version==1 || smk37_session.version==2) && smk37_session.octave<=6 && smk37_session.velocity<=3 &&
         smk37_session.pad_bank<=1 && smk37_session.knob_bank<=1 && smk37_session.fader_bank<=1 &&
         smk37_session.selected_slot<4 && proj_import(&smk37_project_work,
-            &smk37_session.project,sizeof smk37_session.project);
+            &smk37_session.project,smk37_session.version==1 ? 3584u : sizeof smk37_session.project);
 }
 /* Audio serialization is supplied by caller. Stops playback and releases all
  * local ownership before restoring state; loading never starts a sequence. */
@@ -59,12 +62,18 @@ static int smk37_session_restore(void) {
         t->eng_req=e;t->preset=p->t[k].preset;t->user=0;
         for(unsigned i=0;i<P_COUNT;++i){const param_desc_t *d=param_desc_of(e,i);t->p[i]=clamp(p->t[k].p[i],d->min,d->max);}
         memcpy(t->step,p->t[k].step,sizeof t->step);
-        uint8_t values[FP_SIZE+1];fm6_unpack(p->fm6[k],values);fm6_set_patch(k,values);fm6_slot[k]=t->p[P_E7];
+        uint8_t values[FP_SIZE+1];fm6_unpack(p->fm6[k],values);fm6_set_patch(k,values);fm6_adopt(k);
     }
     chain_config=p->chain;motion=p->motion;memset(motion_active,0,sizeof motion_active);motion_base_valid=0;
     song.sel=p->sel%NTRK;song.octave=smk37_session.octave-3;
     smk37_velocity_mode=smk37_session.velocity;smk37_pad_bank=smk37_session.pad_bank;
     smk37_knob_bank=smk37_session.knob_bank;smk37_fader_bank=smk37_session.fader_bank;
+    if(smk37_session.version==2){
+        memcpy(smk37_learn_map,smk37_session.reserved,32);
+        click_mode=smk37_session.reserved[32]%3;click_lvl=smk37_session.reserved[33]%3;cin_bars=smk37_session.reserved[34]%3;
+        smk37_palette=smk37_session.reserved[35]%23;smk37_bold=!!smk37_session.reserved[36];
+    }else{memset(smk37_learn_map,0,32);click_mode=cin_bars=0;click_lvl=1;smk37_palette=smk37_bold=0;}
+    ml_arm=ml_heard=0;smk37_learn_on=0;
     smk37_analog_ready=0;memset(smk37_encoder_phase,0,sizeof smk37_encoder_phase);
     if(smk37_session.generation-smk37_save_generation<0x80000000u)
         smk37_save_generation=smk37_session.generation;

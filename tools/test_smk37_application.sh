@@ -32,3 +32,10 @@ for component in chord midi_control midi_uart; do
     "build/smk37-tests/${component}" > "build/smk37-tests/${component}.log"
     tail -n 2 "build/smk37-tests/${component}.log"
 done
+
+# Real Test12 save migration and the SMK adapters for upstream 1.5.1.
+for component in smk37_upstream smk37_store; do
+    cc -std=c99 -O1 -w -fsanitize=address -Ibuild/gen -Ifirmware/hal \
+        "tests/${component}_test.c" -o "build/smk37-tests/${component}"
+    "build/smk37-tests/${component}"
+done

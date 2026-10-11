@@ -3,6 +3,22 @@
 Last reviewed: **2026-10-10**. Update this record when importing or offering a
 feature; follow [UPSTREAM_WORKFLOW.md](UPSTREAM_WORKFLOW.md).
 
+## October 10 SMK upstream 1.5.1 integration (Test13)
+
+Branch: `integrate/smk37-upstream-20261010`, based on the tested Test12 source
+`36875e41f236d243c984fd31839b1a864b4642eb`.
+Upstream pinned at `a4d7ca2e5d52a4c35e2468401f00d883cadbda03` (1.5.1);
+previous imported baseline `20c275e39f75fa820978032efaceddfc5283c8cb` (1.0.1).
+This is a source-delta import, not an upstream merge. Imported paths: `firmware`,
+`tests`, `tools`, `web`, `assets`, `LICENSES`, `LICENSING.md`, `BUILDING.md`.
+
+See [the complete integration record](smk37/UPSTREAM_1.5.1.md) for SMK-specific
+adaptations, hardware controls, save migration, test evidence and limitations.
+No upstream contribution, public deployment, or Test13 device flash has occurred.
+The local installer continues to stage Test12 until the new candidate is selected
+for hardware testing. Product headings use SMK-37 Pro & Elite; the current private
+binary is the Pro test-device package.
+
 ## October 10 SMK private beta and direct USB updater
 
 Test12 normal-USB installation, restart and saved-project retention were

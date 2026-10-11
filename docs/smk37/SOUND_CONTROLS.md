@@ -1,4 +1,7 @@
-# SMK sound controls (private Test08 candidate)
+# SMK sound controls (historical Test08 candidate)
+
+For the current Test13 controls and upstream 1.5.1 integration, see
+[UPSTREAM_1.5.1.md](UPSTREAM_1.5.1.md). The evidence below records an earlier stage.
 
 The application now includes a sound interface rather than only input counters.
 This is implemented in `firmware/src/smk37_ui.c`, with scanner event queuing and

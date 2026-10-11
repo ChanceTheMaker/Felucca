@@ -44,5 +44,35 @@ int main(void){
     flash[SMK37_STORE_LO+4096+256]^=1; /* newest payload corrupt -> older copy */
     assert(smk37_store_load(&io,0,readback,sizeof readback,0)==0 && !memcmp(readback,old,sizeof old));
     assert(smk37_store_save(&io,4,old,sizeof old,previous));
-    puts("SMK storage: four slots, all interruption stages, corruption fallback and protected ranges passed");
+    /* New FUN10 session, including migration from a committed Test12 copy.
+     * Every program call must remain within a physical 256-byte flash page. */
+    static uint8_t big[3904], migrated[3904], got[3904], scratch[3904];
+    memset(big,73,sizeof big);memset(migrated,0,sizeof migrated);
+    memcpy(migrated,old,3584);memcpy(migrated+3840,old+3584,64);
+    for(unsigned slot=0;slot<4;++slot)for(int cut=0;cut<20;++cut){
+        memcpy(flash,baseline,sizeof flash);allowance=cut;
+        int rc=smk37_store_save(&io,slot,big,sizeof big,scratch);allowance=-1;
+        assert(smk37_store_load(&io,slot,got,sizeof got,0)>=0);
+        assert(!memcmp(got,rc?migrated:big,sizeof got));
+        assert(smk37_store_allocation_ok(&io,sizeof big));
+        assert(!memcmp(flash,baseline,SMK37_STORE_LO));
+        assert(!memcmp(flash+SMK37_STORE_HI,baseline+SMK37_STORE_HI,sizeof flash-SMK37_STORE_HI));
+    }
+    for(header_cut=0;header_cut<32;++header_cut){
+        memcpy(flash,baseline,sizeof flash);
+        assert(smk37_store_save(&io,0,big,sizeof big,scratch));
+        assert(smk37_store_load(&io,0,got,sizeof got,0)>=0 && !memcmp(got,migrated,sizeof got));
+    }
+    header_cut=-1;memcpy(flash,baseline,sizeof flash);
+    assert(!smk37_store_save(&io,0,big,sizeof big,scratch));
+    /* Once both copies use v2, an interrupted replacement still preserves it. */
+    assert(!smk37_store_save(&io,0,big,sizeof big,scratch));
+    memcpy(baseline,flash,sizeof flash);memset(migrated,91,sizeof migrated);
+    for(int cut=0;cut<20;++cut){
+        memcpy(flash,baseline,sizeof flash);allowance=cut;
+        int rc=smk37_store_save(&io,0,migrated,sizeof migrated,scratch);allowance=-1;
+        assert(smk37_store_load(&io,0,got,sizeof got,0)>=0);
+        assert(!memcmp(got,rc?big:migrated,sizeof got));
+    }
+    puts("SMK storage: v1/v2 migration, all interruption stages, page boundaries and protected ranges passed");
 }

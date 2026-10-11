@@ -6,7 +6,9 @@
  * save region is part of this range. Four slots, each with A/B sector commits. */
 #define SMK37_STORE_LO 0xeb000u
 #define SMK37_STORE_HI 0xf3000u
-#define SMK37_STORE_PAYLOAD 3840u
+#define SMK37_STORE_PAYLOAD 3968u
+#define SMK37_SESSION_V1_SIZE 3648u
+#define SMK37_SESSION_V2_SIZE 3904u
 typedef struct {
     int (*read)(uint32_t,void *,uint32_t);
     int (*erase)(uint32_t);
@@ -25,10 +27,17 @@ static int smk37_store_read_copy(const smk37_store_io_t *io,unsigned slot,unsign
                                  void *payload,uint32_t length,smk37_store_header_t *h) {
     if(slot>=4 || copy>1 || !length || length>SMK37_STORE_PAYLOAD)return -1;
     uint32_t a=SMK37_STORE_LO+(slot*2+copy)*4096u;
-    if(io->read(a,h,sizeof *h) || h->magic!=0x534d4b39u || h->version!=1 ||
-       h->slot!=slot || h->length!=length || h->reserved ||
+    if(io->read(a,h,sizeof *h) || h->magic!=0x534d4b39u || (h->version!=1 && h->version!=2) ||
+       h->slot!=slot || (h->length!=length && !(length==SMK37_SESSION_V2_SIZE && h->length==SMK37_SESSION_V1_SIZE)) || h->reserved ||
        h->header_crc!=smk37_store_crc(h,28))return -1;
-    if(io->read(a+256,payload,length) || h->crc!=smk37_store_crc(payload,length))return -1;
+    uint32_t offset=h->version==1 ? 256u : 128u;
+    if(h->length>4096u-offset || io->read(a+offset,payload,h->length) || h->crc!=smk37_store_crc(payload,h->length))return -1;
+    if(h->length==SMK37_SESSION_V1_SIZE && length==SMK37_SESSION_V2_SIZE) {
+        /* Preserve Test10-12 metadata while the upstream FUN8 importer reads
+         * the first 3584 bytes. No flash writes during migration. */
+        memcpy((uint8_t *)payload+3840,(uint8_t *)payload+3584,64);
+        memset((uint8_t *)payload+3584,0,256);
+    }
     return 0;
 }
 /* Scratch is owned by main-loop storage, never used concurrently with audio. */
@@ -52,14 +61,17 @@ static int smk37_store_save(const smk37_store_io_t *io,unsigned slot,const void 
     unsigned copy=current==0 ? 1u : 0u;
     uint32_t a=SMK37_STORE_LO+(slot*2+copy)*4096u;
     if(!smk37_store_range(a,4096) || io->erase(a))return -1;
+    uint32_t offset=length>3840u ? 128u : 256u;
     const uint8_t *p=payload;
-    for(uint32_t off=0;off<length;off+=256u) {
-        uint32_t n=length-off>256u ? 256u : length-off;
-        if(io->program(a+256+off,p+off,n))return -1;
+    for(uint32_t off=0;off<length;) {
+        uint32_t room=256u-((offset+off)&255u);
+        uint32_t n=length-off>room ? room : length-off;
+        if(io->program(a+offset+off,p+off,n))return -1;
+        off+=n;
     }
     /* Verify payload before publishing the commit header. */
-    if(io->read(a+256,smk37_store_scratch,length) || memcmp(payload,smk37_store_scratch,length))return -1;
-    smk37_store_header_t h={0x534d4b39u,1,slot,seq+1u,length,smk37_store_crc(payload,length),0,0};
+    if(io->read(a+offset,smk37_store_scratch,length) || memcmp(payload,smk37_store_scratch,length))return -1;
+    smk37_store_header_t h={0x534d4b39u,offset==128u ? 2u : 1u,slot,seq+1u,length,smk37_store_crc(payload,length),0,0};
     h.header_crc=smk37_store_crc(&h,28);
     if(io->program(a,&h,sizeof h))return -1;
     return smk37_store_read_copy(io,slot,copy,previous,length,&h) || memcmp(payload,previous,length) ? -1 : 0;

@@ -25,7 +25,7 @@ def main():
     parser.add_argument('--stock-package', type=Path)
     parser.add_argument('--enable-saves', action='store_true', help='private Test10 candidate; requires validated stock evidence and separate save-recovery kit')
     parser.add_argument('--enable-usb-update', action='store_true', help='private RAM-updater candidate; each built artifact requires validation')
-    parser.add_argument('--usb-test-number',type=int,default=11,choices=range(11,100))
+    parser.add_argument('--usb-test-number',type=int,default=13,choices=range(11,100))
     args = parser.parse_args()
     if args.enable_usb_update and not args.enable_saves:
         parser.error('--enable-usb-update requires --enable-saves')
@@ -128,14 +128,14 @@ def main():
         "pool_end": hex(sym("_pool_end")), "flash_write_support": args.enable_saves, "usb_update_support": args.enable_usb_update,
         "usb_update_hardware_validated": False,
         "update_product": f"SMK-37_9{args.usb_test_number:02d}", "update_version": f"SMK37 TEST{args.usb_test_number:02d} USB",
-        "prior_unit_evidence": "Test08: playable audio/display, piano/pads, analog controls, all8 knob polarity, buttons/lights and RAM record/replay; see docs/smk37/CONTROL_TRACE.md",
+        "upstream_revision": "a4d7ca2e5d52a4c35e2468401f00d883cadbda03",
+        "upstream_version": "1.5.1",
+        "prior_unit_evidence": "Test12: owner-confirmed USB update/restart and saved-project retention; earlier tests cover controls, sound, sustain and editor. This new artifact is not device-validated.",
         "flash_write_gate": ("private save-only range 0xEB000..0xF3000; call-free RAM routines; runtime JEDEC/trim/allocation checks" if args.enable_saves else "erase/program entry points disassemble to return -1; read routines are call-free RAM code"),
-        "unverified": ["Test09 startup and real-time peripheral coexistence",
-                       "velocity curves and measured scanner timing on device",
-                       "USB editor interaction on device", "physical pedal input mapping",
-                       "runtime flash read/proposed storage allocation",
-                       "step editing and pad bank2 on device", "long-run audio/control timing",
-                       "unit calibration backup", "restore after failed custom startup"],
+        "unverified": [f"Test{args.usb_test_number:02d} startup, audio/control timing and USB update on hardware",
+                       "new effects, automation, MIDI learn and metronome on hardware",
+                       "Test12-to-FUN10 project migration on hardware",
+                       "long-run audio/control timing", "unit calibration backup"],
     }
     if evidence:
         manifest['stock_backup_evidence'] = evidence

@@ -42,10 +42,12 @@ PHASES, PHASES_L = 4, 2                # horizontal phases per glyph (aa_raster.
 # faces stored Huffman-coded (--huff): M and L. S, the most drawn and the least compressible (-15 %), stays
 # 2 px per byte, so the labels draw at full speed
 HUFF = [("M", "L")]
-# L draws only "FELUCCA", the UPDATE MODE countdown digit and the calibration's control names (panel.c
-# B_NAME / E_NAME): a sparse face of those glyphs, the space as its range and the rest as extras
+# L draws only "FELUCCA", the UPDATE MODE countdown digit, the calibration's control names (panel.c
+# B_NAME / E_NAME) and MENU > LARGE's card values and page titles (ui_draw.c draw_column_tall, ui_graph.c
+# graph_title: # . / J W too; a value with another character is set in M): a sparse face of those glyphs, the
+# space as its range and the rest as extras
 # (ui_test.c checks that every L string is covered)
-L_CHARS = " +-0123456789ABCDEFGHIKLMNOPQRSTUVXY"
+L_CHARS = " #+-./0123456789ABCDEFGHIJKLMNOPQRSTUVWXY"
 
 
 def preset(name):
@@ -215,6 +217,10 @@ def emit(face, tracking, gamma, kern_min):
     lines.append(f"static const aafont_t AF_{name} = {{{r['h']}, {r['asc']}, {first}, {last}, {len(extras)}, {len(keys)}, "
                  f"AF_{name}_G, AF_{name}_DATA, {'AF_%s_KERN' % name if keys else '0'}, "
                  f"{'AF_%s_KD' % name if keys else '0'}, AF_{name}_EX, {psh}, {'AF_%s_HC' % name if hc else '0'}}};")
+    if "H" in chars:                                  # the capitals' band (gfx.c CAP_IN: centring text by it)
+        cap = table[chars.index("H") * phases]
+        lines.append(f"#define AF_{name}_CAP_Y {cap[3]}   /* the ink of H: rows {cap[3]} .. {cap[3] + cap[5] - 1} of the line */")
+        lines.append(f"#define AF_{name}_CAP_H {cap[5]}")
     cost = {"data": len(data) + len(hc), "glyph_table": 8 * len(table), "kern": 3 * len(keys), "extras": len(extras),
             "glyphs": len(chars), "phases": phases, "pairs": len(keys), "h": r["h"], "asc": r["asc"], "px": px,
             "font": os.path.basename(font.split("#")[0]), "adv_digit": r["glyphs"]["0"][0] / 16}

@@ -58,6 +58,7 @@ static unsigned smk37_learn_set(unsigned cc,unsigned track,unsigned id) {
     return 5;
 }
 #include "smk37_ui.c"
+#include "smk37_tools.c"
 static void smk37_performance_poll(void) {
     for(unsigned k=0;k<NTRK;++k)if(mpc_io[k]){
         unsigned n=mpc_io[k]&127u;mpc_io[k]=0;track_t *t=&trk[k];

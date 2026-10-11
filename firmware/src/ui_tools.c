@@ -27,6 +27,9 @@ static int tl_cell(const track_t *t, uint32_t p) { return p < TL_N && p != TL_GA
 /* the undo copy of t as it is now (ui.c load_begin, but the automation is copied and stays): one action */
 static void tl_undo_take(track_t *t)
 {
+#ifdef FELUCCA_TOOLS_UNDO
+    FELUCCA_TOOLS_UNDO(t);
+#else
     uint32_t i = trk_index(t);
     undo.trk = (uint8_t)(i + 1u);
     undo.what = UNDO_PAT;
@@ -43,6 +46,7 @@ static void tl_undo_take(track_t *t)
     undo.from_h = pat_from_h[i];
     undo.patn = pat_last[i];
     motion_snapshot_track(t, &undo.motion_backup);
+#endif
 }
 
 /* steps 1..len of t that are not empty (a REST); after the action the ones emptied lose their locks */
@@ -63,13 +67,17 @@ static void tl_unlock(track_t *t, uint64_t was, uint32_t len)
             (void)motion_clear_locks(t, i);
 }
 
+#ifndef FELUCCA_TOOLS_STEPS
+#define FELUCCA_TOOLS_STEPS undo.step
+#endif
+
 /* step j of t becomes the undo copy's step src[j] (taken just before), its automation and locks with it */
 static void tl_order(track_t *t, uint32_t len, const uint8_t *src)
 {
     uint8_t to[NSTEP];
     uint32_t j, k = trk_index(t), f;
     for (j = 0; j < len; j++) {
-        t->step[j] = undo.step[src[j]];
+        t->step[j] = FELUCCA_TOOLS_STEPS[src[j]];
         to[src[j]] = (uint8_t)j;
     }
     f = motion_guard();
@@ -89,11 +97,11 @@ static void tl_reverse(track_t *t, uint32_t len)
     for (j = 0; j < len; j++)
         src[j] = (uint8_t)(len - 1u - j);
     for (j = 0; j < len; j++) {
-        for (e = j; e < len && undo.step[src[e]].time == ST_TIE; e++)
+        for (e = j; e < len && FELUCCA_TOOLS_STEPS[src[e]].time == ST_TIE; e++)
             ;
         if (e == j)
             continue;
-        if (e < len && undo.step[src[e]].time == ST_NOTE) {   /* ties j .. e - 1, their note at e: the note to j */
+        if (e < len && FELUCCA_TOOLS_STEPS[src[e]].time == ST_NOTE) {   /* ties j .. e - 1, their note at e: the note to j */
             for (h = src[e], x = e; x > j; x--)
                 src[x] = src[x - 1u];
             src[j] = h;
@@ -392,7 +400,7 @@ static const char *tl_do(track_t *t, uint32_t p, uint32_t l)
             msg = " CLEARED";
         } else if (p == TL_LREV) {
             for (i = 0; i < len; i++) {
-                const step_t *s = &undo.step[len - 1u - i];
+                const step_t *s = &FELUCCA_TOOLS_STEPS[len - 1u - i];
                 grid_hit(t, i, l, tl_lane(s, l));
                 if (tl_lane(s, l))
                     grid_acc(t, i, l, (step_accents(s) >> l) & 1u);

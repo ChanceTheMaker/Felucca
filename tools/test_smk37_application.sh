@@ -34,8 +34,15 @@ for component in chord midi_control midi_uart; do
 done
 
 # Real Test12 save migration and the SMK adapters for upstream 1.5.1.
-for component in smk37_upstream smk37_store; do
+for component in smk37_upstream smk37_store smk37_completion; do
     cc -std=c99 -O1 -w -fsanitize=address -Ibuild/gen -Ifirmware/hal \
         "tests/${component}_test.c" -o "build/smk37-tests/${component}"
     "build/smk37-tests/${component}"
 done
+
+build/smk37-tests/smk37_completion --wire > build/smk37-tests/completion-wire.jsonl
+if command -v node >/dev/null 2>&1; then
+    node web/test_smk37_completion.mjs
+else
+    node.exe web/test_smk37_completion.mjs
+fi

@@ -523,11 +523,13 @@ const parse = {
     }
     // SMK uses append-only capability tags without claiming unsupported UI/backup commands.
     if (/SMK37/.test(o.version)) {
-      for(let p=0;p<trailer.length;){
+      for(let p=trailer[0]===16?1:0;p<trailer.length;){
         if(trailer[p+1]!==1)break;
         const tag=trailer[p],v=trailer[p+2];
         if(tag===0x4d){o.motionMax=v;o.chance=trailer[p+3]===1;}
         if(tag===0x52)o.ratchet=v;
+        if(tag===0x57)o.songLanes=v;
+        if(tag===0x50 && o.fm6)o.fm6.caps=v;
         if(tag===0x54)o.nudge=v;
         if(tag===0x43)o.learnMax=v;
         if(tag===0x4c)o.locks=!!v;
@@ -581,7 +583,11 @@ const parse = {
   [CMD.SONG](a) {
     const r = new Reader(a);
     const o = { op: r.b(), rc: r.b(), count: r.b(), playing: r.b(), row: r.b(), remaining: r.b(), rows: [] };
-    for (let i = 0; i < o.count; i++) o.rows.push({ slot: r.b(), repeat: r.b() });
+    if(o.op>7 || o.count>16 || a.length!==6+o.count*(o.op>=4?5:2))throw new Error("Invalid SONG reply");
+    for (let i = 0; i < o.count; i++) {
+      if(o.op>=4){const slots=[r.b(),r.b(),r.b(),r.b()];o.rows.push({slot:slots[0],slots,repeat:r.b()});}
+      else o.rows.push({slot:r.b(),repeat:r.b()});
+    }
     return o;
   },
   [CMD.MOTION](a) {
@@ -701,8 +707,10 @@ const req = {
   preset: (e, p) => [CMD.PRESET, [e & 0x7F, p & 0x7F]],
   project: (op, slot) => { if (![0, 1, 2].includes(op)) throw new Error("bad PROJECT op"); return [CMD.PROJECT, [op, slot & 3]]; },   /* 0 load, 1 save, 2 query */
   song: (op = 0, rows = []) => {
-    if (![0, 1, 2, 3].includes(op) || rows.length > 16 || rows.some((r) => !Number.isInteger(r.slot) || r.slot < 0 || r.slot > 3 || !Number.isInteger(r.repeat) || r.repeat < 1 || r.repeat > 16)) throw new Error("bad SONG rows");
-    return [CMD.SONG, op === 1 ? [op, rows.length, ...rows.flatMap((r) => [r.slot, r.repeat])] : [op]];
+    const lanes=op>=4;
+    const slots=r=>lanes?(r.slots??[r.slot,r.slot,r.slot,r.slot]):[r.slot];
+    if (!Number.isInteger(op) || op<0 || op>7 || rows.length>16 || rows.some(r=>slots(r).length!==(lanes?4:1) || slots(r).some(v=>!Number.isInteger(v)||v<0||v>(lanes?4:3)) || !Number.isInteger(r.repeat)||r.repeat<1||r.repeat>16))throw new Error("bad SONG rows");
+    return [CMD.SONG, (op&3)===1?[op,rows.length,...rows.flatMap(r=>[...slots(r),r.repeat])]:[op]];
   },
   motion: (track, op = 0, arg = {}) => {
     if (!Number.isInteger(track) || track < 0 || track > 3 || ![0, 1, 2, 3, 4, 5, 6, 7, 8].includes(op)) throw new Error("Invalid motion request");
@@ -2959,7 +2967,7 @@ async function load(d) {
     assertSession(d);
     if (d.info.ntrk) d.sel = parse[CMD.TRACK](await sessionRequest(d, req.track())).sel;   /* v3: the selected track */
     d.dump = await getDump(d);
-    if (d.info.chainRows) d.song = parse[CMD.SONG](await sessionRequest(d, req.song()));
+    if (d.info.chainRows) d.song = parse[CMD.SONG](await sessionRequest(d, req.song(d.info.songLanes?4:0)));
     buildUI();
     renderPanels();
     await loadSteps(d);
@@ -3299,7 +3307,7 @@ async function project(op, slot) {
     dev.slotUsed[slot] = r.used;
     renderSlots();
     if (!op && r.used) await afterSoundChange();
-    if (dev.info.chainRows) { dev.song = parse[CMD.SONG](await rq(req.song())); renderSong(); }
+    if (dev.info.chainRows) { dev.song = parse[CMD.SONG](await rq(req.song(dev.info.songLanes?4:0))); renderSong(); }
     sayK(op ? "savedSlot" : r.used ? "loadedSlot" : "emptySlot", String(slot + 1));
   } catch (err) { report(err); } finally { releaseBusy(); }
 }
@@ -3319,18 +3327,23 @@ function renderSong() {
   s.rows.forEach((r, i) => {
     const line = el("div", { class: "bar", style: "margin:8px 0" });
     line.append(el("span", { text: String(i + 1) }));
-    const sel = el("select", { disabled: !!s.playing, "aria-label": `${t("slot")} ${i + 1}` });
-    for (let k = 0; k < 4; k++) sel.append(el("option", { value: k, text: `${t("slot")} ${k + 1}${dev.slotUsed[k] ? "" : ` (${t("empty")})`}` }));
-    sel.value = String(r.slot);
-    sel.addEventListener("change", () => { const next = s.rows.map((x) => ({ ...x })); next[i].slot = +sel.value; op(() => changeSong(1, next)); });
+    const laneCount=dev.info.songLanes?4:1;
+    for(let lane=0;lane<laneCount;lane++){
+      const sel=el("select",{disabled:!!s.playing,"aria-label":`${t("slot")} ${i+1}, ${t("track")} ${lane+1}`});
+      for(let k=0;k<(laneCount===4?5:4);k++)sel.append(el("option",{value:k,text:k===4?"?":`${String.fromCharCode(65+k)}${dev.slotUsed[k]?"":` (${t("empty")})`}`}));
+      sel.value=String(r.slots?.[lane]??r.slot);
+      sel.addEventListener("change",()=>{const next=s.rows.map(x=>({...x,slots:[...(x.slots??[x.slot,x.slot,x.slot,x.slot])]}));
+        if(laneCount===4)next[i].slots[lane]=+sel.value;else next[i].slot=+sel.value;op(()=>changeSong(1,next));});
+      if(laneCount===4)line.append(el("span",{text:`T${lane+1}`}));line.append(sel);
+    }
     const reps = el("input", { type: "number", min: 1, max: 16, value: r.repeat, disabled: !!s.playing, style: "width:64px", "aria-label": `${t("songReps")} ${i + 1}` });
     reps.addEventListener("change", () => { const v = +reps.value; if (!Number.isInteger(v) || v < 1 || v > 16) { reps.value = r.repeat; return; } const next = s.rows.map((x) => ({ ...x })); next[i].repeat = v; op(() => changeSong(1, next)); });
-    line.append(sel, reps, el("span", { text: t("songReps") }));
+    line.append(reps, el("span", { text: t("songReps") }));
     rows.append(line);
   });
 }
 async function changeSong(action, rows = []) {
-  const r = parse[CMD.SONG](await rq(req.song(action, rows)));
+  const r = parse[CMD.SONG](await rq(req.song(action+(dev.info.songLanes?4:0), rows)));
   if (r.rc) throw new Error(r.rc >= 3 ? `${t("slot")} ${r.rc - 2}: ${t("empty")}` : t(r.rc === 2 ? "songBusy" : "songInvalid"));
   dev.song = r;
   renderSong();
@@ -3343,7 +3356,7 @@ setInterval(async () => {
   if (!dev?.info?.chainRows || busy || document.hidden || !dev.link.idle || tab !== "projects") return;
   const releaseBusy = beginBusy();
   const d = dev;
-  try { const r = parse[CMD.SONG](await rq(req.song())); if (d === dev) { d.song = r; renderSong(); } }
+  try { const r = parse[CMD.SONG](await rq(req.song(d.info.songLanes?4:0))); if (d === dev) { d.song = r; renderSong(); } }
   catch (err) { report(err); } finally { releaseBusy(); }
 }, 1000);
 

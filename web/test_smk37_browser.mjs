@@ -3,7 +3,9 @@
 import assert from 'node:assert/strict';
 import {readFileSync,mkdirSync} from 'node:fs';
 const {chromium}=await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
-const frames=readFileSync('build/smk37-tests/editor-wire.jsonl','utf8').trim().split('\n').map(JSON.parse);
+const core=readFileSync('build/smk37-tests/editor-wire.jsonl','utf8').trim().split('\n').map(JSON.parse);
+const extra=readFileSync('build/smk37-tests/completion-wire.jsonl','utf8').trim().split('\n').map(JSON.parse);
+const frames=[...extra,...core.filter(f=>!extra.some(e=>e[4]===f[4]))];
 const browser=await chromium.launch({channel:'chrome',headless:true});
 const page=await browser.newPage({viewport:{width:1440,height:1050}}), errors=[];
 page.setDefaultTimeout(15000);
@@ -39,9 +41,16 @@ try{
  assert.equal(await page.locator('#smk-learn-param option').count(),111);
  await page.locator('#smk-learn-assign').click();
  await page.waitForFunction(()=>document.querySelector('#smk-learn-result').textContent.includes('assigned'));
+ await page.getByRole('tab',{name:'Projects',exact:true}).click();
+ assert(await page.locator('#songchain').isVisible());
+ assert.equal(await page.locator('#songrows select').count(),4);
+ assert.equal(await page.locator('#songrows select').nth(2).inputValue(),'4');
+ await page.getByRole('tab',{name:'Library',exact:true}).click();
+ assert.match(await page.locator('#bankhead').textContent(),/3 \/ 8/);
+ assert.match(await page.locator('#banklist').textContent(),/TEST/);
  await page.getByRole('tab',{name:'Sequencer',exact:true}).click();
  assert(await page.getByRole('columnheader',{name:'Nudge',exact:true}).isVisible());
  mkdirSync('build/screenshots',{recursive:true});await page.screenshot({path:'build/screenshots/smk37-upstream-sequencer.png'});
  assert.deepEqual(errors,[]);
- console.log('SMK browser: real 1.5.1 descriptors, INSERT cards, 37-key range, MIDI learn and step nudge passed');
+ console.log('SMK browser: real 1.5.1 descriptors, INSERT cards, 37-key range, MIDI learn, step nudge, 8 user slots and four song lanes passed');
 }catch(e){console.error('Status:',await page.locator('#status').textContent());console.error('Requests:',await page.evaluate(()=>window.smkSent?.slice(-8)));throw e;}finally{await browser.close();}

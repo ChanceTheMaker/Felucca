@@ -40,6 +40,7 @@ static void smk37_session_capture(void) {
     memcpy(smk37_session.reserved,smk37_learn_map,32);
     smk37_session.reserved[32]=click_mode;smk37_session.reserved[33]=click_lvl;smk37_session.reserved[34]=cin_bars;
     smk37_session.reserved[35]=smk37_palette;smk37_session.reserved[36]=smk37_bold;
+    smk37_session.reserved[37]=(song.master_q12+16u)/32u;smk37_session.reserved[38]=0x56;
 }
 static int smk37_session_valid(void) {
     return (smk37_session.version==1 || smk37_session.version==2) && smk37_session.octave<=6 && smk37_session.velocity<=3 &&
@@ -64,6 +65,7 @@ static int smk37_session_restore(void) {
         memcpy(t->step,p->t[k].step,sizeof t->step);
         uint8_t values[FP_SIZE+1];fm6_unpack(p->fm6[k],values);fm6_set_patch(k,values);fm6_adopt(k);
     }
+    smk37_song_row=0;smk37_undo.valid=0;
     chain_config=p->chain;motion=p->motion;memset(motion_active,0,sizeof motion_active);motion_base_valid=0;
     song.sel=p->sel%NTRK;song.octave=smk37_session.octave-3;
     smk37_velocity_mode=smk37_session.velocity;smk37_pad_bank=smk37_session.pad_bank;
@@ -73,6 +75,7 @@ static int smk37_session_restore(void) {
         click_mode=smk37_session.reserved[32]%3;click_lvl=smk37_session.reserved[33]%3;cin_bars=smk37_session.reserved[34]%3;
         smk37_palette=smk37_session.reserved[35]%23;smk37_bold=!!smk37_session.reserved[36];
     }else{memset(smk37_learn_map,0,32);click_mode=cin_bars=0;click_lvl=1;smk37_palette=smk37_bold=0;}
+    song.master_q12=smk37_session.version==2 && smk37_session.reserved[38]==0x56 && smk37_session.reserved[37]<=128 ? smk37_session.reserved[37]*32u : 1024u;
     ml_arm=ml_heard=0;smk37_learn_on=0;
     smk37_analog_ready=0;memset(smk37_encoder_phase,0,sizeof smk37_encoder_phase);
     if(smk37_session.generation-smk37_save_generation<0x80000000u)
@@ -110,3 +113,30 @@ static int smk37_session_resume(void){
     smk37_save_generation=generation;smk37_project_slot=(uint8_t)newest;
     return smk37_session_load(newest);
 }
+
+/* Read-only preparation; publish only a fully loaded chain, never from ISR. */
+static unsigned smk37_chain_prepare(void){
+    unsigned used=0,rc=0;uint8_t engines[NTRK];
+    fm1_irq_off();
+    if(song.playing || song.rec || transport_req || chain.armed){fm1_irq_on();return 2;}
+    if(!smk37_storage_ready || !chain_config.count || !chain_valid(&chain_config)){fm1_irq_on();return 1;}
+    smk37_song_loading=1;chain.config=chain_config;for(unsigned k=0;k<NTRK;++k)engines[k]=trk[k].eng_req;fm1_irq_on();
+    for(unsigned r=0;r<chain.config.count;++r)for(unsigned k=0;k<NTRK;++k){unsigned slot=chain.config.row[r].slot[k];if(slot<4)used|=1u<<slot;}
+    for(unsigned i=0;i<4;++i)if(used&(1u<<i)){
+        if(!smk37_session_used(i)){rc=3+i;break;}
+        project_t *p=&smk37_project_work;chain_pattern_t *q=&chain.source[i];q->motion=p->motion;
+        unsigned n=0;
+        for(unsigned e=0;e<q->motion.count;++e){motion_event_t *v=&q->motion.event[e];unsigned owner=v->place>>6;
+            if(MOTION_ID(v)>=P_FM1_ATK && p->t[owner].engine!=engines[owner])continue;q->motion.event[n++]=*v;}
+        q->motion.count=n;
+        for(unsigned k=0;k<NTRK;++k){memcpy(q->step[k],p->t[k].step,sizeof q->step[k]);for(unsigned j=0;j<NSTEP;++j){step_t *st=&q->step[k][j];if(st->n>4)st->n=4;if(st->time>ST_REST)st->time=ST_REST;for(unsigned z=0;z<4;++z)st->note[z]&=127;st->acc&=st->hit;}q->qnt[k]=!!p->t[k].p[P_SQNT];
+            for(unsigned j=0;j<4;++j)q->timing[k][j]=clamp(p->t[k].p[P_SLEN+j],TP[P_SLEN+j].min,TP[P_SLEN+j].max);}
+    }
+    fm1_irq_off();
+    for(unsigned k=0;k<NTRK;++k)if(engines[k]!=trk[k].eng_req)rc=2;
+    if(!rc && (song.playing || song.rec || transport_req))rc=2;
+    if(!rc){RING_PUBLISH();chain.armed=1;transport_req=1;}
+    smk37_song_loading=0;fm1_irq_on();return rc;
+}
+
+#include "smk37_presets.c"

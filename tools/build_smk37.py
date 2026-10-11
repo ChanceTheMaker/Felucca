@@ -25,8 +25,11 @@ def main():
     parser.add_argument('--stock-package', type=Path)
     parser.add_argument('--enable-saves', action='store_true', help='private Test10 candidate; requires validated stock evidence and separate save-recovery kit')
     parser.add_argument('--enable-usb-update', action='store_true', help='private RAM-updater candidate; each built artifact requires validation')
-    parser.add_argument('--usb-test-number',type=int,default=13,choices=range(11,100))
+    parser.add_argument('--usb-test-number',type=int,default=14,choices=range(11,100))
+    parser.add_argument('--enable-presets',action='store_true',help='opt-in eight-slot preset sectors; validates both stock reads')
     args = parser.parse_args()
+    if args.enable_presets and not args.enable_saves:
+        parser.error('--enable-presets requires --enable-saves')
     if args.enable_usb_update and not args.enable_saves:
         parser.error('--enable-usb-update requires --enable-saves')
     if bool(args.stock_backups) != bool(args.stock_package):
@@ -40,6 +43,12 @@ def main():
                                       args.stock_package.read_bytes())
         except (OSError, ValueError) as exc:
             parser.error(str(exc))
+    if args.enable_presets:
+        for backup in args.stock_backups:
+            raw=backup.read_bytes()
+            for sector in (0xf3000,0xfe000):
+                if raw[sector:sector+4096] != bytes([255])*4096:
+                    parser.error(f'preset allocation is not blank in {backup.name} at {sector:#x}')
     out = build.SRC / "build" / (("smk37-webupdate" if args.usb_test_number==11 else f"smk37-webupdate-test{args.usb_test_number}") if args.enable_usb_update else "smk37-integration")
     out.mkdir(parents=True, exist_ok=True)
     build.GEN = out / "gen"
@@ -64,7 +73,7 @@ def main():
     subprocess.run([sys.executable, str(build.SRC / "tools" / "gen_aa_font.py"),
                     str(build.GEN / "ui_fonts.h"), "--preset", "inter-tight"],
                    check=True, cwd=build.SRC)
-    flags = [*build.CFLAGS, "-Ifirmware/hal", "-Ifirmware/src", f"-I{build.GEN.relative_to(build.SRC)}", f"-DSMK37_ENABLE_SAVES={int(args.enable_saves)}", f"-DSMK37_ENABLE_USB_UPDATE={int(args.enable_usb_update)}"]
+    flags = [*build.CFLAGS, "-Ifirmware/hal", "-Ifirmware/src", f"-I{build.GEN.relative_to(build.SRC)}", f"-DSMK37_ENABLE_PRESETS={int(args.enable_presets)}", f"-DSMK37_ENABLE_SAVES={int(args.enable_saves)}", f"-DSMK37_ENABLE_USB_UPDATE={int(args.enable_usb_update)}"]
     build.tc_all(
         ("cc", *flags, "-c", build.FW / "src" / "smk37_app.c", "-o", out / "app.o"),
         ("cc", "-c", build.FW / "smk37_crt0.S", "-o", out / "crt0.o"),
@@ -125,13 +134,13 @@ def main():
         "purpose": "offline linked application integration",
         "image": name, "bytes": len(image), "sha256": hashlib.sha256(image).hexdigest(),
         "entry": hex(sym("_start")), "bss_end": hex(sym("_bss_end")),
-        "pool_end": hex(sym("_pool_end")), "flash_write_support": args.enable_saves, "usb_update_support": args.enable_usb_update,
+        "pool_end": hex(sym("_pool_end")), "flash_write_support": args.enable_saves, "preset_storage_support": args.enable_presets, "preset_sectors": ["0xf3000", "0xfe000"] if args.enable_presets else [], "usb_update_support": args.enable_usb_update,
         "usb_update_hardware_validated": False,
         "update_product": f"SMK-37_9{args.usb_test_number:02d}", "update_version": f"SMK37 TEST{args.usb_test_number:02d} USB",
         "upstream_revision": "a4d7ca2e5d52a4c35e2468401f00d883cadbda03",
         "upstream_version": "1.5.1",
         "prior_unit_evidence": "Test12: owner-confirmed USB update/restart and saved-project retention; earlier tests cover controls, sound, sustain and editor. This new artifact is not device-validated.",
-        "flash_write_gate": ("private save-only range 0xEB000..0xF3000; call-free RAM routines; runtime JEDEC/trim/allocation checks" if args.enable_saves else "erase/program entry points disassemble to return -1; read routines are call-free RAM code"),
+        "flash_write_gate": (("projects 0xEB000..0xF3000; " + ("presets 0xF3000..0xF4000 and 0xFE000..0xFF000; " if args.enable_presets else "") + "call-free RAM routines; runtime JEDEC/trim/allocation checks") if args.enable_saves else "erase/program entry points disassemble to return -1; read routines are call-free RAM code"),
         "unverified": [f"Test{args.usb_test_number:02d} startup, audio/control timing and USB update on hardware",
                        "new effects, automation, MIDI learn and metronome on hardware",
                        "Test12-to-FUN10 project migration on hardware",

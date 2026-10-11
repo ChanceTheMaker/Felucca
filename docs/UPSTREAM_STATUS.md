@@ -3,6 +3,18 @@
 Last reviewed: **2026-10-10**. Update this record when importing or offering a
 feature; follow [UPSTREAM_WORKFLOW.md](UPSTREAM_WORKFLOW.md).
 
+## October 10 SMK Test14 completion
+
+On the same 1.5.1 integration branch, Test14 adds per-track song chains,
+upstream sequence tools with one-level pattern undo/redo, eight device preset
+slots with FM6 patches, and the owner's confirmed FM-1-style first knob bank.
+The two preset sectors are separate from the four existing project slots and
+are enabled only with private stock evidence and runtime allocation checks.
+See [Test14 controls, storage, tests and artifact hashes](smk37/TEST14.md).
+The candidate is built locally; no flash, push or public release. The local
+installer remains Test12. Browser and firmware support are tested with host
+fixtures; the Pro device checks come next.
+
 ## October 10 SMK upstream 1.5.1 integration (Test13)
 
 Branch: `integrate/smk37-upstream-20261010`, based on the tested Test12 source

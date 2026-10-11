@@ -1,5 +1,8 @@
 ﻿# SMK-37 upstream 1.5.1 integration
 
+Latest candidate: [Test14](TEST14.md) adds songs, tools, presets and the updated
+knob banks. The Test13 evidence below records the initial foundation.
+
 ## Source and release state
 
 Branch `integrate/smk37-upstream-20261010` starts at Test12 commit
@@ -31,16 +34,17 @@ identity, JEDEC, calibration or protected-range checks.
   NIGHT and black/white MONO. Preferences persist in explicitly saved projects.
 - Updated browser DSP and 111-parameter editor cards; engine-specific controls,
   inserts, LFO sync, envelope sync, spread and recording quantization.
-- SMK editor capability tags advertise only implemented operations. No fake user
-  preset slots, writable FM6 banks, sample uploads or complete backup capability.
+- SMK editor capability tags advertise only implemented operations. Test14 advertises eight real user preset slots when their storage is authorized;
+  no writable FM6 voice banks, sample uploads or complete backup capability.
 - Full 37-key piano ownership and upper-key arp remapping. The independent 16
   pad owners retain fixed-note mapping. The Studio keyboard remains C3..C6 for
   SMK and F3..G5 for FM-1; octave labels follow the connected model.
 
 ## Device controls
 
-KNOB BANK off: knobs 1-4 select track, engine, preset and page; knobs 5-8 edit
-that page's four values. KNOB BANK swaps navigation/editing groups. Existing
+Test14 KNOB BANK off (bank 1): knobs 1-4 are master volume, SELECT (tempo),
+PRESETS and ALGORITHM (track 1-4), matching current FM-1 Felucca. Bank 2
+(LED on): track, engine, presets and page. Knobs 5-8 always edit K1-K4. Existing
 fader, wheel, pedal, button and light assignments stay in the SMK hardware layer.
 
 New pages, after Projects: INSERT, INSERT MIX, LFO SYNC, DRUM LEVELS 1/2,
@@ -85,9 +89,9 @@ are outside both the save and application-update write ranges.
 
 The compact SMK control pages replace the FM-1 button-combination UI. This is
 not a claim of complete FM-1 feature/UI parity. FM-1-only LED animations and
-key layers are not copied onto differently wired controls. Song-chain playback
-preparation, pattern tools/undo, favorites and user-preset storage still need
-SMK-specific integration. Song data in imported projects is retained.
+key layers are not copied onto differently wired controls. Test14 adds song-chain playback preparation, pattern tools/undo and user presets;
+see [TEST14.md](TEST14.md). Favorites still need SMK-specific integration.
+Song data in imported projects is retained.
 
 Bluetooth, TRS input, USB audio, user sample writing and complete web backup
 remain outside this candidate. No FM-1 flash geometry is used for SMK storage.

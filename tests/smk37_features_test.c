@@ -14,7 +14,7 @@ static int smk37_storage_erase(uint32_t a){assert(smk37_store_range(a,4096));mem
 static int smk37_storage_program(uint32_t a,const void *p,uint32_t n){assert(smk37_store_range(a,n));for(unsigned i=0;i<n;++i)flash[a+i]&=((const uint8_t *)p)[i];return 0;}
 static int32_t audio[CTL*2];
 static void tick(void){mix_block(audio,CTL);}
-static unsigned request(unsigned cmd,const uint8_t *a,unsigned n){uint8_t f[640]={0x7d,0x46,0x4c};assert(n<636);f[3]=cmd;if(n)memcpy(f+4,a,n);return smk37_editor_handle(f,n+4);}
+static unsigned request(unsigned cmd,const uint8_t *a,unsigned n){uint8_t f[640]={0x7d,0x46,0x4c};assert(n<636);f[3]=cmd;if(n)memcpy(f+4,a,n);return cmd==33 || (cmd>=16&&cmd<=21)?smk37_editor_main_command(f,n+4):smk37_editor_handle(f,n+4);}
 static void wire(unsigned cmd,const uint8_t *a,unsigned n){
     unsigned count=request(cmd,a,n);assert(count && count<sizeof smk37_ed_out);
     putchar('[');for(unsigned i=0;i<count;++i)printf("%s%u",i?",":"",smk37_ed_out[i]);puts("]");
@@ -23,7 +23,7 @@ int main(int argc,char **argv){
     memset(flash,255,sizeof flash);smk37_synth_init();tick();
     if(argc>1 && !strcmp(argv[1],"--wire")){
         wire(1,0,0);wire(4,0,0);wire(15,0,0);wire(27,0,0);
-        uint8_t args[4]={0};wire(16,args,2);wire(22,args,1);
+        uint8_t args[4]={0};wire(16,args,2);wire(22,args,1);args[0]=4;wire(33,args,1);args[0]=0;
         for(unsigned e=0;e<NENGINES;++e){
             args[0]=e;wire(10,args,1);TSEL->eng_req=e;
             for(unsigned i=0;i<P_COUNT;++i){args[0]=0;args[1]=i;wire(5,args,2);}

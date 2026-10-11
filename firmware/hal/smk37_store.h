@@ -6,6 +6,12 @@
  * save region is part of this range. Four slots, each with A/B sector commits. */
 #define SMK37_STORE_LO 0xeb000u
 #define SMK37_STORE_HI 0xf3000u
+/* Separate noncontiguous preset A/B sectors, opt-in at build and runtime. */
+#define SMK37_PRESET_A 0xf3000u
+#define SMK37_PRESET_B 0xfe000u
+#define SMK37_PRESET_RANGE(a,n) ((uint32_t)(n)>0u && \
+    (((uint32_t)(a)>=SMK37_PRESET_A && (uint32_t)(a)<SMK37_PRESET_A+4096u && (uint32_t)(n)<=SMK37_PRESET_A+4096u-(uint32_t)(a)) || \
+     ((uint32_t)(a)>=SMK37_PRESET_B && (uint32_t)(a)<SMK37_PRESET_B+4096u && (uint32_t)(n)<=SMK37_PRESET_B+4096u-(uint32_t)(a))))
 #define SMK37_STORE_PAYLOAD 3968u
 #define SMK37_SESSION_V1_SIZE 3648u
 #define SMK37_SESSION_V2_SIZE 3904u

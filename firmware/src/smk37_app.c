@@ -7,6 +7,9 @@
 #include <stdint.h>
 #include "smk37_unit.h"
 #define FELUCCA_FLASH 0
+#ifndef SMK37_ENABLE_PRESETS
+#define SMK37_ENABLE_PRESETS 0
+#endif
 #ifndef SMK37_ENABLE_USB_UPDATE
 #define SMK37_ENABLE_USB_UPDATE 0
 #endif
@@ -56,8 +59,9 @@
 #define SMK37_ENABLE_SAVES 0
 #endif
 /* Pure arithmetic: RAM flash routines must never call an XIP helper. */
-#define FL_RANGE_OK(off,n) (SMK37_ENABLE_SAVES && (uint32_t)(off)>=SMK37_STORE_LO && \
-    (uint32_t)(off)<SMK37_STORE_HI && (uint32_t)(n)>0 && (uint32_t)(n)<=SMK37_STORE_HI-(uint32_t)(off))
+#define FL_RANGE_OK(off,n) (SMK37_ENABLE_SAVES && (((uint32_t)(off)>=SMK37_STORE_LO && \
+    (uint32_t)(off)<SMK37_STORE_HI && (uint32_t)(n)>0 && (uint32_t)(n)<=SMK37_STORE_HI-(uint32_t)(off)) || \
+    (SMK37_ENABLE_PRESETS && SMK37_PRESET_RANGE(off,n))))
 #include "fm1_flash.h"
 
 volatile smk37_bootguard_t smk37_boot_state __attribute__((section(".noinit")));
@@ -256,17 +260,17 @@ static int smk37_flash_read_raw(uint32_t off,void *dst,uint32_t n)
 }
 static int smk37_storage_read(uint32_t off,void *dst,uint32_t n)
 {
-    return smk37_store_range(off,n)?smk37_flash_read_raw(off,dst,n):-1;
+    return (smk37_store_range(off,n)||(SMK37_ENABLE_PRESETS && SMK37_PRESET_RANGE(off,n)))?smk37_flash_read_raw(off,dst,n):-1;
 }
 static int smk37_storage_erase(uint32_t off)
 {
-    if(!SMK37_ENABLE_SAVES || !smk37_storage_writable || !smk37_store_range(off,4096) || (off&4095))return -1;
+    if(!SMK37_ENABLE_SAVES || !smk37_storage_writable || !FL_RANGE_OK(off,4096) || (off&4095))return -1;
     memset(smk37_dma,0,sizeof smk37_dma);
     return fl_erase4k(off,0);
 }
 static int smk37_storage_program(uint32_t off,const void *src,uint32_t n)
 {
-    if(!SMK37_ENABLE_SAVES || !smk37_storage_writable || !smk37_store_range(off,n))return -1;
+    if(!SMK37_ENABLE_SAVES || !smk37_storage_writable || !FL_RANGE_OK(off,n))return -1;
     memset(smk37_dma,0,sizeof smk37_dma);return fl_write(off,src,n);
 }
 static int smk37_storage_probe(void)
@@ -278,10 +282,15 @@ static int smk37_storage_probe(void)
     if(smk37_store_crc(trim,sizeof trim)!=SMK37_UNIT_TRIM_CRC)return -1;
     if(!smk37_store_allocation_ok(&smk37_storage_io,sizeof smk37_session))return -1;
     smk37_storage_ready=1;smk37_storage_writable=SMK37_ENABLE_SAVES;
+    if(SMK37_ENABLE_PRESETS)(void)smk37_up_boot();
     return 0;
 }
 static void smk37_project_service(void)
 {
+    if(smk37_song_request){smk37_song_request=0;unsigned rc=smk37_chain_prepare();smk37_notice=rc?"SONG: STOP / CHECK SLOTS":"SONG PLAYING";smk37_notice_at=fm1_ms;}
+    if(smk37_user_request){unsigned r=smk37_user_request;smk37_user_request=0;
+        int rc=(r&3)==1?smk37_up_load(r>>2):smk37_up_store(r>>2,0);
+        smk37_notice=rc?"PRESET: EMPTY / STOP FIRST":(r&3)==1?"USER PRESET LOADED":"USER PRESET SAVED";smk37_notice_at=fm1_ms;}
     unsigned request=smk37_project_request;
     if(!request)return;
     smk37_project_request=0;
@@ -319,6 +328,9 @@ static void smk37_editor_service(void)
             if(!rc && op==1)rc=smk37_session_save(slot);
             if(!rc && op==0)rc=smk37_session_load(slot);
             if(!rc){smk37_ed_begin(9);smk37_ed_byte(op);smk37_ed_byte(slot);smk37_ed_byte(smk37_session_used(slot));n=smk37_ed_finish();}
+        }else if(count>=4 && frame[0]==0x7d && frame[1]==0x46 && frame[2]==0x4c &&
+            (frame[3]==33 || (frame[3]>=16&&frame[3]<=21) || ((frame[3]==68||frame[3]==69)&&count>=6&&frame[4]==3))){
+            n=smk37_editor_main_command(frame,count);ota_frame_done();
         }else{
             fm1_irq_off();n=smk37_editor_handle(frame,count);fm1_irq_on();ota_frame_done();
         }
@@ -425,6 +437,7 @@ static void smk37_sound_status(void)
     const param_desc_t *desc[4];
     int16_t values[4];
     const char *engine, *preset, *page;
+    char user_name[13]={0};
     unsigned track;
     /* Copy a coherent view while audio cannot change selection/parameters;
      * formatting and slow LCD transfers happen after interrupts are restored. */
@@ -434,6 +447,10 @@ static void smk37_sound_status(void)
     const engine_t *e = ENGINES[TSEL->eng_req];
     engine = e->name;
     preset = e->npresets ? e->presets[TSEL->preset % e->npresets].name : "INIT";
+    unsigned user=TSEL->user;
+    if(smk37_page==SMK37_PRESET_PAGE)user=smk37_user_slot+1;
+    if(user && smk37_up_used(user-1)){memcpy(user_name,smk37_up.record[user-1].name,12);preset=user_name;}
+    else if(smk37_page==SMK37_PRESET_PAGE)preset="EMPTY USER SLOT";
     const page_t *pg = &smk37_sound_pages[smk37_page];
     page = smk37_patch_mode ? "PATCH: < > PRESET" : pg->title;
     for (unsigned i = 0; i < 4; ++i) {
@@ -443,6 +460,9 @@ static void smk37_sound_status(void)
     }
     unsigned custom=smk37_page;
     if(custom==SMK37_PERFORM_PAGE)for(unsigned i=0;i<4;++i)values[i]=perf_k[i];
+    if(custom==SMK37_SONG_PAGE){chain_row_t *r=&chain_config.row[smk37_song_row];values[0]=chain_config.count?smk37_song_row+1:0;values[1]=smk37_song_track+1;values[2]=r->slot[smk37_song_track]+1;values[3]=r->repeat;}
+    if(custom==SMK37_TOOLS_PAGE){values[0]=smk37_tool;values[1]=smk37_lane+1;values[2]=smk37_undo.valid;values[3]=smk37_undo.track+1;}
+    if(custom==SMK37_PRESET_PAGE){values[0]=smk37_user_slot+1;values[1]=smk37_up_used(smk37_user_slot);values[2]=smk37_up_writable;values[3]=8;}
     if(custom==SMK37_AUTOMATION_PAGE){values[0]=smk37_edit_step+1;values[1]=smk37_auto_param;values[2]=smk37_auto_value;values[3]=smk37_auto_lock;}
     if(custom==SMK37_DETAIL_PAGE){step_t *s=&TSEL->step[smk37_edit_step];values[0]=step_chance(s);values[1]=step_ratchet(s);values[2]=step_nudge(s);values[3]=s->vel;}
     if(custom==SMK37_LEARN_PAGE){values[0]=smk37_learn_on;values[1]=smk37_learn_track+1;values[2]=smk37_learn_param;values[3]=ml_arm;}
@@ -467,6 +487,9 @@ static void smk37_sound_status(void)
         static const char *const project_labels[]={"SLOT","READ OK","SAVE READY",""};
         if(custom==SMK37_STEP_PAGE)label=step_labels[i];
         if(custom==SMK37_PERFORM_PAGE)label=(const char *const[]){"FILTER","CRUSH","THROW","DEPTH"}[i];
+        if(custom==SMK37_SONG_PAGE)label=(const char *const[]){"SECTION","TRACK","PROJECT","REPEAT"}[i];
+        if(custom==SMK37_TOOLS_PAGE)label=(const char *const[]){"TOOL","DRUM LANE","UNDO READY","UNDO TRACK"}[i];
+        if(custom==SMK37_PRESET_PAGE)label=(const char *const[]){"USER SLOT","USED","SAVE ENABLED","CAPACITY"}[i];
         if(custom==SMK37_AUTOMATION_PAGE)label=(const char *const[]){"STEP","PARAMETER","VALUE","LOCK"}[i];
         if(custom==SMK37_DETAIL_PAGE)label=(const char *const[]){"CHANCE","RATCHET","NUDGE","VELOCITY"}[i];
         if(custom==SMK37_LEARN_PAGE)label=(const char *const[]){"LEARN","TRACK","PARAMETER","WAITING CC"}[i];
@@ -477,8 +500,10 @@ static void smk37_sound_status(void)
         draw_text_line(12, 124+i*18, 90, &AF_S, label, T_TEXT, T_BG, 0);
         value[0] = 0;
         if (desc[i]) param_format(desc[i], values[i], value, &unit);
-        if((custom>=SMK37_STEP_PAGE && custom<=SMK37_PROJECT_PAGE) || custom==SMK37_DETAIL_PAGE || custom==SMK37_LEARN_PAGE || custom==SMK37_CLICK_PAGE || custom==SMK37_DISPLAY_PAGE || custom==SMK37_PERFORM_PAGE || custom==SMK37_AUTOMATION_PAGE)fmt_int(value,values[i]);
+        if((custom>=SMK37_STEP_PAGE && custom<=SMK37_PROJECT_PAGE) || custom==SMK37_DETAIL_PAGE || custom==SMK37_LEARN_PAGE || custom==SMK37_CLICK_PAGE || custom==SMK37_DISPLAY_PAGE || custom==SMK37_PERFORM_PAGE || custom==SMK37_AUTOMATION_PAGE || custom==SMK37_SONG_PAGE || custom==SMK37_TOOLS_PAGE || custom==SMK37_PRESET_PAGE)fmt_int(value,values[i]);
         if(custom==SMK37_LEARN_PAGE && i==2)str_cpy(value,param_desc_of(trk[smk37_learn_track].eng_req,values[i])->label,sizeof value);
+        if(custom==SMK37_TOOLS_PAGE && i==0)str_cpy(value,(const char *const[]){"CLEAR","REVERSE","SHIFT LEFT","SHIFT RIGHT","RANDOM","COOK","BEAT","-","LANE CLEAR","LANE REVERSE","LANE FILL","LANE RANDOM"}[smk37_tool],sizeof value);
+        if(custom==SMK37_SONG_PAGE && i==2 && values[i]==5)str_cpy(value,"SILENT",sizeof value);
         if(custom==SMK37_AUTOMATION_PAGE && i==1)str_cpy(value,track_desc(TSEL,values[i])->label,sizeof value);
         if(custom==SMK37_DISPLAY_PAGE){if(!i)str_cpy(value,UI_PALETTES[values[i]%NPALETTES].name,sizeof value);else if(i>1)value[0]=0;}
         if(custom==SMK37_CLICK_PAGE && !i)str_cpy(value,(const char *const[]){"OFF","REC","ON"}[values[i]%3],sizeof value);
@@ -487,8 +512,11 @@ static void smk37_sound_status(void)
         if(custom==SMK37_PROJECT_PAGE && i==3)value[0]=0;
         draw_text_line(104, 124+i*18, 124, &AF_S, value, T_TEXT, T_BG, 0);
     }
-    draw_text_line(0, 202, 240, &AF_S, smk37_knob_bank ? "E1-4 EDIT / E5-8 NAV" : "E1-4 NAV / E5-8 EDIT", T_TEXT, T_BG, 1);
+    draw_text_line(0, 202, 240, &AF_S, smk37_knob_bank ? "TRK / ENGINE / PRE / PAGE" : "VOL / BPM / PRE / TRACK", T_TEXT, T_BG, 1);
     if(custom==SMK37_PERFORM_PAGE)draw_text_line(0,202,240,&AF_S,"HOLD PADS: FX / THROWS",T_THEME,T_BG,1);
+    if(custom==SMK37_SONG_PAGE)draw_text_line(0,202,240,&AF_S,"< DELETE / > ADD / PLAY",T_THEME,T_BG,1);
+    if(custom==SMK37_TOOLS_PAGE)draw_text_line(0,202,240,&AF_S,"< UNDO-REDO / > RUN",T_THEME,T_BG,1);
+    if(custom==SMK37_PRESET_PAGE)draw_text_line(0,202,240,&AF_S,"< LOAD / > SAVE",T_THEME,T_BG,1);
     if(custom==SMK37_AUTOMATION_PAGE)draw_text_line(0,202,240,&AF_S,"< DELETE / > SET",T_THEME,T_BG,1);
     if(custom==SMK37_PROJECT_PAGE)draw_text_line(0,202,240,&AF_S,"< LOAD / > SAVE",T_TEXT,T_BG,1);
     if(custom==SMK37_DETAIL_PAGE){str_cpy(text,"STEP ",sizeof text);fmt_int(text+5,smk37_edit_step+1);draw_text_line(0,202,240,&AF_S,text,T_THEME,T_BG,1);}

@@ -2,7 +2,7 @@
  * Wire formats adapted from editor.c, Copyright (C) 2026 Leo Kuroshita
  * (@kurogedelic), Hugelton Instruments. Existing command numbers unchanged.
  * SMK subset: sound, descriptors, steps, presets, projects and four-track mixing.
- * No OTA, sample writes, user-preset flash or unsupported capability claims. */
+ * SMK project/preset storage and updater are independently gated. No sample writes. */
 static uint8_t smk37_ed_out[2048];
 static unsigned smk37_ed_n;
 static void smk37_ed_byte(unsigned v){if(smk37_ed_n<sizeof smk37_ed_out-1)smk37_ed_out[smk37_ed_n++]=v&127u;}
@@ -48,6 +48,185 @@ static void smk37_ed_motion_reply(uint32_t k, uint32_t rc, uint32_t kinds, uint3
         }
 }
 
+static unsigned smk37_editor_song(const uint8_t *a,unsigned na){
+    unsigned i;
+        uint32_t rc = 0, op, lanes, w, k;
+        chain_config_t c;
+        if (!na || a[0] > 7u || ((a[0]&3u)!=1u && na!=1u)) return 0;
+        smk37_ed_begin(33);
+        op = a[0] & 3u;
+        lanes = a[0] >> 2;
+        w = lanes ? NTRK + 1u : 2u;                     /* the bytes of a row */
+        if (op == 1u) {
+            chain_defaults(&c);
+            if (na < 2u || a[1] > CHAIN_ROWS || na != 2u + w * a[1]) rc = 1;
+            else {
+                c.count = a[1];
+                for (i = 0; i < c.count; i++) {
+                    const uint8_t *r = a + 2u + w * i;
+                    if (lanes) {
+                        memcpy(c.row[i].slot, r, NTRK);
+                        c.row[i].repeat = r[NTRK];
+                    } else if (r[0] < 4u)       /* (a row of one slot: all four tracks on it) */
+                        c.row[i] = chain_row_of(r[0], r[1]);
+                    else
+                        c.row[i].repeat = 0;    /* (invalid) */
+                }
+                if (!chain_valid(&c)) rc = 1;
+                else if ((chain.running || chain.armed || smk37_song_loading)) rc = 2;
+                else { fm1_irq_off();chain_config = c; smk37_song_row = 0;fm1_irq_on(); }
+            }
+        } else if (op == 2u) rc = smk37_chain_prepare();
+        else if (op == 3u) transport_req = 2;
+        fm1_irq_off();
+        smk37_ed_byte(a[0]); smk37_ed_byte(rc); smk37_ed_byte(chain_config.count);
+        smk37_ed_byte(chain.running); smk37_ed_byte(chain.row); smk37_ed_byte(chain.remaining);
+        for (i = 0; i < chain_config.count; i++) {
+            const chain_row_t *r = &chain_config.row[i];
+            if (lanes)
+                for (k = 0; k < NTRK; k++) smk37_ed_byte(r->slot[k]);
+            else                                         /* v6: the clock track's slot (every track "-": A) */
+                smk37_ed_byte(r->slot[chain_clock(r)] < 4u ? r->slot[chain_clock(r)] : 0u);
+            smk37_ed_byte(r->repeat);
+        }
+    fm1_irq_on();return smk37_ed_finish();
+}
+static unsigned smk37_editor_presets(unsigned cmd,const uint8_t *a,unsigned na){
+    unsigned i;
+    if((cmd==20 || cmd==21) && na!=1)return 0;
+    smk37_ed_begin(cmd);
+    switch(cmd){
+    case 16: {                                     /* start, count -> start, count, total, per slot: used, engine, name;
+                                                            * (1.2) then per slot its category (category.c CAT_*, 0 unused):
+                                                            * after the entries, so an older editor stops before them */
+        uint32_t s0, cnt;
+        if (na < 2u)
+            return 0;
+        s0 = a[0];
+        unsigned total=smk37_up_ready?SMK37_UP_SLOTS:0;
+        cnt = a[1] > 16u ? 16u : a[1];
+        if (s0 >= total)
+            cnt = 0;
+        else if (s0 + cnt > total)
+            cnt = total - s0;
+        smk37_ed_byte(s0);
+        smk37_ed_byte(cnt);
+        smk37_ed_byte(total);
+        for (i = s0; i < s0 + cnt; i++) {
+            char nm[13] = {0};
+            uint32_t j, u = (uint32_t)smk37_up_used(i);
+            for (j = 0; u && j < 12u; j++)
+                nm[j] = (&smk37_up.record[i])->name[j];
+            smk37_ed_byte(u);
+            smk37_ed_byte(u ? (&smk37_up.record[i])->engine : 0u);
+            smk37_ed_string(nm, 12);
+        }
+        for (i = s0; i < s0 + cnt; i++)
+            smk37_ed_byte(smk37_up_used(i) ? up_cat_of(&smk37_up.record[i]) : 0u);
+        break;
+    }
+    case 17: {                                      /* slot -> slot, used, engine, name, P_COUNT x v14, 16 x (note,
+                                                            * flags), (v5) kind [, 16 x hi], (1.2) category
+                                                            * (upreset.c up_parse) */
+        int16_t v[P_COUNT];
+        char nm[13] = {0};
+        const up_rec_t *r;
+        uint32_t u;
+        if (na != 1u || a[0] >= SMK37_UP_SLOTS)
+            return 0;
+        r = (&smk37_up.record[a[0]]);
+        u = (uint32_t)smk37_up_used(a[0]);
+        if (u)
+            up_values(r, v);                               /* today's P_* order, clamped */
+        for (i = 0; u && i < 12u; i++)
+            nm[i] = r->name[i];
+        smk37_ed_byte(a[0]);
+        smk37_ed_byte(u);
+        smk37_ed_byte(u ? r->engine : 0u);
+        smk37_ed_string(nm, 12);
+        for (i = 0; i < P_COUNT; i++)
+            smk37_ed_value(u ? v[i] : 0);
+        for (i = 0; i < 16u; i++) {
+            smk37_ed_byte(u ? r->note[i] & 0x7Fu : 0u);
+            smk37_ed_byte(u ? r->flags[i] & 0x7Fu : 0u);
+        }
+        smk37_ed_byte(u && up_grid(r));                  /* kind: 1 = a drum grid, then bit 7 of each step's */
+        for (i = 0; u && up_grid(r) && i < 16u; i++)   /* hits (bit 0) and accents (bit 1) */
+            smk37_ed_byte((uint32_t)(r->note[i] >> 7) | (uint32_t)(r->flags[i] >> 7) << 1);
+        smk37_ed_byte(u ? up_cat_of(r) : 0u);            /* 1.2: the category (an older editor stops before it) */
+        break;
+    }
+    case 18: {                                      /* slot, engine, name, values, pattern -> slot, rc */
+        static up_rec_t r;
+        uint32_t slot = 0, rc;
+        if (na < 1u)
+            return 0;
+        rc = (uint32_t)up_parse(a, na, &r, &slot);
+        if (!rc && slot>=SMK37_UP_SLOTS)rc=1;
+        if (!rc && !smk37_up_idle())
+            rc = 2;
+        if (!rc) {
+            int16_t v[P_COUNT];
+            up_values(&r, v);                              /* each value inside its range */
+            for (i = 0; i < P_COUNT; i++)
+                up_set_value(&r, i, v[i]);                 /* the record's own form (v4: a byte each) */
+            rc = smk37_up_put(slot, &r) ? 2u : 0u;
+        }
+        smk37_ed_byte(a[0]);
+        smk37_ed_byte(rc);
+        break;
+    }
+    case 19: {                                    /* slot, name -> slot, rc */
+        char nm[13] = {0};
+        uint32_t n0, rc = 1;
+        if (na < 1u)
+            return 0;
+        for (n0 = 0; 1u + n0 < na && a[1 + n0] && n0 < 13u; n0++)
+            ;
+        if (a[0] < SMK37_UP_SLOTS && (!n0 || up_name_ok(a + 1, n0)) &&
+            (1u + n0 == na || (2u + n0 == na && !a[1u + n0]))) {   /* "" = automatic name */
+            for (i = 0; i < n0; i++)
+                nm[i] = (char)a[1 + i];
+            int r;
+            r = !smk37_up_idle() ? 2 : smk37_up_store(a[0], nm);
+            rc = r ? 2u : 0u;
+        }
+        smk37_ed_byte(a[0]);
+        smk37_ed_byte(rc);
+        break;
+    }
+    case 20:                                       /* slot -> slot, rc */
+        if (na < 1u)
+            return 0;
+        smk37_ed_byte(a[0]);
+        smk37_ed_byte(a[0] < SMK37_UP_SLOTS && !smk37_up_load(a[0]) ? 0u : 1u);
+        break;
+    case 21:
+        if (na < 1u)
+            return 0;
+        smk37_ed_byte(a[0]);
+        smk37_ed_byte(a[0] >= SMK37_UP_SLOTS ? 1u : !smk37_up_idle() || smk37_up_put(a[0], 0) ? 2u : 0u);
+        break;
+    default:return 0;
+    }return smk37_ed_finish();
+}
+static unsigned smk37_editor_user_fm6(unsigned cmd,const uint8_t *a,unsigned na){
+    if(na!=(cmd==68?2u:130u) || a[0]!=3)return 0;
+    unsigned k=a[1],rc=smk37_up_used(k)&&smk37_up.record[k].engine==ENGI_FM6?0:1;
+    if(!rc && cmd==69){smk37_up_work=smk37_up;memcpy(smk37_up_work.fm6[k],a+2,FM6_PACKED);rc=smk37_up_commit();}
+    smk37_ed_begin(cmd);smk37_ed_byte(3);smk37_ed_byte(k);smk37_ed_byte(rc);
+    if(!rc && cmd==68)for(unsigned i=0;i<FM6_PACKED;++i)smk37_ed_byte(smk37_up.fm6[k][i]);
+    return smk37_ed_finish();
+}
+/* Storage and SONG PLAY execute in the main loop, never under the generic IRQ lock. */
+static unsigned smk37_editor_main_command(const uint8_t *f,unsigned n){
+    if(n<4 || f[0]!=0x7d || f[1]!=0x46 || f[2]!=0x4c)return 0;
+    for(unsigned i=0;i<n;++i)if(f[i]&128)return 0;
+    if(f[3]==33)return smk37_editor_song(f+4,n-4);
+    if(f[3]>=16&&f[3]<=21)return smk37_editor_presets(f[3],f+4,n-4);
+    if((f[3]==68||f[3]==69)&&n>=6&&f[4]==3)return smk37_editor_user_fm6(f[3],f+4,n-4);
+    return 0;
+}
 static uint8_t smk37_ed_watch,smk37_ed_track,smk37_ed_engine,smk37_ed_preset;
 static int16_t smk37_ed_shadow[P_COUNT+G_COUNT];
 static step_t smk37_ed_steps[NSTEP];
@@ -85,8 +264,9 @@ static unsigned smk37_editor_handle(const uint8_t *f,unsigned n){
         smk37_ed_byte(NENGINES);smk37_ed_byte(P_COUNT);smk37_ed_byte(G_COUNT);smk37_ed_byte(NSTEP);smk37_ed_byte(P_E0);
         for(i=0;i<NENGINES;++i)smk37_ed_string(ENGINES[i]->name,8);
         smk37_ed_byte(NTRK);
-        {static const uint8_t caps[]={0x4d,1,64,1,0x52,1,4,0x4c,1,1,0x41,1,0,1,0x54,1,16,0x43,1,16,0x46,1,8,0};
-         for(i=0;i<sizeof caps;++i)smk37_ed_byte(caps[i]);} /* only implemented capabilities */
+        {static const uint8_t caps[]={16,0x57,1,4,0x4d,1,64,1,0x52,1,4,0x4c,1,1,0x41,1,0,1,0x54,1,16,0x43,1,16,0x46,1,8,0};
+         for(i=0;i<sizeof caps;++i)smk37_ed_byte(caps[i]);
+         if(smk37_up_ready){smk37_ed_byte(0x50);smk37_ed_byte(1);smk37_ed_byte(3);}} /* only implemented capabilities */
         break;
     case 2:case 3:case 5:{
         if(na!=(cmd==3?4u:2u) || a[0]>1 || a[1]>=(a[0]?G_COUNT:P_COUNT))return 0;
@@ -96,7 +276,7 @@ static unsigned smk37_editor_handle(const uint8_t *f,unsigned n){
             int val=clamp(smk37_ed_read(a+2),d->min,d->max);
             if(a[0] && a[1]==G_ENGSEL){smk37_ed_load_preset((unsigned)val,0);}
             else if(a[0] && (a[1]==G_SAVE || a[1]==G_LOAD))return 0; /* explicit PROJECT command only */
-            else *v=enum_orig(d,val);
+            else if(a[0] || !(chain.running && chain_owns(a[1]))) *v=enum_orig(d,val);
         }
         smk37_ed_byte(a[0]);smk37_ed_byte(a[1]);
         if(cmd==5){smk37_ed_byte(d->fmt);smk37_ed_value(d->min);smk37_ed_value(d->max);smk37_ed_value(d->def);
@@ -143,7 +323,7 @@ static unsigned smk37_editor_handle(const uint8_t *f,unsigned n){
     case 31:{
         if((na!=2&&na!=4)||a[0]>=NTRK||a[1]>=P_COUNT)return 0;
         track_t *t=&trk[a[0]];const param_desc_t *d=param_desc_of(t->eng_req,a[1]);
-        if(na==4)t->p[a[1]]=enum_orig(d,clamp(smk37_ed_read(a+2),d->min,d->max));
+        if(na==4 && !(chain.running && chain_owns(a[1])))t->p[a[1]]=enum_orig(d,clamp(smk37_ed_read(a+2),d->min,d->max));
         smk37_ed_byte(a[0]);smk37_ed_byte(a[1]);smk37_ed_value(t->p[a[1]]);break;}
     case 64:{
         if(!na || a[0]>=NTRK)return 0;

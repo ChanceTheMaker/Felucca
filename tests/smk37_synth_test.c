@@ -78,6 +78,7 @@ int main(void)
     assert(gated(0, 84));
     smk37_key_event(36, 84, 0);
     assert(!gated(0, 84));
+    smk37_knob_bank=1; /* bank 2: SMK navigation */
     /* Encoder bounce cancels, complete detents select tracks, invalid input
      * cannot mutate selection. Track selection preserves a held key's owner. */
     song.sel = 0;

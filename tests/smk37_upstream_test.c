@@ -31,11 +31,11 @@ int main(void){
     assert(trk[0].step[19].time==ST_NOTE && trk[0].step[19].note[0]==64);
     assert(trk[0].p[P_ITYPE]==0 && trk[0].p[P_ESYNC]==0 && trk[0].p[P_SQNT]==1);
     /* Re-save as FUN10, then mixed old/new copies choose the newest generation. */
-    trk[0].p[P_ITYPE]=3;smk37_palette=20;smk37_bold=1;click_mode=2;cin_bars=1;
+    song.master_q12=1376;trk[0].p[P_ITYPE]=3;smk37_palette=20;smk37_bold=1;click_mode=2;cin_bars=1;
     assert(!smk37_learn_set(21,0,P_ITYPE));
-    assert(!smk37_session_save(0));trk[0].p[P_ITYPE]=0;smk37_palette=0;
+    assert(!smk37_session_save(0));song.master_q12=0;smk37_song_row=15;smk37_undo.valid=1;trk[0].p[P_ITYPE]=0;smk37_palette=0;
     assert(!smk37_session_load(0));assert(trk[0].p[P_ITYPE]==3 && smk37_palette==20 && smk37_bold==1 && click_mode==2 && cin_bars==1);
-    assert(ml_tab[0] || ml_tab[1]);
+    assert(ml_tab[0] || ml_tab[1]);assert(song.master_q12==1376 && !smk37_song_row && !smk37_undo.valid);
     /* Piano keys above key31 must retain their own arp mapping; pads stay fixed. */
     song.sel=0;song.octave=0;smk37_pad_bank=0;smk37_page=0;trk[0].p[P_AMODE]=1;trk[0].p[P_AHOLD]=0;trk[0].p[P_QUANT]=0;
     smk37_play_key_event(36,100);uint32_t notes[64],count;

@@ -45,7 +45,13 @@ static const page_t smk37_sound_pages[] = {
     {"PERFORMANCE FX",0,SC_TRACK,GR_NONE,{255,255,255,255}},
     {"AUTOMATION",0,SC_TRACK,GR_NONE,{255,255,255,255}},
 
+    {"SONG CHAIN",0,SC_TRACK,GR_NONE,{255,255,255,255}},
+    {"SEQ TOOLS",0,SC_TRACK,GR_NONE,{255,255,255,255}},
+    {"USER PRESETS",0,SC_TRACK,GR_NONE,{255,255,255,255}},
 };
+#define SMK37_SONG_PAGE 40u
+#define SMK37_TOOLS_PAGE 41u
+#define SMK37_PRESET_PAGE 42u
 #define SMK37_PERFORM_PAGE 38u
 #define SMK37_AUTOMATION_PAGE 39u
 #define SMK37_DETAIL_PAGE 32u
@@ -62,6 +68,10 @@ static const page_t smk37_sound_pages[] = {
 #define SMK37_PEDAL_PAGE (SMK37_SOUND_PAGES+3u)
 #define SMK37_PAGE_COUNT (SMK37_SOUND_PAGES+4u)
 static uint8_t smk37_page;
+static uint8_t smk37_song_row,smk37_song_track,smk37_tool,smk37_lane,smk37_user_slot;
+static volatile uint8_t smk37_song_request,smk37_user_request,smk37_song_loading;
+static void smk37_tool_action(void);
+static void smk37_pattern_undo(void);
 static uint8_t smk37_learn_on,smk37_learn_track,smk37_learn_param;
 static uint8_t smk37_palette,smk37_bold;
 static uint8_t smk37_auto_param,smk37_auto_lock;
@@ -83,8 +93,7 @@ static unsigned smk37_wrap(unsigned value, int direction, unsigned count)
     return direction > 0 ? (value+1u)%count : (value+count-1u)%count;
 }
 
-/* Same sound/preserved-track semantics as ui.c apply_preset_to; no undo or
- * persistent storage is available in the bring-up target. */
+/* Same sound/preserved-track semantics as ui.c apply_preset_to. */
 static void smk37_load_preset(track_t *t, unsigned index)
 {
     const engine_t *e = ENGINES[t->eng_req];
@@ -113,7 +122,7 @@ static void smk37_load_preset(track_t *t, unsigned index)
 
 static void smk37_turn(unsigned encoder, int direction)
 {
-    if (encoder >= 8 || !direction) return;
+    if (encoder >= 8 || !direction || smk37_song_loading) return;
     direction = direction > 0 ? 1 : -1;
     if (smk37_page == SMK37_LIGHT_PAGE && encoder != 3) {
         if (encoder == 0) smk37_light_target = smk37_wrap(smk37_light_target, direction, 36);
@@ -122,7 +131,17 @@ static void smk37_turn(unsigned encoder, int direction)
         return;
     }
     if ((smk37_page == SMK37_BUTTON_PAGE || smk37_page == SMK37_PEDAL_PAGE) && encoder != 3) return;
-    if (smk37_page < SMK37_SOUND_PAGES && smk37_knob_bank) encoder ^= 4u;
+    /* Bank 1 follows current FM-1 panel functions. Bank 2 exposes SMK
+     * navigation; page controls remain physically K5..K8 in both banks. */
+    if(smk37_page<SMK37_SOUND_PAGES && !smk37_knob_bank){
+        if(encoder==0){
+            static char notice[24];song.master_q12=clamp((int)song.master_q12+direction*32,0,4096);
+            str_cpy(notice,"MASTER ",sizeof notice);fmt_int(notice+7,(song.master_q12*100u+2048u)/4096u);
+            str_cpy(notice+str_len(notice),"%",sizeof notice-str_len(notice));smk37_notice=notice;smk37_notice_at=fm1_ms;return;
+        }
+        if(encoder==1){song.g[G_BPM]=clamp(song.g[G_BPM]+direction,GP[G_BPM].min,GP[G_BPM].max);smk37_notice="SELECT: TEMPO";smk37_notice_at=fm1_ms;return;}
+        if(encoder==3){song.sel=clamp((int)song.sel+direction,0,NTRK-1);return;}
+    }
     track_t *t = TSEL;
     if (encoder == 0) song.sel = smk37_wrap(song.sel, direction, NTRK);
     else if (encoder == 1) {
@@ -144,6 +163,20 @@ static void smk37_turn(unsigned encoder, int direction)
         smk37_patch_mode = 0;
     }
     else if (smk37_page < SMK37_SOUND_PAGES) {
+        if(smk37_page==SMK37_SONG_PAGE){
+            if(chain.running || chain.armed)return;
+            if(encoder==4)smk37_song_row=smk37_wrap(smk37_song_row,direction,chain_config.count?chain_config.count:1);
+            if(encoder==5)smk37_song_track=smk37_wrap(smk37_song_track,direction,NTRK);
+            if(chain_config.count){chain_row_t *r=&chain_config.row[smk37_song_row];
+                if(encoder==6)r->slot[smk37_song_track]=smk37_wrap(r->slot[smk37_song_track],direction,5);
+                if(encoder==7)r->repeat=clamp(r->repeat+direction,1,16);}
+            return;
+        }
+        if(smk37_page==SMK37_TOOLS_PAGE){
+            if(encoder==4){do{smk37_tool=smk37_wrap(smk37_tool,direction,12);}while(smk37_tool==7);}
+            if(encoder==5)smk37_lane=smk37_wrap(smk37_lane,direction,NLANE);return;
+        }
+        if(smk37_page==SMK37_PRESET_PAGE){if(encoder==4)smk37_user_slot=smk37_wrap(smk37_user_slot,direction,8);return;}
         if(smk37_page==SMK37_PERFORM_PAGE){perf_k[encoder-4]=clamp(perf_k[encoder-4]+direction,encoder==4?-100:0,100);return;}
         if(smk37_page==SMK37_AUTOMATION_PAGE){
             if(encoder==4)smk37_edit_step=smk37_wrap(smk37_edit_step,direction,NSTEP);
@@ -197,6 +230,7 @@ static void smk37_turn(unsigned encoder, int direction)
         int16_t *value;
         const param_desc_t *d = page_desc(&smk37_sound_pages[smk37_page], encoder-4, &value);
         if (d && value) {
+            if(chain.running && smk37_sound_pages[smk37_page].scope!=SC_GLOBAL && chain_owns(smk37_sound_pages[smk37_page].id[encoder-4]))return;
             *value = (int16_t)enum_step(d, *value, clamp(*value+direction, d->min, d->max));
             const page_t *pg=&smk37_sound_pages[smk37_page];
             if(smk37_learn_on && pg->scope!=SC_GLOBAL){smk37_learn_track=song.sel;smk37_learn_param=pg->id[encoder-4];ml_heard=0;ml_arm=1;}
@@ -208,10 +242,20 @@ static void smk37_turn(unsigned encoder, int direction)
  * with notes in the audio consumer. Diagnostics deliberately ignore actions. */
 static void smk37_button_event(unsigned button)
 {
-    if (button >= 18 || smk37_page >= SMK37_SOUND_PAGES) return;
+    if (button >= 18 || smk37_page >= SMK37_SOUND_PAGES || smk37_song_loading) return;
     track_t *t=TSEL;
     unsigned part=song.sel%NTRK;
     int direction=button==2 ? -1 : 1;
+    if(smk37_page==SMK37_SONG_PAGE && (button==2 || button==3)){
+        if(chain.running || chain.armed)return;
+        if(button==3 && chain_config.count<CHAIN_ROWS){chain_config.row[chain_config.count]=chain_row_of(smk37_project_slot,1);smk37_song_row=chain_config.count++;}
+        if(button==2 && chain_config.count){for(unsigned i=smk37_song_row;i+1<chain_config.count;++i)chain_config.row[i]=chain_config.row[i+1];--chain_config.count;if(smk37_song_row && smk37_song_row>=chain_config.count)--smk37_song_row;}
+        return;
+    }
+    if(smk37_page==SMK37_TOOLS_PAGE && (button==2 || button==3)){if(button==2)smk37_pattern_undo();else smk37_tool_action();return;}
+    if(smk37_page==SMK37_PRESET_PAGE && (button==2 || button==3)){
+        if(!smk37_user_request)smk37_user_request=(smk37_user_slot<<2)|(button==2?1:2);return;
+    }
     if(smk37_page==SMK37_AUTOMATION_PAGE && (button==2 || button==3)){
         if(button==2){motion_delete_event(t,smk37_edit_step,smk37_auto_param);smk37_notice="EVENT REMOVED";}
         else{unsigned rc=smk37_auto_lock?motion_set_lock(t,smk37_edit_step,smk37_auto_param,smk37_auto_value):motion_set_event(t,smk37_edit_step,smk37_auto_param,smk37_auto_value);
@@ -229,6 +273,7 @@ static void smk37_button_event(unsigned button)
     switch (button) {
     case 0:
         smk37_knob_bank ^= 1;
+        smk37_notice=smk37_knob_bank?"BANK 2: TRACK ENGINE PAGE":"BANK 1: FM-1 CONTROLS";smk37_notice_at=fm1_ms;
         memset(smk37_encoder_phase, 0, sizeof smk37_encoder_phase);
         break;
     case 1: smk37_fader_bank ^= 1; break;
@@ -271,6 +316,7 @@ static void smk37_button_event(unsigned button)
     case 14: smk37_page=smk37_page==7?27:smk37_page==27?SMK37_PERFORM_PAGE:7; smk37_patch_mode=0; break;
     case 15: smk37_page=smk37_page==23 ? SMK37_STEP_PAGE : smk37_page==SMK37_STEP_PAGE ? SMK37_DETAIL_PAGE : smk37_page==SMK37_DETAIL_PAGE ? SMK37_AUTOMATION_PAGE : 23; smk37_patch_mode=0; break;
     case 16:
+        if(smk37_page==SMK37_SONG_PAGE && !song.playing && !transport_req){smk37_song_request=1;break;}
         transport_req=(song.playing || transport_req==1) ? 2 : 1;
         if (transport_req==2) { song.rec=0; for(unsigned i=0;i<NTRK;++i) trk[i].rh_n=0; }
         break;

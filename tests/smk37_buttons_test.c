@@ -32,22 +32,24 @@ static void knob_cycle(unsigned encoder, int direction)
 int main(void)
 {
     smk37_synth_init(); tick();
-    /* Each physical encoder can edit in its bank; no second sign reversal. */
+    {
+    /* K1..K4 stay on physical knobs 5..8 in both banks, with stock polarity. */
     smk37_page=3;
-    for(unsigned i=0;i<8;++i) {
-        smk37_knob_bank=i<4;
-        int16_t *value;
-        const param_desc_t *desc=page_desc(&smk37_sound_pages[3],i%4,&value);
-        assert(desc && value);
-        int old=*value; *value=50;
-        knob_cycle(i,1); assert(*value==51);
-        knob_cycle(i,-1); assert(*value==50);
-        *value=old;
+    for(unsigned bank=0;bank<2;++bank)for(unsigned i=4;i<8;++i){
+        smk37_knob_bank=bank;int16_t *value;
+        const param_desc_t *desc=page_desc(&smk37_sound_pages[3],i-4,&value);assert(desc&&value);
+        int old=*value;*value=50;knob_cycle(i,1);assert(*value==51);knob_cycle(i,-1);assert(*value==50);*value=old;
     }
+    smk37_knob_bank=0;smk37_page=0;
+    unsigned volume=song.master_q12;int tempo=song.g[G_BPM];
+    knob_cycle(0,1);assert(song.master_q12==volume+32);knob_cycle(0,-1);assert(song.master_q12==volume);
+    knob_cycle(1,1);assert(song.g[G_BPM]==tempo+1);knob_cycle(1,-1);assert(song.g[G_BPM]==tempo);
+    knob_cycle(3,1);assert(song.sel==1);knob_cycle(3,-1);assert(song.sel==0);
+    unsigned preset=TSEL->preset;knob_cycle(2,1);assert(TSEL->preset!=preset);knob_cycle(2,-1);assert(TSEL->preset==preset);
+    smk37_knob_bank=1;knob_cycle(3,1);assert(smk37_page==1);knob_cycle(3,-1);assert(smk37_page==0);
+    unsigned engine=TSEL->eng_req;knob_cycle(1,1);assert(TSEL->eng_req!=engine);knob_cycle(1,-1);assert(TSEL->eng_req==engine);
     smk37_knob_bank=0;
-    smk37_page=0;
-    knob_cycle(3,1); assert(smk37_page==1);
-    knob_cycle(3,-1); assert(smk37_page==0);
+    }
     smk37_patch_mode=1;
     assert(smk37_indicator_status()&(1u<<12));
     /* Each navigation shortcut opens a real parameter page. */
@@ -100,9 +102,17 @@ int main(void)
     /* Banking does not change sound until a knob/fader actually moves. */
     press(13); smk37_encoder_event(0,1);
     press(1); assert(smk37_knob_bank && !smk37_encoder_phase[0]);
-    int level=TSEL->p[P_LEVEL]; smk37_turn(0,-1); assert(TSEL->p[P_LEVEL]==level-1);
-    smk37_turn(4,1); assert(song.sel==1); smk37_turn(4,-1); assert(song.sel==0);
+    smk37_turn(0,1); assert(song.sel==1); smk37_turn(0,-1); assert(song.sel==0);
+    int level=TSEL->p[P_LEVEL]; smk37_turn(4,-1); assert(TSEL->p[P_LEVEL]==level-1);
     press(1); assert(!smk37_knob_bank);
+    uint32_t master=song.master_q12;unsigned page=smk37_page;int bpm=song.g[G_BPM];
+    smk37_turn(0,1);assert(song.master_q12==master+32 && TSEL->p[P_LEVEL]==level-1);
+    smk37_turn(1,1);assert(song.g[G_BPM]==bpm+1 && smk37_page==page);
+    smk37_turn(3,1);assert(song.sel==1 && smk37_page==page);smk37_turn(3,-1);assert(song.sel==0);
+    smk37_turn(4,1);assert(TSEL->p[P_LEVEL]==level);
+    for(unsigned i=0;i<200;++i)smk37_turn(0,-1);assert(!song.master_q12);
+    for(unsigned i=0;i<200;++i)smk37_turn(0,1);assert(song.master_q12==4096);
+    song.master_q12=master;
     uint16_t raw[6]={400,400,400,400,528,630};
     smk37_analog_playback(raw,63);
     int attack=TSEL->p[P_ATK]; press(2); smk37_analog_playback(raw,63);

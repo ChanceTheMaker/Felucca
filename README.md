@@ -4,10 +4,12 @@ Felucca [Salt] by Chance Roth (@ChanceTheMaker), based on Felucca by Leo Kuroshi
 and Hügelton Instruments. This branch integrates **Felucca 1.5.1 into the SMK-37
 Pro & Elite project**, based on upstream `a4d7ca2`.
 
-**Test13 is a local hardware-test candidate.** The owner's Pro passed Test12's
-normal-USB update, controls, sound, sustain and project-save checks. Test13 adds
-the newer sound engine, effects, sequencing details, automation and MIDI control
-features. See [integration and testing notes](docs/smk37/UPSTREAM_1.5.1.md).
+**Test14 is a local hardware-test candidate.** The owner's Pro passed Test12's
+normal-USB update, controls, sound, sustain and project-save checks. Test14 adds
+upstream 1.5.1 synthesis/effects, sequencing details, automation and MIDI control,
+plus song sections, sequence tools/undo, eight device presets and FM-1-style
+bank-1 controls. See [Test14 controls and testing notes](docs/smk37/TEST14.md)
+and [upstream integration details](docs/smk37/UPSTREAM_1.5.1.md).
 
 The private installer package remains matched to the backed-up Pro test device.
 It is not a stock-first-install image or a public firmware release. Public-site

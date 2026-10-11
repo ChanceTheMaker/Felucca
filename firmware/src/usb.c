@@ -17,6 +17,9 @@
  * USB frame from the TIMER5 ISR, nested in the render too (main.c). The
  * update loader leaves both off: MIDI only. */
 #include "../hal/fm1_usb.h"   /* registers; relative, so the loader and the host tests find it too */
+#ifndef FELUCCA_SYSEX
+#define FELUCCA_SYSEX FELUCCA_OTA
+#endif
 #ifndef FELUCCA_CDC
 #define FELUCCA_CDC 0
 #endif
@@ -107,7 +110,7 @@ static struct {
     volatile uint8_t ota_req;    /* F0 22 24 35 7F F7: M-UPGRADE upgrade command (FELUCCA_OTA) */
 } usb;
 
-#if FELUCCA_OTA
+#if FELUCCA_SYSEX
 /* M-UPGRADE SysEx (ota.c): one received frame at a time (7-bit bytes between
  * F0 and F7; frames arriving while one is pending are dropped, the host
  * retries), and a TX ring of SysEx event packets sent before any MIDI. */
@@ -594,7 +597,7 @@ static void sysex_byte(uint8_t b)
         return;                                        /* realtime may occur anywhere in SysEx */
     if ((b & 0x80u) && b != 0xF0u && b != 0xF7u) {
         usb.sx_on = 0;
-#if FELUCCA_OTA
+#if FELUCCA_SYSEX
         sx_collect = 0;
 #endif
         return;                                        /* another status aborts the unfinished frame */
@@ -602,14 +605,14 @@ static void sysex_byte(uint8_t b)
     if (b == 0xF0) {
         usb.sx_on = 1;
         usb.sx_len = 0;
-#if FELUCCA_OTA
+#if FELUCCA_SYSEX
         sx_collect = !sx_ready;
         sx_pos = 0;
 #endif
     }
     if (!usb.sx_on)
         return;
-#if FELUCCA_OTA
+#if FELUCCA_SYSEX
     if (sx_collect && b != 0xF0 && b != 0xF7) {
         if (sx_pos < sizeof sx_frame)
             sx_frame[sx_pos++] = b;
@@ -625,10 +628,12 @@ static void sysex_byte(uint8_t b)
             ok = usb.sysex[i] == UBOOT_KEY[i];
         if (ok)
             usb.uboot_req = 1;
+#if FELUCCA_SYSEX
 #if FELUCCA_OTA
         else if (usb.sx_len == 6u && usb.sysex[1] == 0x22 && usb.sysex[2] == 0x24 && usb.sysex[3] == 0x35 &&
                  usb.sysex[4] == 0x7F)
             usb.ota_req = 1;
+#endif
         else if (sx_collect && sx_pos) {
             sx_frame_len = sx_pos;
             RING_PUBLISH();
@@ -651,7 +656,7 @@ static void midi_in_event(uint32_t pkt)                 /* one USB-MIDI event pa
     }
     if (st >= 0x80u && st < 0xF8u) {
         usb.sx_on = 0;                                 /* channel/system common also ends SysEx */
-#if FELUCCA_OTA
+#if FELUCCA_SYSEX
         sx_collect = 0;
 #endif
     }
@@ -704,7 +709,7 @@ static void ep1_rx(void)                                /* leaves the packet (NA
     sie_wr(S_RXCSR2, csr >> 8);
 }
 
-#if FELUCCA_OTA
+#if FELUCCA_SYSEX
 /* ---- SysEx frames for the main loop (ota.c / editor.c hooks; felucca.c and the
  * update loader supply ota_now_ms / ota_idle) ---- */
 static uint32_t ota_now_ms(void);
@@ -753,7 +758,7 @@ static void ota_frame_done(void)
 static void ep1_tx(void)
 {
     uint32_t csr, n = 0;
-#if FELUCCA_OTA
+#if FELUCCA_SYSEX
     if (mo_w == mo_r && so_w == so_r)
         return;
 #else
@@ -766,7 +771,7 @@ static void ep1_tx(void)
         return;                                         /* previous packet still pending */
     if (csr & 0x80u)
         sie_wr(S_TXCSR1, csr & ~0x80u);
-#if FELUCCA_OTA
+#if FELUCCA_SYSEX
     while (so_r != so_w && n < 64u) {                   /* SysEx first, never split by notes */
         uint32_t pkt = sx_out_q[so_r % SXQ];
         ep1tx[n] = (uint8_t)pkt;
@@ -1029,7 +1034,7 @@ static void usb_poll(void)                              /* TIMER5 ISR, 2 kHz */
         usb.suspended = 0;
         mo_r = mo_w;                                    /* nothing stale for the next host */
         usb.sx_on = 0;
-#if FELUCCA_OTA
+#if FELUCCA_SYSEX
         so_r = so_w;
         sx_collect = 0;
 #endif

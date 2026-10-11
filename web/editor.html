@@ -2375,6 +2375,10 @@ function devicePresetRows(info, names, preferences) {
 
 /* Browser keyboard: each pointer/key owns its note. Shared pitches send one
  * Note On and only release after their final owner lets go. */
+function keyboardHardware(version = "") {
+  return /SMK[- ]?37/i.test(version) ? { name: "SMK-37", offset: 0, count: 37, whites: 22, maxOctave: 6 }
+    : { name: "FM-1", offset: 5, count: 27, whites: 16, maxOctave: 7 };
+}
 class BrowserKeyboard {
   constructor(onChange = () => {}) {
     this.output = null; this.channel = 0; this.held = new Map(); this.sustain = false; this.onChange = onChange;
@@ -2763,6 +2767,7 @@ async function load(d) {
     /* the first frame after opening the port can be lost: a few tries */
     d.info = parse[CMD.INFO](await sessionRequest(d, req.info(), { timeout: 500, retries: 3 }));
     $("version").textContent = d.info.version;
+    renderPlayKeys();
     const total = d.info.pcount + d.info.gcount;
     for (let i = 0; i < d.info.pcount; i++) { sayK("reading", `${i + 1}/${total}`); d.pdesc[i] = await getDescOrNull(0, i, d); }
     for (let i = 0; i < d.info.gcount; i++) { sayK("reading", `${d.info.pcount + i + 1}/${total}`); d.gdesc[i] = await getDescOrNull(1, i, d); }
@@ -3095,7 +3100,7 @@ function renderSlots() {
     box.append(el("span", { text: String.fromCharCode(65 + i) }),
       el("span", { class: "dim", text: u == null ? t("unknown") : t(u ? "used" : "empty") }),
       el("button", { ic: "symbol_folder_open", onclick: () => project(0, i) }, t("load")),
-      el("button", { ic: "port_disk", onclick: () => project(1, i) }, t("save")));
+      el("button", { ic: "port_disk", disabled: /SMK37 TEST(?:09|10)$/.test(dev?.info?.version || ""), title: /SMK37 TEST(?:09|10)$/.test(dev?.info?.version || "") ? "Device saving is disabled in this test build" : "", onclick: () => project(1, i) }, t("save")));
   }
 }
 async function project(op, slot) {
@@ -4726,13 +4731,15 @@ function renderPlayKeys(resizing = false) {
   if (resizing && (playKeyboard.held.size || playPointers.size)) { playResizePending = true; return; }
   if (!resizing) { playKeyboard.releaseAll(); playPointers.clear(); }
   $("play-oct-down").disabled = Number($("play-octave").value) <= -1;
-  $("play-oct-up").disabled = Number($("play-octave").value) >= 7;
-  const base = (Number($("play-octave").value) + 1) * 12 + 5;
+  const hardware = keyboardHardware(dev?.info?.version);
+  if (Number($("play-octave").value) > hardware.maxOctave) $("play-octave").value = String(hardware.maxOctave);
+  $("play-oct-up").disabled = Number($("play-octave").value) >= hardware.maxOctave;
+  const base = (Number($("play-octave").value) + 1) * 12 + hardware.offset;
   const blackNote = note => [1, 3, 6, 8, 10].includes(note % 12);
   const width = $("play-keys").getBoundingClientRect().width;
-  // Keep all 27 hardware keys; add balanced white-key steps when each can stay ~40px wide.
-  const extra = Math.max(0, Math.min(59, Math.floor(width / 40) - 16));
-  let first = base, last = base + 26, whiteCount = 16;
+  // Keep the connected instrument's hardware span, then add balanced extra keys.
+  const extra = Math.max(0, Math.min(59, Math.floor(width / 40) - hardware.whites));
+  let first = base, last = base + hardware.count - 1, whiteCount = hardware.whites;
   for (let i = 0; i < extra; i++) {
     const left = (i % 2 === 0 && first > 0) || last >= 127;
     if (left && first > 0) { do { first--; } while (first > 0 && blackNote(first)); }
@@ -4747,12 +4754,12 @@ function renderPlayKeys(resizing = false) {
   $("play-keys").style.setProperty('--white-keys', whiteCount);
   let whites = 0;
   for (let note = first; note <= last; note++) {
-    const offset = note - base, black = blackNote(note), extended = offset < 0 || offset >= 27;
+    const offset = note - base, black = blackNote(note), extended = offset < 0 || offset >= hardware.count;
     const button = el("button", { type: "button", class: [black ? "black" : "", extended ? "extended" : ""].filter(Boolean).join(" "), "aria-label": noteName(note), "aria-pressed": "false" });
     button.dataset.note = note;
     button.dataset.hardware = String(!extended);
-    if (note === base || note === base + 26) button.dataset.edge = note === base ? 'start' : 'end';
-    if (extended) button.title = `${noteName(note)} — beyond the FM-1's 27 keys`;
+    if (note === base || note === base + hardware.count - 1) button.dataset.edge = note === base ? 'start' : 'end';
+    if (extended) button.title = `${noteName(note)} — beyond the ${hardware.name}'s ${hardware.count} keys`;
     button.style.left = `${black ? whites * 100 / whiteCount - 30 / whiteCount : whites++ * 100 / whiteCount}%`;
     button.append(el("span", { text: noteName(note) }), el("small", { text: playCodes[offset]?.replace("Key", "").replace("Semicolon", ";") || "\u00a0" }));
     $("play-keys").append(button);
@@ -4798,7 +4805,7 @@ window.addEventListener("keydown", (e) => {
   if (!$("play-typing").checked || e.target.closest?.("input, select, textarea, [contenteditable]:not([contenteditable='false']), [role='textbox'], [role='dialog']")) return;
   const offset = playCodes.indexOf(e.code);
   if (offset < 0 || !playKeyboard.output) return;
-  e.preventDefault(); playDown(`key:${e.code}`, (Number($("play-octave").value) + 1) * 12 + 5 + offset);
+  e.preventDefault(); playDown(`key:${e.code}`, (Number($("play-octave").value) + 1) * 12 + keyboardHardware(dev?.info?.version).offset + offset);
 });
 window.addEventListener("keyup", (e) => {
   playKeyboard.release(`key:${e.code}`); playKeyboard.release(`button:${e.code}`);

@@ -12,6 +12,9 @@
 #define NPART 4                  /* synth parts: tracks 1..4 */
 #define NTRK NPART               /* tracks (the formats and the protocol count these): every track is a part */
 #define NSTEP 64
+#ifndef FELUCCA_KEY_COUNT
+#define FELUCCA_KEY_COUNT 27u
+#endif
 #define HALF_FRAMES 128          /* I2S half buffer: 2.9 ms at 44.1 kHz (a key waits 0..1 half, then plays 1 half later) */
 #ifndef FELUCCA_SLICE
 #define FELUCCA_SLICE 1          /* the SLICE engine (eng_slice.c), engine 13; FELUCCA_SLICE=0 builds without it */

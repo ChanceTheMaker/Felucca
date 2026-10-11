@@ -1,7 +1,12 @@
 # SMK37 preparation
 
-Run Felucca natively on the incoming M-VAVE SMK-37 Pro, with a shared Pro/Elite
-hardware target. This is pre-arrival development, not installable SMK firmware.
+The SMK-37 Pro port has reached a hardware-tested private beta on the owner's
+unit. Test12 plays Felucca's engines with the piano keys, pads and panel controls,
+supports sustain and saved projects, and updates through normal USB after a
+one-time recovery-adapter bootstrap. See [USB installation](smk37/USB_INSTALLER.md)
+for test evidence and remaining limitations. Packages contain unit-specific stock
+data and remain local; there is no public, redistributable SMK firmware release.
+Elite hardware has not been tested.
 Base: Salt RC1 `7b1164abd2322c279faf9bb57ae22283466b9f53`, incorporating upstream
 v1.0.1 `20c275e39f75fa820978032efaceddfc5283c8cb`. No firmware or protocol
 changes have been imported from another project in this round.
@@ -103,6 +108,31 @@ must be measured before choosing polyphonic versus channel aftertouch behavior.
 
 ## Bring-up acceptance
 
+### Current evidence audit (October 8)
+
+The current artifact is an experimental sound application, **not the completed SMK
+Felucca port**. Sixteen driver host suites and a processor link do not satisfy
+the acceptance stages below.
+
+| Requirement | Current evidence | Still required |
+| --- | --- | --- |
+| Separate SMK application | Own startup, scanner, ADC, display/audio drivers; shared DSP; linked image (current size/hash in build manifest) | Physical startup, RAM/clock validation |
+| Hardware mapping | Stock-derived contact tables, ADC channel/mux schedule, owner MIDI captures and photos | Verify electrical indices against every physical control on custom firmware |
+| Playing behavior | 37-key fixed-velocity adapter, provisional encoder assignments and real DSP host tests | Calibrated velocity, pad pressure, wheels/faders, physical encoder validation, pedal and transport |
+| Device interface | Track/engine/preset navigation, 23 sound pages and diagnostic page | Full sequencer, storage menus and physical standalone validation |
+| Calibration preservation | Read-only decoder tested on synthetic records; no flash writer linked | Actual unit backup and verified physical storage mapping; vendor update file is insufficient |
+| Recovery | Owner successfully used ordinary vendor update; traced software mailbox | Independently verified recovery from failed application startup; owner reports parts arrived October 10, adapter identity/wiring still unconfirmed |
+| Persistence | Disabled to avoid using FM-1 storage geometry | SMK storage implementation and restore/power-interruption validation |
+| Installation artifact | Analysis-only ELF/bin and manifest, `installable:false` | Model-specific loader/package with verified writes and protected-region preservation |
+| Final validation | Host tests, source/disassembly checks | On-device display, audio, timing, full controls, boot/recovery and Studio reconnect |
+
+Immediate hardware prerequisite: obtain a recovery path independent of this
+application and a restorable backup of the unit's calibration before any
+installation recommendation. The owner has explicitly requested no flashing.
+Until that changes, the diagnostic image can be improved offline but must not
+be promoted to an installer or represented as tested on the device. Do not use
+the FM-1 updater or fabricate calibration defaults to bypass these requirements.
+
 | Stage | Exit evidence before proceeding |
 | --- | --- |
 | Recovery | Exact board identity, restorable stock image, protected regions documented |
@@ -113,10 +143,20 @@ must be measured before choosing polyphonic versus channel aftertouch behavior.
 | Persistence/update | Calibration preserved; saves, power cycles, interruption recovery tested |
 | Product integration | Capability detection, exact model packages, backup and Studio reconnect tested |
 
-No SMK binary is built or published before these prerequisites are resolved.
+Offline integration binaries may be built for analysis. No SMK installation
+package is published or recommended before these prerequisites are resolved.
 FM-1 host tests do not substitute for SMK hardware validation.
 
 ## Prepared tools and validation
+
+- [Arrival results](smk37/ARRIVAL_RESULTS.md): observed stock controls, ports,
+  bank behavior and limitations from the October 7 physical-device session.
+- [Startup analysis](smk37/STARTUP_ANALYSIS.md): decoded stock entry-path RAM
+  operations and concrete FM-1 hardware-layer assumptions that need replacement.
+- [Board photographs](smk37/BOARD_PHOTOS.md): this unit's component markings,
+  keybed construction, scanner hypotheses and next milestones.
+- [Control tracing](smk37/CONTROL_TRACE.md): stock interrupt routines, candidate
+  scan inputs/selection table and display-transfer differences from FM-1.
 
 - [Package inventory and comparison](smk37/PACKAGES.md): 13 pinned research
   packages inspected offline; Pro/Elite wrapper and payload differences recorded.
@@ -137,3 +177,38 @@ FM-1 host tests do not substitute for SMK hardware validation.
 [declaration]: https://manuals.plus/m/fcbba55f34b76e45d57847128f5b1bff1ca6bffc0dca03cc5b4fdcabe0f1be5d.pdf
 [report]: https://device.report/m/e1477f22153841fb96635ae650f53e8ba8cc6abb6095f8c36b40d7b4067e5b4d.pdf
 [research]: https://github.com/jonathaslacerda/smk-37-pro-docs/tree/ab85d7340163ba9e171dc9396e31c034829bbc02
+
+
+## October 10 recovery and calibration update
+
+The owner's SMK entered WL82 ROM recovery through the XIAO adapter. A fixed
+RAM helper read the first 1 MiB twice with flash writes disabled; both reads
+match, and the stock firmware portion exactly matches Pro 016. The actual
+556-byte usrtrim record is at 0xC1000 and all 37 key curves validate. The owner
+confirmed normal stock operation after disconnecting the adapter. See
+[recovery evidence](smk37/RECOVERY_RESEARCH.md) for hashes and limitations.
+
+`tools/smk37_backup.py FIRST SECOND PRO016_PACKAGE` reproduces the offline
+checks and rejects mismatched reads, invalid calibration, or unreviewed stock
+packages. `tools/build_smk37.py --stock-backups FIRST SECOND --stock-package
+PRO016_PACKAGE` validates those inputs before building and records their
+metadata in the manifest. It does not embed private backup/calibration data
+or enable calibrated velocity without physical scanner timing validation.
+Installation remains disabled; neither custom startup nor SMK flash restoration
+has been hardware tested. The historical October 8 table above is superseded
+for backup, calibration location and ROM entry only.
+
+## October 10 playable hardware and Test09 update
+
+The historical installation/startup gates above are superseded for the owner's
+specific unit by Test01-08 application installs with complete readback. Test08
+has working piano/pads/audio/display, all-eight clockwise knob directions,
+function/bank buttons, analog wheels/faders and indicator lights. Detailed
+qualitative results and remaining gaps are recorded in smk37/CONTROL_TRACE.md.
+This does not certify stock restoration or another unit's compatibility.
+
+Test09 adds velocity curves, USB editor replies and RAM step editing, plus
+read-only storage and pedal diagnostics. Saving remains compile-time disabled;
+physical sustain mapping is pending. See smk37/SOUND_CONTROLS.md for controls,
+the four-slot persistence design, host coverage and next hardware gates. Private
+packaging never changes the public installer or the FM-1 firmware.

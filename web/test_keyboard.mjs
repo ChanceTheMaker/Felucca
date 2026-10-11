@@ -34,3 +34,10 @@ assert.equal(k.sustain, false); assert.equal(k.held.size, 0);
 // Parse the complete script too, including UI wiring, without requiring a DOM.
 new vm.Script(html.match(/<script>([\s\S]*?)<\/script>/)[1]);
 console.log('Browser keyboard: chords, shared notes, repeats, release, sustain, channel changes, disconnect, glissando, bounds and send errors passed.');
+
+const profile = vm.runInNewContext(proto + ";keyboardHardware", { console, setTimeout, clearTimeout });
+assert.equal(profile("FELUCCA SMK37 TEST09").count, 37);
+assert.equal(profile("FELUCCA SMK37 TEST09").offset, 0);
+assert.equal(profile("FELUCCA 1.0").count, 27);
+assert.equal(profile("FELUCCA 1.0").offset, 5);
+console.log("Keyboard device profiles: SMK C3..C6 and FM-1 F3..G5 passed.");

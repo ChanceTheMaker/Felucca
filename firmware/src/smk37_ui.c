@@ -1,0 +1,253 @@
+/* SPDX-License-Identifier: GPL-3.0-only
+ * Preset-loading semantics derived from ui.c:
+ * Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hugelton Instruments */
+/* SMK sound controls, serialized with the audio consumer. Encoder numbers are
+ * electrical scan indices, not yet verified panel positions. No storage IO. */
+static const page_t smk37_sound_pages[] = {
+    {"MIX", 0, SC_TRACK, GR_NONE, {P_LEVEL,P_PAN,P_MUTE,P_TRANS}},
+    {"ENGINE 1", 0, SC_ENGINE, GR_NONE, {P_E0,P_E1,P_E2,P_E3}},
+    {"ENGINE 2", 0, SC_ENGINE, GR_NONE, {P_E4,P_E5,P_E6,P_E7}},
+    {"ENVELOPE", 0, SC_TRACK, GR_NONE, {P_ATK,P_DEC,P_SUS,P_REL}},
+    {"ENV DEST", 0, SC_TRACK, GR_NONE, {P_ED_FLT,P_ED_PIT,P_ED_SHP,255}},
+    {"LFO", 0, SC_TRACK, GR_NONE, {P_LRATE,P_LWAVE,P_LPHASE,P_LFADE}},
+    {"LFO DEST", 0, SC_TRACK, GR_NONE, {P_LD_PIT,P_LD_FLT,P_LD_SHP,P_LD_AMP}},
+    {"EFFECTS", 0, SC_TRACK, GR_NONE, {P_DIST,P_CHOR,P_DLY,P_REV}},
+    {"DELAY", 0, SC_GLOBAL, GR_NONE, {G_DTIME,G_DFDBK,G_DCOLOR,G_DMIX}},
+    {"REVERB", 0, SC_GLOBAL, GR_NONE, {G_RTYPE,G_RSIZE,G_RDAMP,255}},
+    {"CHORUS", 0, SC_GLOBAL, GR_NONE, {G_CRATE,G_CDEPTH,255,255}},
+    {"VOICE", 0, SC_TRACK, GR_NONE, {P_VOICE,P_GLIDE,P_GLMODE,P_PRIO}},
+    {"VOICE 2", 0, SC_TRACK, GR_NONE, {P_ALLOC,P_DETUNE,P_PAN,P_MUTE}},
+    {"SCALE", 0, SC_TRACK, GR_NONE, {P_ROOT,P_SCALE,P_QUANT,P_TRANS}},
+    {"CHORD", 0, SC_TRACK, GR_NONE, {P_CHRD,P_VOIC,255,255}},
+    {"ARP", 0, SC_TRACK, GR_NONE, {P_AMODE,P_ARATE,P_AOCT,P_AGATE}},
+    {"ARP 2", 0, SC_TRACK, GR_NONE, {P_ASWING,P_APROB,P_AHOLD,P_AORDER}},
+    {"SLICER", 0, SC_TRACK, GR_NONE, {P_SLCR,P_SLPAT,P_SLRATE,P_SLDEPTH}},
+    {"TEMPO", 0, SC_GLOBAL, GR_NONE, {G_BPM,G_SWING,G_TUNE,255}},
+    {"MOD 1", 0, SC_TRACK, GR_NONE, {P_M1SRC,P_M1DST,P_M1AMT,255}},
+    {"MOD 2", 0, SC_TRACK, GR_NONE, {P_M1SRC+3,P_M1DST+3,P_M1AMT+3,255}},
+    {"MOD 3", 0, SC_TRACK, GR_NONE, {P_M1SRC+6,P_M1DST+6,P_M1AMT+6,255}},
+    {"MOD 4", 0, SC_TRACK, GR_NONE, {P_M1SRC+9,P_M1DST+9,P_M1AMT+9,255}},
+    {"SEQUENCER", 0, SC_TRACK, GR_NONE, {P_SLEN,P_SDIV,P_SSWING,P_SGATE}},
+    {"STEP EDIT", 0, SC_TRACK, GR_NONE, {255,255,255,255}},
+    {"CONTROLS", 0, SC_TRACK, GR_NONE, {255,255,255,255}},
+    {"PROJECTS", 0, SC_TRACK, GR_NONE, {255,255,255,255}},
+};
+#define SMK37_STEP_PAGE 24u
+#define SMK37_SETTINGS_PAGE 25u
+#define SMK37_PROJECT_PAGE 26u
+#define SMK37_SOUND_PAGES (sizeof smk37_sound_pages / sizeof smk37_sound_pages[0])
+#define SMK37_ANALOG_PAGE SMK37_SOUND_PAGES
+#define SMK37_BUTTON_PAGE (SMK37_SOUND_PAGES+1u)
+#define SMK37_LIGHT_PAGE (SMK37_SOUND_PAGES+2u)
+#define SMK37_PEDAL_PAGE (SMK37_SOUND_PAGES+3u)
+#define SMK37_PAGE_COUNT (SMK37_SOUND_PAGES+4u)
+static uint8_t smk37_page;
+static uint8_t smk37_knob_bank, smk37_fader_bank, smk37_patch_mode = 1;
+static uint8_t smk37_pad_bank, smk37_velocity_mode, smk37_edit_step, smk37_project_slot;
+/* Requests are consumed by the main loop, never flash from the audio ISR. */
+static volatile uint8_t smk37_project_request;
+static uint8_t smk37_pedal_down;
+static uint8_t smk37_saved_arp[NTRK], smk37_saved_chord[NTRK], smk37_saved_quant[NTRK];
+static const char *smk37_notice;
+static uint32_t smk37_notice_at;
+/* Light diagnostics only: OFF, PAD1..16, INDICATOR1..19. */
+static uint8_t smk37_light_target, smk37_light_color, smk37_light_level = 4;
+static int8_t smk37_encoder_phase[8];
+
+static unsigned smk37_wrap(unsigned value, int direction, unsigned count)
+{
+    return direction > 0 ? (value+1u)%count : (value+count-1u)%count;
+}
+
+/* Same sound/preserved-track semantics as ui.c apply_preset_to; no undo or
+ * persistent storage is available in the bring-up target. */
+static void smk37_load_preset(track_t *t, unsigned index)
+{
+    const engine_t *e = ENGINES[t->eng_req];
+    if (!e->npresets) return;
+    index %= e->npresets;
+    if (e->presets == SMP_PRESET_TABLE && index < SMP_NSETS)
+        index = SMP_SET_ORIG[index];
+    const preset_t *p = &e->presets[index];
+    panic_req |= (uint8_t)(1u << trk_index(t));
+    t->preset = (uint8_t)index;
+    t->user = 0;
+    for (unsigned i = 0; i < P_E0; ++i)
+        if (!(i == P_LEVEL || i == P_PAN || i == P_MUTE ||
+              (i >= P_AMODE && i <= P_SGATE) ||
+              (i >= P_SLCR && i <= P_SLDEPTH) || i == P_CHRD || i == P_VOIC))
+            t->p[i] = TP[i].def;
+    for (unsigned i = 0; i < 8; ++i) t->p[P_E0+i] = p->e[i];
+    for (unsigned i = 0; i < 4; ++i) t->p[P_ATK+i] = p->env[i];
+    t->p[P_ED_FLT] = p->fenv;
+    t->p[P_VOICE] = p->mono ? V_LEGATO : V_POLY;
+    static const uint8_t defaults[4] = {0,24,28,36};
+    for (unsigned i = 0; i < 4; ++i)
+        t->p[P_DIST+i] = p->fx[i] ? p->fx[i]-1 : defaults[i];
+    fm6_track_loaded(t);
+}
+
+static void smk37_turn(unsigned encoder, int direction)
+{
+    if (encoder >= 8 || !direction) return;
+    direction = direction > 0 ? 1 : -1;
+    if (smk37_page == SMK37_LIGHT_PAGE && encoder != 3) {
+        if (encoder == 0) smk37_light_target = smk37_wrap(smk37_light_target, direction, 36);
+        if (encoder == 1) smk37_light_color = smk37_wrap(smk37_light_color, direction, 3);
+        if (encoder == 2) smk37_light_level = clamp(smk37_light_level+direction, 1, 8);
+        return;
+    }
+    if ((smk37_page == SMK37_BUTTON_PAGE || smk37_page == SMK37_PEDAL_PAGE) && encoder != 3) return;
+    if (smk37_page < SMK37_SOUND_PAGES && smk37_knob_bank) encoder ^= 4u;
+    track_t *t = TSEL;
+    if (encoder == 0) song.sel = smk37_wrap(song.sel, direction, NTRK);
+    else if (encoder == 1) {
+        unsigned engine = t->eng_req;
+        do { engine = smk37_wrap(engine, direction, NENGINES); }
+        while (!FELUCCA_FM4 && engine == ENGI_DIGITAL);
+        t->eng_req = (uint8_t)engine;
+        for (unsigned i = 0; i < 8; ++i) t->p[P_E0+i] = ENGINES[engine]->edit[i].def;
+        smk37_load_preset(t, 0);
+    } else if (encoder == 2) {
+        const engine_t *e = ENGINES[t->eng_req];
+        if (!e->npresets) return;
+        unsigned p = t->preset;
+        do { p = smk37_wrap(p, direction, e->npresets); }
+        while (e->presets == SMP_PRESET_TABLE && p < SMP_NSETS && SMP_SET_ORIG[p] != p);
+        smk37_load_preset(t, p);
+    } else if (encoder == 3) {
+        smk37_page = smk37_wrap(smk37_page, direction, SMK37_PAGE_COUNT);
+        smk37_patch_mode = 0;
+    }
+    else if (smk37_page < SMK37_SOUND_PAGES) {
+        if (smk37_page==SMK37_SETTINGS_PAGE) {
+            if(encoder==4) smk37_velocity_mode=smk37_wrap(smk37_velocity_mode,direction,4);
+            if(encoder==5) smk37_pad_bank^=1;
+            return;
+        }
+        if (smk37_page==SMK37_PROJECT_PAGE) {
+            if(encoder==4) smk37_project_slot=smk37_wrap(smk37_project_slot,direction,4);
+            return;
+        }
+        if (smk37_page==SMK37_STEP_PAGE) {
+            step_t *s=&TSEL->step[smk37_edit_step];
+            if(encoder==4) smk37_edit_step=smk37_wrap(smk37_edit_step,direction,NSTEP);
+            if(encoder==5) { s->note[0]=clamp(s->note[0]+direction,0,127); s->n=1; }
+            if(encoder==6) s->vel=clamp(s->vel+direction,1,127);
+            if(encoder==7) s->time=smk37_wrap(s->time,direction,3);
+            return;
+        }
+        int16_t *value;
+        const param_desc_t *d = page_desc(&smk37_sound_pages[smk37_page], encoder-4, &value);
+        if (d && value)
+            *value = (int16_t)enum_step(d, *value, clamp(*value+direction, d->min, d->max));
+    }
+}
+
+/* Owner-confirmed physical button IDs B01..B18. Press edges only, serialized
+ * with notes in the audio consumer. Diagnostics deliberately ignore actions. */
+static void smk37_button_event(unsigned button)
+{
+    if (button >= 18 || smk37_page >= SMK37_SOUND_PAGES) return;
+    track_t *t=TSEL;
+    unsigned part=song.sel%NTRK;
+    int direction=button==2 ? -1 : 1;
+    if(smk37_page==SMK37_PROJECT_PAGE && (button==2 || button==3)) {
+        if(!smk37_project_request) smk37_project_request=(uint8_t)((smk37_project_slot<<2)|(button==2 ? 1u : 2u));
+        return; /* < load, > save; explicit presses, no autosave */
+    }
+    if(smk37_page==SMK37_STEP_PAGE && (button==2 || button==3)) {
+        smk37_edit_step=(smk37_edit_step+NSTEP+direction*16)%NSTEP;
+        return;
+    }
+    switch (button) {
+    case 0:
+        smk37_knob_bank ^= 1;
+        memset(smk37_encoder_phase, 0, sizeof smk37_encoder_phase);
+        break;
+    case 1: smk37_fader_bank ^= 1; break;
+    case 2: case 3:
+        if (smk37_patch_mode) {
+            /* Preset navigation independent of the physical encoder bank. */
+            uint8_t bank=smk37_knob_bank; smk37_knob_bank=0;
+            smk37_turn(2,direction); smk37_knob_bank=bank;
+        } else smk37_page=smk37_wrap(smk37_page,direction,SMK37_SOUND_PAGES);
+        break;
+    case 4: song.octave=clamp(song.octave-1,-3,3); break;
+    case 5: song.octave=clamp(song.octave+1,-3,3); break;
+    case 6:
+        if (t->p[P_AMODE] && t->p[P_AMODE]!=6) {
+            smk37_saved_arp[part]=t->p[P_AMODE]; t->p[P_AMODE]=0;
+        } else t->p[P_AMODE]=smk37_saved_arp[part] ? smk37_saved_arp[part] : 1;
+        smk37_page=15; smk37_patch_mode=0; break;
+    case 7:
+        if (t->p[P_AMODE]==6) t->p[P_AMODE]=0;
+        else {
+            if (t->p[P_AMODE]) smk37_saved_arp[part]=t->p[P_AMODE];
+            t->p[P_AMODE]=6;
+        }
+        smk37_page=15; smk37_patch_mode=0; break;
+    case 8:
+        if (t->p[P_QUANT]) { smk37_saved_quant[part]=t->p[P_QUANT]; t->p[P_QUANT]=0; }
+        else {
+            if (!t->p[P_SCALE]) t->p[P_SCALE]=1; /* useful initial C major */
+            t->p[P_QUANT]=smk37_saved_quant[part] ? smk37_saved_quant[part] : QN_SNAP;
+        }
+        smk37_page=13; smk37_patch_mode=0; break;
+    case 9:
+        if (t->p[P_CHRD]) { smk37_saved_chord[part]=t->p[P_CHRD]; t->p[P_CHRD]=0; }
+        else t->p[P_CHRD]=smk37_saved_chord[part] ? smk37_saved_chord[part] : 3; /* major */
+        smk37_page=14; smk37_patch_mode=0; break;
+    case 10: smk37_page=smk37_page==18 ? SMK37_SETTINGS_PAGE : smk37_page==SMK37_SETTINGS_PAGE ? SMK37_PROJECT_PAGE : 18; smk37_patch_mode=0; break;
+    case 11: smk37_notice="BLUETOOTH NOT AVAILABLE"; smk37_notice_at=fm1_ms; break;
+    case 12: smk37_page=0; smk37_patch_mode=1; break;
+    case 13: smk37_page=1; smk37_patch_mode=0; break;
+    case 14: smk37_page=7; smk37_patch_mode=0; break;
+    case 15: smk37_page=smk37_page==23 ? SMK37_STEP_PAGE : 23; smk37_patch_mode=0; break;
+    case 16:
+        transport_req=(song.playing || transport_req==1) ? 2 : 1;
+        if (transport_req==2) { song.rec=0; for(unsigned i=0;i<NTRK;++i) trk[i].rh_n=0; }
+        break;
+    case 17:
+        song.rec ^= (uint8_t)(1u<<part);
+        if (!(song.rec&(1u<<part))) t->rh_n=0;
+        else if (!song.playing) transport_req=1;
+        smk37_page=23; smk37_patch_mode=0;
+        smk37_notice="RECORDING IS RAM ONLY"; smk37_notice_at=fm1_ms;
+        break;
+    }
+}
+static uint32_t smk37_indicator_status(void)
+{
+    if (smk37_page>=SMK37_SOUND_PAGES) return 0;
+    const track_t *t=TSEL;
+    uint32_t bits=0;
+    if (smk37_knob_bank) bits|=1u;
+    if (smk37_fader_bank) bits|=1u<<1;
+    if (song.octave<0) bits|=1u<<4;
+    if (song.octave>0) bits|=1u<<5;
+    if (t->p[P_AMODE] && t->p[P_AMODE]!=6) bits|=1u<<6;
+    if (t->p[P_AMODE]==6) bits|=1u<<7;
+    if (t->p[P_QUANT]) bits|=1u<<8;
+    if (t->p[P_CHRD]) bits|=1u<<9;
+    if (smk37_page==18 || smk37_page==SMK37_SETTINGS_PAGE || smk37_page==SMK37_PROJECT_PAGE) bits|=1u<<10;
+    if (smk37_patch_mode) bits|=1u<<12;
+    if ((smk37_page>=1 && smk37_page<=6) || (smk37_page>=19 && smk37_page<=22)) bits|=1u<<13;
+    if (smk37_page>=7 && smk37_page<=10) bits|=1u<<14;
+    if (smk37_page==23 || smk37_page==SMK37_STEP_PAGE) bits|=1u<<15;
+    if (song.playing) bits|=1u<<(song.rec ? 17 : 16);
+    if (song.rec) bits|=1u<<18;
+    return bits;
+}
+
+/* Four valid quadrature transitions per step, pending physical confirmation. */
+static void smk37_encoder_event(unsigned encoder, int direction)
+{
+    if (encoder >= 8 || (direction != 1 && direction != -1)) return;
+    int phase = smk37_encoder_phase[encoder] + direction;
+    if (phase == 4 || phase == -4) {
+        smk37_turn(encoder, direction);
+        phase = 0;
+    }
+    smk37_encoder_phase[encoder] = (int8_t)phase;
+}

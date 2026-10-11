@@ -1,7 +1,227 @@
 # Upstream integration status
 
-Last reviewed: **2026-10-05**. Update this record when importing or offering a
+Last reviewed: **2026-10-10**. Update this record when importing or offering a
 feature; follow [UPSTREAM_WORKFLOW.md](UPSTREAM_WORKFLOW.md).
+
+## October 10 SMK private beta and direct USB updater
+
+Test12 normal-USB installation, restart and saved-project retention were
+confirmed by the owner on the SMK-37 Pro. Test11 adapter bootstrap had full
+flash readback verification; Test12 changed four application sectors, exercising
+USB programming. Controls, sound, sustain, project persistence and two-way web
+editing have also passed owner checks. Host driver/synth regressions, protected
+flash/update tests and browser updater checks pass. See
+[USB_INSTALLER.md](smk37/USB_INSTALLER.md) and
+[CONTROL_TRACE.md](smk37/CONTROL_TRACE.md) for the evidence and its limits.
+
+This branch contains source, tests and the local SMK landing page/installer.
+Private stock backups, calibration and generated firmware packages stay outside
+Git. It is prepared for the owner's fork; no upstream submission or public-site
+publication is part of this checkpoint. Public packaging, stock first-install,
+power-loss recovery and wider-device validation remain unfinished. The RAM
+updater still requires the adapter after power loss during programming.
+
+The dated entries below preserve earlier development stages and are superseded
+by this checkpoint where hardware validation is now recorded.
+
+## October 8 SMK sound interface and startup checks
+
+The latest local build adds [sound controls](smk37/SOUND_CONTROLS.md): four-track,
+engine and factory-preset selection, 23 editable sound pages and input
+diagnostics. Encoder transitions use a separate bounded queue consumed by the
+audio ISR; the physical encoder ordering/direction/detents remain unverified.
+Startup and later preset loads now use the same complete preset initialization.
+Tests exercise every selectable engine/factory preset with active voices,
+held-key sound changes, track ownership, parameter bounds and navigation.
+The real-synth AddressSanitizer suite, FM-1 chord/MIDI regressions and all 16
+SMK driver suites pass. The processor build completes successfully.
+
+Latest image: **338200 bytes**, BSS end `0x01C1550C`, pool end `0x01C6FA70`,
+SHA256 `f9cce8a8fc54b18de01a2d003931df8e2ea1e726002f0252e69de5c3c96004dd`.
+It remains analysis-only with no flash writer; no installation, publication or
+device access occurred. This supersedes the earlier diagnostic images below.
+Physical verification, calibration, remaining panel functions, persistence and
+a verified recovery/install path remain unfinished.
+
+Recovery follow-up is recorded in [RECOVERY_RESEARCH.md](smk37/RECOVERY_RESEARCH.md).
+The official tool manual clarifies reset/handshake timing; battery-backed power
+means USB cycling alone cannot be assumed to reset the board. The community
+reader lists WL82 support as unknown, so its generic read command is not a
+verified backup route. No recovery commands were executed; binary unchanged.
+
+External ADC transport is now linked into the diagnostic application. SPI2
+owns conversion polling and mux updates; ADC IRQ is disabled. The screen
+rotates raw electrical inputs 01..24, and bounded conversion failure disables
+ADC while digital scanning continues. Sixteen driver suites pass with
+ASan/UBSan, including the joint ADC/scanner test. The processor build completes
+without the initializer warning found during the first compile. Current image:
+334088 bytes, BSS end `0x01C150EC`, pool end `0x01C6FA70`, SHA256
+`f8f1c9fa462ce355aec4d23c16c7e46905008bcbcedff633d773c9059eaaa924`.
+The manifest now explicitly lists analog mapping/settling/calibration as
+unverified. This supersedes the helper-only state below. No device access,
+flashing, push or publication occurred.
+
+Analog follow-up: local SDK definitions identify ADC inputs PA8/PC9/PA10 and
+the special `0x11900` bit as internal analog-test enable. Added an offline
+external-input scheduler covering all 24 channel/mux pairs with three scanner
+completions before conversion and explicit result ownership. All 15 driver
+suites pass under ASan/UBSan. The helper remains unconnected to hardware; it
+does not reproduce stock's internal-monitor path or pad sample cadence.
+The application binary is unchanged from the digital-control build below.
+
+Offline analog tracing now identifies ADC IRQ 24, its three-SPI-completion
+selection handshake, shared shift-word mux bits 3..5, and channel banks 1/8/2.
+The primary/secondary schedule and unresolved secondary 6..7 path are recorded
+in CONTROL_TRACE.md. This resolves scanner/ADC coordination needed for the
+remaining controls; analog hardware is still disabled. No new binary or device
+operation was needed for this trace.
+
+Digital-control follow-up: the integrated scanner decodes all 18 button
+contacts and eight quadrature encoder pairs for display diagnostics. Button
+debounce, encoder initialization, bidirectional cycles and invalid-transition
+resynchronization pass offline tests (14 driver suites with ASan/UBSan).
+Physical names/direction, detent scaling and timing are not inferred from these
+tests, and no sound-control assignment is made yet. Current image: 333408 bytes,
+BSS end `0x01C1508C`, pool end `0x01C6FA70`, SHA256
+`277f05b4063a29443187ccc57ba05bf82412cdcdc98d97be8dcddb8ef26fdcc7`.
+This supersedes the startup-only images below. No flashing or publication.
+
+Further startup review found that clearing BSS erased the early reset-source
+snapshot. Startup now retains the pre-watchdog reset/watchdog values across
+initialization and explicitly initializes the early P33 timeout counter. It
+also copies the linker RAM-text range before peripheral startup and issues
+`csync`; that section is currently empty. Thirteen driver suites pass with
+ASan/UBSan, including startup copy/zero boundaries and empty sections. Processor
+disassembly confirms inline initialization loops, synchronization, and restored
+diagnostic values. The current offline image is 332720 bytes, SHA256
+`a9b9b4e4579912336360dc2eff9ce4238023733c67c3af53ccd105b39de60815`;
+BSS/pool endpoints are unchanged from the keyboard-handoff build below.
+No hardware execution or recovery guarantee follows from these checks.
+
+The follow-up keyboard handoff preserves full contact durations in a bounded
+scanner-to-audio event queue. A loss latches until the consumer discards the
+incomplete history and releases all local keys; the display counts these loss
+episodes. Fixed velocity remains deliberate until unit calibration and timing
+are verified. Twelve driver suites pass with ASan/UBSan, including 100 complete
+37-key press/release cycles, counter wrap, capacity and loss recovery. The real
+synth test also checks all-local-key release and retrigger after a lost burst.
+The rebuilt offline image is 332636 bytes, BSS end `0x01C1505C`, SHA256
+`68b756411d862e5225ce598001205da3407fb2efc412e54c168fdb6775110809`.
+This supersedes the image hash below. No device access or flashing was performed
+in this follow-up; the owner explicitly requested continued offline work.
+
+The offline SMK application now records startup stages in retained RAM. Two
+failed warm-start attempts request the stock software-update mailbox path
+before starting peripherals. Thirty seconds of operation with recent scanner
+and audio progress clears the pending-start flag; intentional USB update entry
+does not count as a crash. Cold power-on and invalid retained state reset the
+counter. The diagnostic screen includes the previous boot stage. This policy
+is host-tested; SRAM retention, P33 reset-source behavior and successful updater
+entry are still unverified on this device. It is not a verified hardware
+recovery mechanism.
+
+SMK startup also establishes TIMER4's full period and oscillator /1 divider
+explicitly instead of accepting a possibly incompatible inherited timer.
+Eleven driver suites pass with ASan/UBSan, including the new boot policy and
+timer-inheritance tests. The updated processor image links successfully:
+332476 bytes, BSS end `0x01C14E5C`, pool end `0x01C6FA70`, SHA256
+`1fcd965c5ad659da29dea3261628c37afbe144fe1d1aae1f86c3d228d1d51aea`.
+HAL boundary and whitespace checks pass. No flash package is generated.
+
+Read-only Windows inspection found no present device matching the previously
+observed SMK VID or RP2040/Seeed recovery-adapter identifiers, and MIDI input
+enumeration returned an empty list. The owner has been asked to connect the
+stock SMK and confirm recovery-part availability. Hardware validation and a
+unit calibration backup cannot be established from the offline image/tests.
+No device commands, firmware writes, pushes or publication occurred.
+
+Subsequently the owner reconnected the keyboard and confirmed the recovery
+parts have not arrived. Windows now enumerates all three SMK MIDI inputs;
+the new USB snapshot reports `4353:B64B`, audio `00` and MIDI `03`, all `OK`.
+This removes the disconnected-device obstacle, but does not establish forced
+recovery or a calibration backup. The difference from the Pro016 compiled
+PID template is recorded in the interface/arrival notes; no flash-selection
+rule is inferred from either PID. No outgoing device commands were sent.
+
+## October 7 SMK arrival analysis
+
+Local branch `feat/smk37-arrival-analysis` extends the interface-research stack.
+[Arrival results](smk37/ARRIVAL_RESULTS.md) record receive-only stock MIDI tests,
+owner-reported successful Pro 016 installation and audible synthesis, photographed
+settings, and port/bank distinctions. [Startup analysis](smk37/STARTUP_ANALYSIS.md)
+records the decoded Pro/FM-1 entry-path comparison and source boundaries needing
+an SMK implementation. No upstream revision changed.
+
+The follow-up adds a [board-photo inventory](smk37/BOARD_PHOTOS.md) and a
+hash-pinned offline startup/RAM mapping tool. All 52 SMK preparation tests pass;
+the mapped disassembly identifies documented scanner/display candidates,
+including GPIO reads and a 16-entry selection table. These are static findings,
+not hardware-validated pin assignments;
+the standard SMK packaging target still refuses installation-package generation.
+Further tracing identifies a 37-pair contact consumer, eight quadrature pairs,
+and timing/response logic. `tools/smk37_controls.py` extracts the pinned tables
+offline. Physical ordering still needs hardware verification; normal note and
+MIDI velocity conversion have now been traced and implemented independently.
+Follow-up tracing adds 18 distinct button contacts, ADC ordering leads, response
+defaults and a 548-byte persistent trim-block path containing key response data.
+The owner reports stock operation is fine after reassembly. No device writes
+were performed; physical storage location and recovery remain open.
+The first isolated firmware components now decode the 108 digital contacts and
+convert calibrated key response to velocity/note values. Native C tests pass
+with address/undefined-behavior sanitizers; a freestanding pi32v2 compilation
+emits 1822 bytes of code and 308 bytes of constants, with no unresolved
+external symbols. The read-only trim decoder now validates all 37 key curves
+and converts contact duration using the supplied calibration; tests use a
+synthetic fixture, not an actual unit backup. The stock trim file is identified
+as `mnt/sdfile/app/usrtrim`; its physical address conversion is still being
+traced. The dual-contact debounce/timing component also passes host and target
+compilation checks. Stock key processing is triggered by a complete 16-slot
+SPI2 scan via software IRQ 2; its physical cadence remains unmeasured.
+These components are now connected to the offline application's SPI2 scanner;
+that scanner has not been executed on the physical device.
+The separate SMK ALNK0 audio transport is implemented from the stock channel-3
+setup and existing credited GPL transport. Its register simulation passes;
+physical audio and clock configuration remain unverified. The separate SPI1
+LCD transport adds bounded transfers and timeout cleanup, with no backlight
+assumption. Seven C suites pass, including panel startup/clear sequencing and
+failure injection at every transfer. Panel callbacks are now connected to the
+separate offline SMK application entry; visible output has not been checked.
+Further stock tracing confirms boot information at 0x01C7FD50, vectors at
+0x01C7FE00 and software update-entry mailbox 0x01C7FD80 with the
+`usb_update_mode` marker and P33 reset. Forced hardware recovery is still
+unverified; the owner has been asked whether the recovery parts have arrived.
+There is no custom hardware execution, installable firmware build, flash, push
+or PR submission. This is an intermediate implementation milestone, not completion
+of the owner's requested SMK firmware.
+Raw captures and vendor binary/disassembly artifacts remain local and ignored.
+
+The application integration now links `firmware/src/smk37_app.c` using the
+real Felucca DSP/sequencer, shared AC79 CPU/USB routines, and separate SMK
+audio/display transports. `tools/build_smk37.py` produced a 332008-byte image
+at entry `0x02000120`, BSS end `0x01C14E4C`, pool end `0x01C6FA70`.
+Its manifest explicitly marks it non-installable. No package/loader is built;
+the application contains no flash writer, FM-1 ADC/scanner, TRS UART or radio.
+The linker allocation remains a conservative hypothesis, not measured SMK RAM.
+Shared local-note arrays now have a board-supplied size (FM-1 default 27), and
+key note-on accepts velocity. The separate 37-key event adapter passes its
+ASan integration test with actual rendered audio, including upper keys,
+velocity, duplicate-note ownership and release after track/note changes.
+The stock-derived SPI2 scanner now feeds debounced key events through a bounded
+IRQ queue to the audio consumer. Bring-up uses explicitly fixed velocity 100;
+factory defaults are not substituted for unit calibration. Queue overflow
+releases local notes rather than retaining a lost release. Boot startup copies
+the stock SPL handoff fields to the reserved boot-info area before taking over
+vectors. A diagnostic screen identifies the build and shows scan/audio/late
+counters. Full SMK control menus are still pending.
+Nine driver suites pass with ASan/UBSan; the real-synth test passes with ASan;
+existing FM-1 chord and MIDI-control/clock integration suites pass unchanged.
+All 52 Python SMK tests and the HAL register-access boundary check pass.
+Build SHA256: `6e0bdd955a107e0f571df25791399a6e419e35c4aed001ceb0ff3ba1ef971e8b`.
+
+Forced recovery, board wiring, calibration preservation and available RAM remain
+unverified. The earlier pre-arrival notes below describe the preceding rounds.
+
+## Earlier preparation rounds
 
 SMK-37 preparation begins separately from RC1 at fork commit
 `7b1164abd2322c279faf9bb57ae22283466b9f53`. The shared Pro/Elite target is
@@ -174,3 +394,15 @@ contribution, append the following information:
 
 After upstream merges a contribution, record the merge SHA and the Salt PR that
 removes or reconciles the duplicate implementation.
+
+## Private SMK Test09 work (October 10)
+
+Continues the existing SMK worktree base; no upstream import, PR, push or website
+publication in this round. Test08's eight knob directions and performance checks
+are recorded in smk37/CONTROL_TRACE.md. Test09 uses existing SysEx command IDs
+for sound/track/step editing with OTA disabled, adds generic velocity curves and
+RAM step/pad banks, and prepares four project slots with runtime writes blocked.
+Pedal mapping and runtime flash reads require the next hardware pass. Details,
+limitations and save-enablement prerequisites are in smk37/SOUND_CONTROLS.md.
+
+Test09 hardware follow-up: owner confirmed velocity response, pedal ADC23, runtime read probe, bidirectional editor, lit step editing/playback and pad bank2. Test10 SAVE is a private sustain/persistence candidate with separate save-only adapter recovery preparation. Tests pass; adapter hardware verification, new-image approval and physical save/load/reboot tests remain pending. No push, PR or publication.

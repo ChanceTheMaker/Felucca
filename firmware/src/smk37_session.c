@@ -1,0 +1,103 @@
+/* SPDX-License-Identifier: GPL-3.0-only */
+/* Reuse the versioned FUN8 wire format, without FM-1 runtime storage/UI. */
+#define PROJ_HOST 1
+#include "project.c"
+#undef PROJ_HOST
+#include "smk37_store.h"
+typedef struct {
+    project_store_t project;
+    uint32_t generation;
+    uint8_t version,octave,velocity,pad_bank,knob_bank,fader_bank,selected_slot,reserved[53];
+} smk37_session_t;
+_Static_assert(sizeof(smk37_session_t)==3648,"SMK session wire size");
+static smk37_session_t smk37_session,smk37_session_previous;
+static project_t smk37_project_work;
+static uint8_t smk37_storage_ready,smk37_storage_writable;
+static uint32_t smk37_save_generation;
+static int smk37_storage_read(uint32_t,void *,uint32_t);
+static int smk37_storage_erase(uint32_t);
+static int smk37_storage_program(uint32_t,const void *,uint32_t);
+static const smk37_store_io_t smk37_storage_io={smk37_storage_read,smk37_storage_erase,smk37_storage_program};
+static void smk37_session_capture(void) {
+    project_t *p=&smk37_project_work;
+    memset(p,0,sizeof *p);p->magic=PROJ_MAGIC;p->size=sizeof *p;
+    p->parts=NPART;p->phys=PROJ_PHYS;p->sel=song.sel;p->chain=chain_config;p->motion=motion;
+    memcpy(p->g,song.g,sizeof p->g);
+    for(unsigned k=0;k<NTRK;++k){
+        memcpy(p->t[k].p,trk[k].p,sizeof trk[k].p);
+        memcpy(p->t[k].step,trk[k].step,sizeof trk[k].step);
+        p->t[k].engine=trk[k].eng_req;p->t[k].preset=trk[k].preset;
+        fm6_pack(fm6_patch[k],p->fm6[k]);
+    }
+    p->sum=proj_sum(p);
+    memset(&smk37_session,0,sizeof smk37_session);
+    proj_pack(&smk37_session.project,p);
+    smk37_session.version=1;smk37_session.octave=(uint8_t)(song.octave+3);
+    smk37_session.generation=smk37_save_generation+1u;
+    smk37_session.velocity=smk37_velocity_mode;smk37_session.pad_bank=smk37_pad_bank;
+    smk37_session.knob_bank=smk37_knob_bank;smk37_session.fader_bank=smk37_fader_bank;
+    smk37_session.selected_slot=smk37_project_slot;
+}
+static int smk37_session_valid(void) {
+    return smk37_session.version==1 && smk37_session.octave<=6 && smk37_session.velocity<=3 &&
+        smk37_session.pad_bank<=1 && smk37_session.knob_bank<=1 && smk37_session.fader_bank<=1 &&
+        smk37_session.selected_slot<4 && proj_import(&smk37_project_work,
+            &smk37_session.project,sizeof smk37_session.project);
+}
+/* Audio serialization is supplied by caller. Stops playback and releases all
+ * local ownership before restoring state; loading never starts a sequence. */
+static int smk37_session_restore(void) {
+    if(!smk37_session_valid())return -1;
+    project_t *p=&smk37_project_work;
+    seq_stop();song.rec=0;transport_req=0;smk37_sustain(0);
+    for(unsigned k=0;k<FELUCCA_KEY_COUNT;++k)if(kb_chn[k])key_off(k,&trk[kb_trk[k]]);
+    panic_req=(1u<<NTRK)-1u;
+    for(unsigned i=0;i<G_COUNT;++i) song.g[i]=clamp(p->g[i],GP[i].min,GP[i].max);
+    for(unsigned k=0;k<NTRK;++k){
+        track_t *t=&trk[k];unsigned e=p->t[k].engine%NENGINES;
+        if(e==ENGI_DIGITAL)e=ENGI_FM6;
+        t->eng_req=e;t->preset=p->t[k].preset;t->user=0;
+        for(unsigned i=0;i<P_COUNT;++i){const param_desc_t *d=param_desc_of(e,i);t->p[i]=clamp(p->t[k].p[i],d->min,d->max);}
+        memcpy(t->step,p->t[k].step,sizeof t->step);
+        uint8_t values[FP_SIZE+1];fm6_unpack(p->fm6[k],values);fm6_set_patch(k,values);fm6_slot[k]=t->p[P_E7];
+    }
+    chain_config=p->chain;motion=p->motion;memset(motion_active,0,sizeof motion_active);motion_base_valid=0;
+    song.sel=p->sel%NTRK;song.octave=smk37_session.octave-3;
+    smk37_velocity_mode=smk37_session.velocity;smk37_pad_bank=smk37_session.pad_bank;
+    smk37_knob_bank=smk37_session.knob_bank;smk37_fader_bank=smk37_session.fader_bank;
+    smk37_analog_ready=0;memset(smk37_encoder_phase,0,sizeof smk37_encoder_phase);
+    if(smk37_session.generation-smk37_save_generation<0x80000000u)
+        smk37_save_generation=smk37_session.generation;
+    return 0;
+}
+static int smk37_session_load(unsigned slot) {
+    if(!smk37_storage_ready || slot>=4)return -1;
+    if(smk37_store_load(&smk37_storage_io,slot,&smk37_session,sizeof smk37_session,0)<0)return -1;
+    fm1_irq_off();int rc=smk37_session_restore();if(!rc)smk37_project_slot=(uint8_t)slot;fm1_irq_on();return rc;
+}
+static int smk37_session_save(unsigned slot) {
+    if(!smk37_storage_writable || slot>=4 || song.playing || song.rec || transport_req)return -1;
+    fm1_irq_off();
+    for(unsigned k=0;k<FELUCCA_KEY_COUNT;++k)if(kb_chn[k]){fm1_irq_on();return -1;}
+    for(unsigned k=0;k<NTRK;++k)if(midi_owners[k]){fm1_irq_on();return -1;}
+    if(smk37_pedal_down || song.playing || song.rec || transport_req){fm1_irq_on();return -1;}
+    smk37_session_capture();fm1_irq_on();
+    smk37_session.selected_slot=(uint8_t)slot;
+    int rc=smk37_store_save(&smk37_storage_io,slot,&smk37_session,sizeof smk37_session,&smk37_session_previous);
+    if(!rc){smk37_save_generation=smk37_session.generation;smk37_project_slot=(uint8_t)slot;}
+    return rc;
+}
+static int smk37_session_used(unsigned slot){
+    if(!smk37_storage_ready || slot>=4)return 0;
+    return smk37_store_load(&smk37_storage_io,slot,&smk37_session,sizeof smk37_session,0)>=0 && smk37_session_valid();
+}
+static int smk37_session_resume(void){
+    unsigned newest=4;uint32_t generation=0;
+    for(unsigned slot=0;slot<4;++slot)if(smk37_session_used(slot)){
+        uint32_t g=smk37_session.generation;
+        if(newest==4 || (g!=generation && g-generation<0x80000000u)){newest=slot;generation=g;}
+    }
+    if(newest==4)return -1;
+    smk37_save_generation=generation;smk37_project_slot=(uint8_t)newest;
+    return smk37_session_load(newest);
+}

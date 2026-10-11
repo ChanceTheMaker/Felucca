@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Shared destinations; navigation never initiates an installation or audio playback.
 (() => {
+  if (location.pathname === '/editor.html') {
+    for (const a of document.querySelectorAll('a[href^="../installer/"]')) {
+      const hash = a.getAttribute('href').split('#')[1];
+      a.setAttribute('href', '/'+(hash ? '#'+(hash === 'fm1-guide' ? 'guide' : hash === 'themes' ? 'features' : hash) : ''));
+    }
+  }
   const nav = document.querySelector('.site-nav');
   if (!nav) return;
   const studio = document.body.classList.contains('editor-page');

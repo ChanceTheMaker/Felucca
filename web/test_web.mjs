@@ -968,7 +968,7 @@ async function editorSessions() {
     parse: { 1: r => r, 2: () => ({ used: false }), 3: () => ({}), 4: r => r },
     req: { info: () => "info", project: () => "project", smpInfo: () => "sample", dump: () => "dump" },
     paramKeys: noop, libAdopt: () => { adoptStarted?.(); return adopted || Promise.resolve(); },
-    buildUI: () => { shown++; }, renderPanels: noop, loadSteps: noop,
+    buildUI: () => { shown++; }, renderPanels: noop, renderPlayKeys: noop, loadSteps: noop,
     startWatch: async () => false, renderLive: noop, renderLib: noop,
     renderBank: noop, renderSysinfo: noop, sayK: noop, report: noop, syncPreferences: noop,
   });

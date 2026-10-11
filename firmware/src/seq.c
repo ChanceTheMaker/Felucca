@@ -34,7 +34,7 @@ static const uint16_t SCALE_MASK[] = {
 
 #define KB_SILENT 255u
 static uint32_t kb_prev;
-static uint8_t kb_note[27], kb_trk[27];  /* per key: the note it started and on which track */
+static uint8_t kb_note[FELUCCA_KEY_COUNT], kb_trk[FELUCCA_KEY_COUNT];
 static uint8_t last_note = 60;
 static volatile uint8_t transport_req;   /* 1 start, 2 stop, 3 restart (from the UI) */
 static volatile uint8_t panic_req;       /* bit per track: release every sounding note (preset / engine change) */
@@ -396,7 +396,7 @@ static uint32_t perf_key(uint32_t k)
 
 /* key k plays kb_note[k] on track t: its chord (chord.c; the note alone with CHRD OFF). A note another key
  * holds already sounds: it is not started again (nor sent to MIDI OUT); the key keeps its notes */
-static void key_on(uint32_t k, track_t *t)
+static void key_on_velocity(uint32_t k, track_t *t, uint32_t velocity)
 {
     uint32_t n = chord_build(t, kb_note[k], kb_chord[k]), i, mc = trk_midi_ch(trk_index(t));
     kb_chn[k] = 0;
@@ -404,12 +404,14 @@ static void key_on(uint32_t k, track_t *t)
         uint32_t x = kb_chord[k][i];
         if (midi_local_held(t, x))
             continue;
-        input_on(t, x, 100);
-        midi_out_event(0x09u | (0x90u | mc) << 8 | x << 16 | 100u << 24);
+        input_on(t, x, velocity);
+        midi_out_event(0x09u | (0x90u | mc) << 8 | x << 16 | velocity << 24);
     }
     kb_chn[k] = (uint8_t)n;
     last_note = kb_note[k];                         /* (step entry, the SAMPLE zone: the key's note) */
 }
+
+static void key_on(uint32_t k, track_t *t) { key_on_velocity(k, t, 100); }
 
 /* key k is up: the notes it started end, but those another key still holds */
 static void key_off(uint32_t k, track_t *t)
@@ -445,6 +447,9 @@ static __attribute__((noinline)) void kb_lat(uint32_t k)
 
 static void keyboard_block(void)
 {
+#ifdef FELUCCA_KEYBOARD_BLOCK
+    FELUCCA_KEYBOARD_BLOCK();
+#else
     uint32_t cur = fm1_in.notes, ch, k;
     ch = cur ^ kb_prev;                           /* keys also sound while entering steps */
     if (!ch)
@@ -485,6 +490,7 @@ static void keyboard_block(void)
         }
     }
     kb_prev = cur;
+#endif
 }
 
 /* -------------------------------------------------------- sequencer --- */

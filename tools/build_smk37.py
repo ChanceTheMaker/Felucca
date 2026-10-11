@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-only
+"""Link an offline SMK integration image, never a flash/update package.
+
+JIELI_TOOLCHAIN=... python tools/build_smk37.py
+The raw .bin is not directly installable. Private packaging is a separate step.
+Uses the conservative existing AC79 linker allocation, not the FM-1 package
+builder/storage geometry. Outputs are isolated under build/smk37-integration.
+"""
+import argparse
+import hashlib
+from pathlib import Path
+from smk37_backup import inspect_backup
+import json
+import re
+import subprocess
+import sys
+import zlib
+import build
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--stock-backups', nargs=2, type=Path)
+    parser.add_argument('--stock-package', type=Path)
+    parser.add_argument('--enable-saves', action='store_true', help='private Test10 candidate; requires validated stock evidence and separate save-recovery kit')
+    parser.add_argument('--enable-usb-update', action='store_true', help='private RAM-updater candidate; each built artifact requires validation')
+    parser.add_argument('--usb-test-number',type=int,default=11,choices=range(11,100))
+    args = parser.parse_args()
+    if args.enable_usb_update and not args.enable_saves:
+        parser.error('--enable-usb-update requires --enable-saves')
+    if bool(args.stock_backups) != bool(args.stock_package):
+        parser.error('--stock-backups and --stock-package must be supplied together')
+    if args.enable_saves and not args.stock_backups:
+        parser.error('--enable-saves requires validated stock backups and package')
+    evidence = None
+    if args.stock_backups:
+        try:
+            evidence = inspect_backup(*(p.read_bytes() for p in args.stock_backups),
+                                      args.stock_package.read_bytes())
+        except (OSError, ValueError) as exc:
+            parser.error(str(exc))
+    out = build.SRC / "build" / (("smk37-webupdate" if args.usb_test_number==11 else f"smk37-webupdate-test{args.usb_test_number}") if args.enable_usb_update else "smk37-integration")
+    out.mkdir(parents=True, exist_ok=True)
+    build.GEN = out / "gen"
+    build.GEN.mkdir(parents=True, exist_ok=True)
+    trim_crc = zlib.crc32(args.stock_backups[0].read_bytes()[0xc1000:0xc1000+556]) if evidence else 0
+    (build.GEN/'smk37_unit.h').write_text(
+        '/* Generated private backup evidence, no calibration values. */\n'
+        f'#define SMK37_UNIT_TRIM_CRC 0x{trim_crc:08x}u\n'
+        f'#define SMK37_UNIT_HEAD_CRC 0x{zlib.crc32(args.stock_backups[0].read_bytes()[:0x4000]) if evidence else 0:08x}u\n'
+        f'#define SMK37_UPDATE_PRODUCT "SMK-37_9{args.usb_test_number:02d}"\n'
+        f'#define SMK37_UPDATE_VERSION "SMK37 TEST{args.usb_test_number:02d} USB"\n')
+    if args.enable_usb_update:
+        from build_smk37_loader import build_loader
+        build_loader(out, build.GEN, f"SMK-37_9{args.usb_test_number:02d}")
+    for generator, header in (("gen_tables.py", "felucca_tables.h"),
+                              ("gen_fm6_patches.py", "felucca_fm6.h"),
+                              ("gen_samples.py", "felucca_samples.h"),
+                              ("gen_ui_palettes.py", "ui_palettes.h"),
+                              ("gen_aa_keycaps.py", "ui_keycaps.h")):
+        subprocess.run([sys.executable, str(build.SRC / "tools" / generator),
+                        str(build.GEN / header)], check=True, cwd=build.SRC)
+    subprocess.run([sys.executable, str(build.SRC / "tools" / "gen_aa_font.py"),
+                    str(build.GEN / "ui_fonts.h"), "--preset", "inter-tight"],
+                   check=True, cwd=build.SRC)
+    flags = [*build.CFLAGS, "-Ifirmware/hal", "-Ifirmware/src", f"-I{build.GEN.relative_to(build.SRC)}", f"-DSMK37_ENABLE_SAVES={int(args.enable_saves)}", f"-DSMK37_ENABLE_USB_UPDATE={int(args.enable_usb_update)}"]
+    build.tc_all(
+        ("cc", *flags, "-c", build.FW / "src" / "smk37_app.c", "-o", out / "app.o"),
+        ("cc", "-c", build.FW / "smk37_crt0.S", "-o", out / "crt0.o"),
+        ("cc", "-c", build.FW / "hal" / "fm1_vec.S", "-o", out / "vec.o"),
+    )
+    elf = out / "smk37-integration.elf"
+    # This allocation is a hypothesis based on shared CPU family + reserved
+    # boot/vector addresses. The manifest explicitly does not certify RAM.
+    build.tc("pi32v2/bin/ld", "-T", build.FW / "app.ld",
+             out / "crt0.o", out / "vec.o", out / "app.o", "-o", elf)
+    symbols = build.tc("common/bin/objdump", "-t", elf)
+    sections = build.tc("common/bin/objdump", "-h", elf)
+    disassembly = build.tc("common/bin/objdump", "-d", elf)
+    (out / "smk37-integration.dis").write_text(disassembly)
+    (out / "sections.txt").write_text(sections)
+    (out / "symbols.txt").write_text(symbols)
+    def sym(name):
+        return int(re.search(r"^([0-9a-f]+) .*\s" + name + r"$", symbols, re.M)[1], 16)
+    image = bytearray()
+    for section, address in ((".text", build.APP_XIP), (".ram_text", sym("_rt_load")),
+                             (".data", sym("_data_load"))):
+        blob = out / (section[1:] + ".bin")
+        blob.unlink(missing_ok=True)
+        build.tc("common/bin/objcopy", "-O", "binary", "-j", section, elf, blob)
+        raw = blob.read_bytes() if blob.exists() else b""
+        if not raw:
+            continue
+        offset = address - build.APP_XIP
+        if offset < len(image): raise SystemExit("overlapping image sections")
+        image.extend(b"\xff" * (offset - len(image)))
+        image.extend(raw)
+    image.extend(b"\xff" * (-len(image) % 4))
+    if sym("_start") != build.APP_XIP or image[:4] != bytes.fromhex("04818000"):
+        raise SystemExit("invalid entry stub")
+    # Keep inside the stricter FM-1 allocation as well as stock SMK app extent.
+    if len(image) > 0x8DFBC: raise SystemExit("image exceeds conservative XIP allocation")
+    for forbidden in ("fm1_flash", "ota_session", "uart_midi_init", "fm1_adc_init", "fm1_input_init"):
+        if re.search(r"\b" + forbidden + r"\w*$", symbols, re.M):
+            raise SystemExit("wrong-board/flash routine linked: " + forbidden)
+    # Test09 may read flash, but neither write entry point may touch hardware.
+    for routine in ('fl_erase4k_ram', 'fl_prog_ram'):
+        body = disassembly.split(routine + ':', 1)[1].split('\n\n', 1)[0]
+        instructions = [line.split('\t')[-1].strip() for line in body.splitlines() if re.match(r'\s*[0-9a-f]+:', line)]
+        if not args.enable_saves and instructions != ['r0 = -1', 'rts']:
+            raise SystemExit('Test09 flash write gate is not a rejection stub: ' + routine)
+        if args.enable_saves and instructions == ['r0 = -1', 'rts']:
+            raise SystemExit('Save-enabled candidate still rejects all writes: ' + routine)
+    for routine in ('fl_read_ram', 'fl_jedec_ram'):
+        if not 0x1c00000 <= sym(routine) < 0x1c08000:
+            raise SystemExit('Flash read helper is not in reserved RAM: ' + routine)
+    ram_dis = build.tc('common/bin/objdump', '-d', '-j', '.ram_text', elf)
+    if re.search(r'\bcall\b', ram_dis):
+        raise SystemExit('Flash RAM routines contain a call requiring review')
+    name = "smk37-integration-NOT-FOR-INSTALL.bin"
+    (out / name).write_bytes(image)
+    manifest = {
+        "board": "SMK-37 Pro", "installable": False,
+        "purpose": "offline linked application integration",
+        "image": name, "bytes": len(image), "sha256": hashlib.sha256(image).hexdigest(),
+        "entry": hex(sym("_start")), "bss_end": hex(sym("_bss_end")),
+        "pool_end": hex(sym("_pool_end")), "flash_write_support": args.enable_saves, "usb_update_support": args.enable_usb_update,
+        "usb_update_hardware_validated": False,
+        "update_product": f"SMK-37_9{args.usb_test_number:02d}", "update_version": f"SMK37 TEST{args.usb_test_number:02d} USB",
+        "prior_unit_evidence": "Test08: playable audio/display, piano/pads, analog controls, all8 knob polarity, buttons/lights and RAM record/replay; see docs/smk37/CONTROL_TRACE.md",
+        "flash_write_gate": ("private save-only range 0xEB000..0xF3000; call-free RAM routines; runtime JEDEC/trim/allocation checks" if args.enable_saves else "erase/program entry points disassemble to return -1; read routines are call-free RAM code"),
+        "unverified": ["Test09 startup and real-time peripheral coexistence",
+                       "velocity curves and measured scanner timing on device",
+                       "USB editor interaction on device", "physical pedal input mapping",
+                       "runtime flash read/proposed storage allocation",
+                       "step editing and pad bank2 on device", "long-run audio/control timing",
+                       "unit calibration backup", "restore after failed custom startup"],
+    }
+    if evidence:
+        manifest['stock_backup_evidence'] = evidence
+        manifest['unverified'].remove('unit calibration backup')
+    (out / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    print(json.dumps(manifest, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

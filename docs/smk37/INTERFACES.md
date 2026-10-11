@@ -32,6 +32,13 @@ one configuration, class/subclass/protocol zero, and product/serial string
 indices 2/3. Keep the USB release field separate from the package's `_016`
 firmware identity; it does not identify the installed software version.
 
+On October 8 the reconnected owner's Pro enumerated as `4353:B64B`, with audio
+interface `00`, MIDI interface `03`, and three named MIDI input ports. This
+followed the owner's reported Pro016 installation and reassembly. The compiled
+`344B` template therefore must not be used as a strict runtime allowlist. The
+SDK mutates product-ID bytes while composing descriptors, but the exact SMK
+mutation path has not been established. See [arrival results](ARRIVAL_RESULTS.md).
+
 Class zero defers classification to the interfaces. This descriptor does not
 establish MIDI port count, audio support, endpoint allocation, port names, or
 the actual serial string. No complete configuration descriptor was identified

@@ -21,7 +21,26 @@
 #endif
 static struct { uint32_t notes, buttons; } fm1_in; /* unused FM-1 UI layers */
 static const uint8_t smk37_empty_sample[512];
+#ifndef SMK37_ENABLE_SAMPLES
+#define SMK37_ENABLE_SAMPLES 0
+#endif
+static uint8_t smk37_samples_owned,smk37_samples_state;
+static volatile uint8_t smk37_samples_request;
+#ifndef SMK37_ENABLE_TRS
+#define SMK37_ENABLE_TRS 0
+#endif
+static uint8_t smk37_trs_enabled;
+static uint32_t smk37_trs_bytes;
+#if SMK37_ENABLE_TRS
+static void smk37_trs_output(uint32_t packet);
+#define FELUCCA_MIDI_OUTPUT_TAP(packet) smk37_trs_output(packet)
+#endif
+#if SMK37_ENABLE_SAMPLES
+static const uint8_t *smk37_sample_xip(unsigned k);
+#define SMP_USER_XIP(k) smk37_sample_xip(k)
+#else
 #define SMP_USER_XIP(k) (smk37_empty_sample)
+#endif
 #include "core.h"
 #include "engines.c"
 #include "params.c"
@@ -59,6 +78,8 @@ static unsigned smk37_learn_set(unsigned cc,unsigned track,unsigned id) {
 }
 #include "smk37_ui.c"
 #include "smk37_tools.c"
+#include "smk37_phrases.c"
+#include "smk37_workflow.c"
 static void smk37_performance_poll(void) {
     for(unsigned k=0;k<NTRK;++k)if(mpc_io[k]){
         unsigned n=mpc_io[k]&127u;mpc_io[k]=0;track_t *t=&trk[k];
@@ -90,6 +111,7 @@ static void smk37_synth_init(void)
     }
     /* Moderate bench level until the actual DAC output has been measured. */
     song.master_q12 = 1024;
+    smk37_sound_undo.valid=0;
 }
 
 /* Velocity zero releases the original track/note even if selection or octave
@@ -128,6 +150,7 @@ static void smk37_sustain(unsigned down)
 static void smk37_play_key_event(unsigned key, unsigned velocity)
 {
     if (key>=37) return;
+    if(velocity)smk37_input_at=fm1_ms;
     if (!velocity) {
         if(smk37_pedal_down && kb_chn[key]) smk37_pedal_pending[key]=1;
         else smk37_key_event(key,48+key,0);
@@ -166,18 +189,20 @@ static void smk37_pad_event(unsigned pad, unsigned velocity)
 {
     static const uint8_t notes[16] = {40,41,42,43,48,49,50,51,36,37,38,39,44,45,46,47};
     if (pad >= 16 || velocity > 127) return;
+    if(velocity)smk37_input_at=fm1_ms;
     unsigned key = 37u+pad;
     if(!velocity && (smk37_perf_pads&(1u<<pad))){smk37_perf_pads&=~(1u<<pad);perf_press(pad<PF_NFX?pad:PF_M1+pad-14,0);return;}
     if(velocity && smk37_page==SMK37_PERFORM_PAGE){
         if(!(smk37_perf_pads&(1u<<pad))){smk37_perf_pads|=1u<<pad;perf_press(pad<PF_NFX?pad:PF_M1+pad-14,1);}return;
     }
-    if(velocity && smk37_page==SMK37_DETAIL_PAGE){smk37_edit_step=(smk37_edit_step/16u)*16u+pad;return;}
+    if(velocity && smk37_page==SMK37_DETAIL_PAGE){smk37_edit_step=(smk37_edit_step/16u)*16u+pad;smk37_preview_step();return;}
     if(velocity && smk37_page==SMK37_STEP_PAGE) {
+        smk37_pattern_gesture(TSEL,0xffff);
         unsigned step=(smk37_edit_step/16u)*16u+pad;
         step_t *s=&TSEL->step[step];
         if(s->time==ST_NOTE && (s->n || s->hit)) s->time=ST_REST;
         else { s->time=ST_NOTE; s->n=1; s->note[0]=last_note; s->vel=(uint8_t)velocity; }
-        smk37_edit_step=(uint8_t)step;
+        smk37_edit_step=(uint8_t)step;smk37_preview_step();
         return;
     }
     if (velocity) {
@@ -229,7 +254,9 @@ static void smk37_analog_playback(const uint16_t raw[6], unsigned valid)
         unsigned delta = raw[i] > prev ? raw[i]-prev : prev-raw[i];
         if (i<4) {
             if (!first && (delta >= 8 || (raw[i] != prev && (raw[i]==0 || raw[i]>=1023))))
-                { if (smk37_fader_bank) TSEL->p[P_ATK+i]=smk37_fader_value(raw[i]);
+                { smk37_sound_take(smk37_fader_bank?TSEL:&trk[i],0x800+i);
+                  smk37_input_at=fm1_ms;
+                  if (smk37_fader_bank) TSEL->p[P_ATK+i]=smk37_fader_value(raw[i]);
                   else trk[i].p[P_LEVEL] = smk37_fader_value(raw[i]); }
             else if (!first) continue;
         } else if (i==4) {

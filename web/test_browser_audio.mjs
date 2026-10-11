@@ -50,7 +50,7 @@ try {
   await page.getByRole('button',{name:'Enable audio',exact:true}).click();
   await page.waitForFunction(()=>window.testAudioContext.state==='running');
   await page.waitForFunction(()=>document.querySelector('#status').textContent==='Audio ready');
-  await page.getByRole('button',{name:'FM-1',exact:true}).click();
+  await page.locator('#mode-fm1').click();
   await page.waitForFunction(()=>window.testAudioContext.state==='suspended');
   assert.equal(await page.locator('#audio-scope').isVisible(),false);
   assert.equal(await page.locator('#tabs').isVisible(),true);

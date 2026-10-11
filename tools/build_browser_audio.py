@@ -1,5 +1,7 @@
 """Build the hardware-free browser DSP with Zig 0.13 (zig cc)."""
 import argparse
+import hashlib
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -18,4 +20,13 @@ subprocess.run([args.zig, 'cc', '-target', 'wasm32-freestanding', '-O2', '-fno-b
                 '-Wl,-z,stack-size=0x40000', '-Wl,--initial-memory=0x800000', '-Wl,--max-memory=0x800000',
                 '-I' + str(gen), str(ROOT / 'web/audio/engine.c'),
                 '-o', str(ROOT / 'web/audio/engine.wasm')], cwd=ROOT, check=True)
-print('Built web/audio/engine.wasm')
+# Keep the editor, loader, WASM and worklet URLs on the same DSP build.
+revision = hashlib.sha256((ROOT / 'web/audio/engine.wasm').read_bytes()).hexdigest()[:16]
+editor = ROOT / 'web/editor.html'
+source = editor.read_text(encoding='utf-8')
+source, count = re.subn(r"import\('\./audio/browser\.js(?:\?v=[^']*)?'\)",
+                       "import('./audio/browser.js?v=" + revision + "')", source)
+if count != 1:
+    raise SystemExit('Expected one browser audio import to fingerprint')
+editor.write_text(source, encoding='utf-8')
+print('Built web/audio/engine.wasm; audio asset revision ' + revision)

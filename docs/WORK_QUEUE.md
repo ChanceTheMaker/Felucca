@@ -10,3 +10,29 @@ the current implementation or publish.
   pages links to the installer homepage, with its size/styling preserved and
   visible keyboard focus. The owner authorized merging into the fork's main;
   live deployment is separate.
+
+## SMK firmware
+
+- [ ] **Investigate browser-audio regression retry.** The commit-time run against
+  localhost:8771 ended with a timeout in its error-path Playwright screenshot,
+  masking the original error. Recover the original failure and rerun; do not
+  infer a browser-audio pass or a specific product defect from this result.
+
+- [ ] **TRS OFF leaves a held FM-1 note sounding (Test21).** On 2026-10-10 the
+  owner confirmed that switching TRS OUT OFF with the cable connected does not
+  stop a held receiver note. Chords, sustain and pitch otherwise worked; mod
+  remains inconclusive. Root cause unknown. The owner explicitly deferred repair
+  to continue sample/storage testing. No shutdown fix is included. See
+  [Test21 hardware results](smk37/TEST21.md#hardware-follow-up).
+
+- [ ] **Review saving TRS OUT across power cycles.** The owner confirmed Test21
+  restarts with TRS OFF and requested recording this for later. This is the
+  current intentional startup behavior, not evidence of a failed settings write.
+  Decide and implement the desired persistence in a later round.
+
+- [ ] **Finish user-sample persistence validation.** USR1 test upload and playback
+  were reported successful, but the post-restart check was inconclusive while
+  testing the FM-1 receiver. Reconnect Studio to inspect USR1, select SAMPLE / USR1
+  and listen directly through the SMK headphone output after a power cycle.
+  TRS sends MIDI events, not the uploaded sample audio. Do not mark persistence
+  passed or sample data lost without that check. Deferred at the owner's request.

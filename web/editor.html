@@ -10,7 +10,7 @@
 <script defer src="analytics.js"></script>
 <script defer src="site-nav.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Felucca [Salt] Studio</title>
+<title data-i18n="ui.smkStudioTitle">Felucca SMK — Studio</title>
 <style>
   /* Fukiai: Hügelton Instruments' icon font (MIT, FUKIAI-LICENSE.txt). Icons are text in .ic spans;
      they stay hidden until the face has loaded (html.fk), so a missing font never shows boxes. */
@@ -172,7 +172,7 @@
 </style>
 <link rel="stylesheet" href="skin.css">
 <link rel="stylesheet" href="interface.css">
-<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="fonts.css?v=smk2">
 <script src="locales.js"></script>
 <script src="i18n.js"></script>
 <script src="skin.js"></script>
@@ -180,7 +180,7 @@
 <body class="editor-page">
 <main id="studio">
   <div class="masthead"><div class="brand-row">
-    <div><div class="eyebrow"><span data-i18n="site.smk37_sound_laboratory">SMK-37 Pro &amp; Elite / Sound laboratory</span></div><h1><a class="brand-home" href="../installer/#page-top">Felucca <em>[Salt]</em></a></h1><p class="tagline"><span data-i18n="site.synthesizer_sequencer_performance_editor">SYNTHESIZER • SEQUENCER • PERFORMANCE EDITOR</span></p></div>
+    <div><div class="eyebrow"><span data-i18n="site.smk37_sound_laboratory">Sound laboratory</span></div><h1><a class="brand-home" href="../installer/#page-top"><em>Felucca SMK</em></a></h1><p class="tagline"><span data-i18n="site.smk_supported_models">For SMK-37 Pro &amp; Elite</span></p></div>
     <nav class="site-nav" aria-label="Main navigation" data-i18n-aria-label="nav.label"><a href="../installer/#install" data-nav="install" data-i18n="nav.install">Install</a><a href="index.html#guide" data-nav="manual" data-i18n="nav.manual">Manual</a><a href="#studio" data-nav="studio" data-i18n="nav.studio" aria-current="page">Studio</a><a href="../installer/#themes" data-nav="themes" data-i18n="nav.themes">Themes</a><a href="../installer/#features" data-nav="features" data-i18n="nav.features">Features</a></nav>
     <div class="brand-links"><button class="lang" id="lang" type="button"></button></div>
   </div>
@@ -406,7 +406,7 @@
     <div class="piano-scroll"><div class="piano" id="play-keys" role="group" aria-labelledby="play-title"></div></div>
     <p id="play-help"></p>
   </section>
-  <footer>Felucca [Salt] Studio by Chance Roth (<a href="https://github.com/ChanceTheMaker" target="_blank" rel="noopener">@ChanceTheMaker</a>).<br>
+  <footer>Felucca SMK Studio by Chance Roth (<a href="https://github.com/ChanceTheMaker" target="_blank" rel="noopener">@ChanceTheMaker</a>).<br>
     <span data-i18n="site.based_on_felucca_by_leo_kuroshita_kurogedelic">Based on Felucca by Leo Kuroshita (@kurogedelic),</span> <a href="https://hugelton.com" target="_blank" rel="noopener">Hügelton Instruments</a><span data-i18n="site.gpl_3_0">. GPL-3.0.</span><br>
     <span data-t="foot"></span> <span data-i18n="site.m_vave_and_fm_1_are_trademarks_of_their_respective_owners">M-VAVE and FM-1 are trademarks of their respective owners.</span><br>
     <a href="FUKIAI-LICENSE.txt" data-t="iconsCredit"></a></footer>
@@ -425,7 +425,7 @@ const CMD = { INFO: 1, GET: 2, SET: 3, DUMP: 4, DESC: 5, STEP_GET: 6, STEP_SET: 
   TRACK_PARAM: 31, TRACK_CHANGED: 32, SONG: 33,
   UI_STATE: 34, UI_SET: 35, UI_PALETTES: 36, FAV_GET: 37, FAV_SET: 38,
   MOTION: 64, BACKUP_LIST: 65, BACKUP_GET: 66, BACKUP_PUT: 67,
-  FM6_GET: 68, FM6_PUT: 69, FM6_LIST: 70, FM6_ERASE: 71 };
+  FM6_GET: 68, FM6_PUT: 69, FM6_LIST: 70, FM6_ERASE: 71, MENU_DESC: 72, MENU_SET: 73 };
 /* frames the device sends on its own (while WATCH is on); never replies */
 const PUSH = new Set([CMD.CHANGED, CMD.RELOAD, CMD.STEP_CHANGED, CMD.TRACK_CHANGED]);
 /* user preset bank: name 1..12 printable ASCII, a 16-step pattern of (note, flags 1 acc 2 slide 4 tie) */
@@ -499,7 +499,7 @@ const parse = {
     for (let i = 0; i < o.nengines; i++) o.engines.push(r.s());
     o.chainRows = 0;
     o.ntrk = r.i < a.length ? r.b() : 0;             /* v3: tracks (0 = older firmware, one instrument) */
-    o.uiCaps = 0;
+    o.uiCaps = 0; o.menuCount = 0;
     const trailer = a.slice(r.i);
     if (trailer[0] === 16) o.chainRows = 16;       /* existing v6 SONG capability */
     if (trailer.length >= 4 && trailer[0] === 16 && trailer[1] === 0x55 && trailer[2] === 1)
@@ -527,6 +527,7 @@ const parse = {
         if(trailer[p+1]!==1)break;
         const tag=trailer[p],v=trailer[p+2];
         if(tag===0x4d){o.motionMax=v;o.chance=trailer[p+3]===1;}
+        if(tag===0x4e)o.menuCount=Math.min(v,64);
         if(tag===0x52)o.ratchet=v;
         if(tag===0x57)o.songLanes=v;
         if(tag===0x50 && o.fm6)o.fm6.caps=v;
@@ -540,6 +541,15 @@ const parse = {
     }
     return o;
   },
+  [CMD.MENU_DESC](a) {
+    const r = new Reader(a), o = { index:r.b(), id:r.b() };
+    if(o.id===127)return o;
+    Object.assign(o,{kind:r.b(),value:r.v(),min:r.v(),max:r.v(),name:r.s(),choices:[]});
+    if(o.max<o.min || o.max-o.min>255 || o.kind>1)throw new Error("Invalid menu descriptor");
+    if(o.kind===0)for(let v=o.min;v<=o.max;v++)o.choices.push(r.s());else o.unit=r.s();
+    if(r.i<a.length){o.tab=r.b();o.tabName=r.s();}return o;
+  },
+  [CMD.MENU_SET](a) { const r=new Reader(a); return {rc:r.b(),id:r.b(),value:r.v()}; },
   [CMD.UI_STATE](a) {
     const r = new Reader(a), o = { caps: r.b(), palette: r.b(), font: r.b(), monitor: r.b(), filter: r.b() };
     const u28 = () => r.b() | r.b() << 7 | r.b() << 14 | r.b() << 21;
@@ -684,6 +694,8 @@ const parse = {
 function upName(s) { return String(s ?? "").replace(/[^\x20-\x7E]/g, "").trim().slice(0, UP.NAME_MAX) || "PATCH"; }
 
 const req = {
+  menuDesc: (index) => [CMD.MENU_DESC,[index]],
+  menuSet: (id,value) => [CMD.MENU_SET,[id,...v14enc(value)]],
   uiState: () => [CMD.UI_STATE, []],
   uiSet: (id, value) => [CMD.UI_SET, [id, value]],
   uiPalettes: () => [CMD.UI_PALETTES, []],
@@ -757,6 +769,8 @@ function replyMatches(cmd, args, a) {
     case CMD.MOTION: return a[0] === args[0];
     case CMD.BACKUP_GET: return a[0] === args[0] && a.slice(2, 7).every((v, i) => v === args[i + 1]);
     case CMD.BACKUP_PUT: return a[0] === args[0] && a[1] === args[1];
+    case CMD.MENU_DESC: return a[0] === args[0];
+    case CMD.MENU_SET: return a[1] === args[0];
     case CMD.UI_SET: return a[1] === args[0] && a[2] === args[1];
     case CMD.FAV_GET: case CMD.FAV_SET:
       return ![0, 3, 4].includes(a[0]) || (a[1] === args[0] && a[2] === args[1] && a[3] === args[2] && a[4] === args[3]);
@@ -1898,6 +1912,10 @@ function makeMockDevice(opt = {}) {
     D("INS A", F.PCT, 0, 127, 64), D("INS B", F.PCT, 0, 127, 96), D("INS C", F.PCT, 0, 127, 96), D("MIX", F.PCT, 0, 127, 127),
     E("TYPE", ["LP", "BP", "HP"], 0), E("ESYNC", ["OFF", "ON"], 0));   /* 1.5: ANALOG's filter TYPE (101, #104), ENV SYNC (102, #175) */
   const P_COUNT = 111, G_COUNT = 27, NSTEP = 64, P_E0 = 103, G_ENGSEL = 20, P_SLCR = 45;
+  // Never feed an older DSP's shorter parameter vector into the current protocol.
+  if (opt.presets && (opt.presets.length !== ENG.length || opt.presets.some(bank =>
+      bank.some(preset => preset.values.length !== P_COUNT))))
+    throw new Error(window.FeluccaI18n.t('ui.audioVersionMismatch'));
   if (opt.presets) for (let e = 0; e < ENG.length; e++) {
     ENG[e].presets = (opt.presets[e] || []).map(pr => ({name:pr.name,
       e:pr.values.slice(P_E0), env:pr.values.slice(1,5), mono:pr.values[37] !== 0}));
@@ -2737,7 +2755,7 @@ let BROWSER_AUDIO = QS.get('audio') === '1';
 let MOCK = QS.get("mock") === "1" || BROWSER_AUDIO;
 $("mock").hidden = !MOCK || BROWSER_AUDIO;
 let browserSynth = null;
-const audioModule = import('./audio/browser.js');
+const audioModule = import('./audio/browser.js?v=1a65e1d991025089');
 const deviceText = Object.fromEntries(I18N.languages.map(({code:l}) => [l, {...TEXT[l]}]));
 function renderAudioMode() {
   for (const {code:l} of I18N.languages) Object.assign(TEXT[l], deviceText[l]);
@@ -2880,11 +2898,17 @@ async function connect() {
     if (dev === connectedDevice) playKeyboard.connect(dev.output);
   } catch (e) {
     console.error(e);
-    if (BROWSER_AUDIO) { delete $("audio-status").dataset.i18n; $("audio-status").textContent = e.message; browserSynth?.stop(); }
+
     if (connectedDevice && connectedDevice === dev) { /* an old connection must not close a replacement */
       const timeout = /^timeout/.test(e.message);
       disconnect();
       sayK(timeout ? "noreply" : "error", timeout ? "" : e.message);
+    }
+    if (BROWSER_AUDIO) {
+      browserSynth?.stop();
+      delete $("audio-status").dataset.i18n;
+      $("audio-status").textContent = e.message;
+      if (!connectedDevice) sayK("error", e.message);
     }
   } finally {
     connecting = false;
@@ -2944,8 +2968,8 @@ async function load(d) {
   try {
     /* the first frame after opening the port can be lost: a few tries */
     d.info = parse[CMD.INFO](await sessionRequest(d, req.info(), { timeout: 500, retries: 3 }));
-    $("version").textContent = d.info.version;
-    $("mode-fm1").textContent = /SMK37/.test(d.info.version) ? "SMK-37" : "FM-1";
+    $("version").textContent = BROWSER_AUDIO ? "" : d.info.version;
+    if (!BROWSER_AUDIO) $("mode-fm1").textContent = /SMK37/.test(d.info.version) ? "SMK-37" : "FM-1";
     renderPlayKeys();
     const total = d.info.pcount + d.info.gcount;
     for (let i = 0; i < d.info.pcount; i++) { sayK("reading", `${i + 1}/${total}`); d.pdesc[i] = await getDescOrNull(0, i, d); }
@@ -3911,6 +3935,10 @@ function recRow(k) {
 function renderSamples() {
   const box = $("smpslots");                        /* the tab says when there are no slots (renderPanels) */
   if (!dev || !dev.smp) { box.replaceChildren(); return; }
+  if (!dev.smp.nslots) {
+    box.replaceChildren(el("p", { class: "dim", text: t(/SMK37/.test(dev.info?.version || "") ? "smkSampleSetup" : "smpNone") }));
+    return;
+  }
   const max = SMP.MAX_DATA;
   box.replaceChildren(...dev.smp.slots.map((u, k) => {
     const d = smpDraft[k];
@@ -4363,6 +4391,15 @@ async function syncPreferences(d) {
   const preferences = await readDevicePreferences((r, o) => sessionRequest(d, r, o), d.info, d.names, d.preferences);
   if (dev !== d) return;
   d.preferences = preferences;
+  if(d.info.menuCount && (!d.menu || performance.now()-(d.menuReadAt||0)>10000)){
+    const items=[];
+    for(let i=0;i<d.info.menuCount;i++){
+      const item=parse[CMD.MENU_DESC](await sessionRequest(d,req.menuDesc(i)));
+      if(dev!==d)return;
+      if(item.id!==127)items.push(item);
+    }
+    d.menu=items;d.menuReadAt=performance.now();
+  }
   if (preferences.slots) { d.bank = preferences.slots; renderBank(); }
   renderPreferences();
 }
@@ -4398,7 +4435,7 @@ function renderPreferences(force = false) {
   $("device-display").hidden = !p || !(p.state.caps & 7);
   $("device-presets").hidden = !p || !(p.state.caps & 8);
   if (!p) { renderPreferences.sig = null; return; }
-  const sig = JSON.stringify([p.state, p.palettes, lang, d.dump && d.dump.engine]);
+  const sig = JSON.stringify([p.state, p.palettes, d.menu, lang, d.dump && d.dump.engine]);
   if (!force && sig === renderPreferences.sig) return;
   renderPreferences.sig = sig;
   const defs = [
@@ -4414,6 +4451,27 @@ function renderPreferences(force = false) {
     select.value = value;
     select.addEventListener("change", () => changePreference(id, +select.value));
     controls.push(el("label", { class: "bar" }, el("span", { text: t(key) }), select));
+  }
+  // Descriptor-driven device settings; unavailable on older/device-free builds.
+  // Palette is already above. Names/choices come from firmware, like parameter labels.
+  let menuTab;
+  for(const item of [...(d.menu||[])].sort((a,b)=>(a.tab||0)-(b.tab||0))){
+    if(item.id===0)continue;
+    if(item.tabName!==menuTab){menuTab=item.tabName;controls.push(el("h3",{text:menuTab||"Settings"}));}
+    const input=item.kind===0?el("select",{"aria-label":item.name}):el("input",{type:"number",min:item.min,max:item.max,"aria-label":item.name});
+    if(item.kind===0)input.replaceChildren(...item.choices.map((text,i)=>el("option",{value:i+item.min,text})));
+    input.value=item.value;
+    input.addEventListener("change",async()=>{
+      if(dev!==d)return;
+      while(busy && dev===d)await sleep(20);
+      if(dev!==d)return;
+      await op(async()=>{
+        const response=parse[CMD.MENU_SET](await sessionRequest(d,req.menuSet(item.id,+input.value),FLASH_OPT));
+        if(dev!==d)return;
+        d.menu=null;await syncPreferences(d);preferenceResult(response.rc);
+      });
+    });
+    controls.push(el("label",{class:"bar"},el("span",{text:item.name}),input));
   }
   $("device-display-controls").replaceChildren(...controls);
   if (!(p.state.caps & 8)) return;

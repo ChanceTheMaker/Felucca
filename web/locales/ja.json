@@ -497,6 +497,11 @@
   "editor.smkLearnAssign": "Assign CC",
   "editor.smkLearnClear": "Clear this CC",
   "editor.smkNudge": "Nudge",
-  "site.smk37_sound_laboratory": "SMK-37 Pro & Elite / Sound laboratory",
-  "ui.smkModeTipConnect": "SMK-37 に接続"
+  "site.smk37_sound_laboratory": "サウンドラボ",
+  "ui.smkModeTipConnect": "SMK-37 に接続",
+  "site.smk_supported_models": "SMK-37 Pro & Elite 用",
+  "ui.smkInstallerTitle": "Felucca SMK — インストーラー",
+  "ui.smkStudioTitle": "Felucca SMK Studio",
+  "ui.audioVersionMismatch": "ブラウザー音源とStudioのバージョンが異なります。ページを再読み込みして、対応する音声ファイルを読み込んでください。",
+  "editor.smkSampleSetup": "有効なサンプルスロットがありません。サンプル保存対応ビルドでは、SMK の NAVIGATE → SYSTEM → SAMPLE STORAGE を開き、初期化後に再接続してください。初期化すると純正サンプルデータが置き換わるため、純正ファームウェアのバックアップを保管してください。"
 }

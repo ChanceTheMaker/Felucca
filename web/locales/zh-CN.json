@@ -497,6 +497,11 @@
   "editor.smkLearnAssign": "Assign CC",
   "editor.smkLearnClear": "Clear this CC",
   "editor.smkNudge": "Nudge",
-  "site.smk37_sound_laboratory": "SMK-37 Pro & Elite / Sound laboratory",
-  "ui.smkModeTipConnect": "连接 SMK-37"
+  "site.smk37_sound_laboratory": "声音实验室",
+  "ui.smkModeTipConnect": "连接 SMK-37",
+  "site.smk_supported_models": "适用于 SMK-37 Pro & Elite",
+  "ui.smkInstallerTitle": "Felucca SMK — 安装器",
+  "ui.smkStudioTitle": "Felucca SMK Studio",
+  "ui.audioVersionMismatch": "浏览器音源和 Studio 的版本不一致。请重新加载此页面以获取匹配的音频文件。",
+  "editor.smkSampleSetup": "没有已启用的采样槽。在支持采样存储的固件中，请在 SMK 上打开 NAVIGATE → SYSTEM → SAMPLE STORAGE，初始化后重新连接。初始化会替换原厂采样数据，请保留原厂备份。"
 }

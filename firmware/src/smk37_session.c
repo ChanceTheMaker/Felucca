@@ -4,6 +4,7 @@
 #include "project.c"
 #undef PROJ_HOST
 #include "smk37_store.h"
+#include "smk37_slice_edit.c"
 typedef struct {
     project_store_t project;
     uint32_t generation;
@@ -65,7 +66,7 @@ static int smk37_session_restore(void) {
         memcpy(t->step,p->t[k].step,sizeof t->step);
         uint8_t values[FP_SIZE+1];fm6_unpack(p->fm6[k],values);fm6_set_patch(k,values);fm6_adopt(k);
     }
-    smk37_song_row=0;smk37_undo.valid=0;
+    smk37_song_row=0;smk37_undo.valid=0;smk37_sound_undo.valid=0;
     chain_config=p->chain;motion=p->motion;memset(motion_active,0,sizeof motion_active);motion_base_valid=0;
     song.sel=p->sel%NTRK;song.octave=smk37_session.octave-3;
     smk37_velocity_mode=smk37_session.velocity;smk37_pad_bank=smk37_session.pad_bank;
@@ -73,8 +74,8 @@ static int smk37_session_restore(void) {
     if(smk37_session.version==2){
         memcpy(smk37_learn_map,smk37_session.reserved,32);
         click_mode=smk37_session.reserved[32]%3;click_lvl=smk37_session.reserved[33]%3;cin_bars=smk37_session.reserved[34]%3;
-        smk37_palette=smk37_session.reserved[35]%23;smk37_bold=!!smk37_session.reserved[36];
-    }else{memset(smk37_learn_map,0,32);click_mode=cin_bars=0;click_lvl=1;smk37_palette=smk37_bold=0;}
+        if(!smk37_global_prefs){smk37_palette=smk37_session.reserved[35]%23;smk37_bold=!!smk37_session.reserved[36];}
+    }else{memset(smk37_learn_map,0,32);click_mode=cin_bars=0;click_lvl=1;if(!smk37_global_prefs)smk37_palette=smk37_bold=0;}
     song.master_q12=smk37_session.version==2 && smk37_session.reserved[38]==0x56 && smk37_session.reserved[37]<=128 ? smk37_session.reserved[37]*32u : 1024u;
     ml_arm=ml_heard=0;smk37_learn_on=0;
     smk37_analog_ready=0;memset(smk37_encoder_phase,0,sizeof smk37_encoder_phase);
@@ -140,3 +141,6 @@ static unsigned smk37_chain_prepare(void){
 }
 
 #include "smk37_presets.c"
+#if SMK37_ENABLE_SAMPLES
+#include "smk37_samples.c"
+#endif

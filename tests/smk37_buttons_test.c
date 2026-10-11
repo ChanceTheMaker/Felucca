@@ -53,7 +53,14 @@ int main(void)
     smk37_patch_mode=1;
     assert(smk37_indicator_status()&(1u<<12));
     /* Each navigation shortcut opens a real parameter page. */
-    press(14); assert(smk37_page==1 && !smk37_patch_mode);
+    press(14); assert(smk37_page==SMK37_PROJECT_PAGE && !smk37_patch_mode);
+    assert(!smk37_project_request && (smk37_indicator_status()&(1u<<13)));
+    press(14); assert(!smk37_project_request); /* Opening Save twice never writes. */
+    smk37_turn(4,1); assert(smk37_project_slot==1);
+    press(4); assert(smk37_project_request==6); /* Explicit save to selected slot. */
+    smk37_project_request=0;
+    press(12); assert(smk37_page==1 && !smk37_patch_mode);
+    assert((smk37_indicator_status()&(1u<<11)) && !(smk37_indicator_status()&(1u<<13)));
     press(4); assert(smk37_page==2); press(3); assert(smk37_page==1);
     press(15); assert(smk37_page==7 && (smk37_indicator_status()&(1u<<14)));
     press(11); assert(smk37_page==18);
@@ -134,7 +141,7 @@ int main(void)
     press(17); tick(); assert(!song.playing && !trk[0].seq_n);
     /* Press edges queued in one block still start/stop in the correct order. */
     press(17); press(17); assert(transport_req==2); tick(); assert(!song.playing);
-    press(12); assert(smk37_notice && !(smk37_indicator_status()&(1u<<11)));
+    press(12); assert(smk37_page==1 && (smk37_indicator_status()&(1u<<11)));
     /* Diagnostics never toggle functions or start recording. */
     smk37_page=SMK37_BUTTON_PAGE;
     for(unsigned i=1;i<=18;++i) press(i);

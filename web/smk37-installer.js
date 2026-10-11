@@ -10,8 +10,10 @@ try{
  if(!r.ok)throw Error('No candidate package is staged. Studio remains available.');
  candidate=await r.json();
  if(candidate.private!==true||!/^SMK-37_\d{3}$/.test(candidate.product)||!/^([a-f0-9]{64})$/.test(candidate.sha256))throw Error('Invalid candidate metadata.');
+ const release=document.getElementById('release');
+ if(release)release.textContent=`${candidate.version} · Private beta`;
  log(`${candidate.version} - ${candidate.usb_hardware_validated ? 'USB installation, restart and saved-project retention confirmed on the test device.' : 'private USB updater candidate; hardware validation pending.'}`);
-}catch(e){candidate=null;log(e.message);}
+}catch(e){candidate=null;log(e.message);const release=document.getElementById('release');if(release)release.textContent='No firmware staged';}
 if(!navigator.requestMIDIAccess)log('Web MIDI is unavailable here. Open this local page in Chrome or Edge.');
 sync();
 button.addEventListener('click',async()=>{

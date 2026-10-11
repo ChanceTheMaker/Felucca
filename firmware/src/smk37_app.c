@@ -3,7 +3,8 @@
  * plus the stock-derived SMK display transport. Not an installable release:
  * clock handoff/recovery and physical peripheral behavior need validation.
  * Test10 supports private opt-in save writes after unit/storage validation.
- * The SMK RAM updater is opt-in; FM-1 ADC, TRS UART and radio are disabled. */
+ * The SMK RAM updater, samples and stock-derived TRS OUT are opt-in;
+ * FM-1 ADC/UART initialization and radio remain disabled. */
 #include <stdint.h>
 #include "smk37_unit.h"
 #define FELUCCA_FLASH 0
@@ -17,7 +18,10 @@
 #define FELUCCA_SYSEX 1
 #define FELUCCA_UART 0
 #define FELUCCA_CDC 0
-#define FELUCCA_UAC 0
+#ifndef SMK37_ENABLE_USB_AUDIO
+#define SMK37_ENABLE_USB_AUDIO 0
+#endif
+#define FELUCCA_UAC SMK37_ENABLE_USB_AUDIO
 #define FELUCCA_ID "SMK37_DEV"
 #if SMK37_ENABLE_USB_UPDATE
 #define FELUCCA_VERSION SMK37_UPDATE_VERSION
@@ -31,6 +35,7 @@
 #include "fm1_time.h"
 #include "fm1_sys.h"
 #include "fm1_irq.h"
+#include "fm1_timer.h"
 #include "smk37_audio.h"
 #include "smk37_lcd_hw.h"
 #include "smk37_lights_hw.h"
@@ -61,8 +66,20 @@
 /* Pure arithmetic: RAM flash routines must never call an XIP helper. */
 #define FL_RANGE_OK(off,n) (SMK37_ENABLE_SAVES && (((uint32_t)(off)>=SMK37_STORE_LO && \
     (uint32_t)(off)<SMK37_STORE_HI && (uint32_t)(n)>0 && (uint32_t)(n)<=SMK37_STORE_HI-(uint32_t)(off)) || \
-    (SMK37_ENABLE_PRESETS && SMK37_PRESET_RANGE(off,n))))
+    (SMK37_ENABLE_PRESETS && SMK37_PRESET_RANGE(off,n)) || SMK37_SAMPLE_WRITE_OK(off,n)))
+#if SMK37_ENABLE_SAMPLES
+static uint8_t smk37_samples_formatting;
+#define SMK37_SAMPLE_WRITE_OK(off,n) (((smk37_samples_owned || smk37_samples_formatting) && SMK37_SAMPLE_RANGE(off,n)) || (smk37_samples_formatting && SMK37_SAMPLE_JOURNAL_RANGE(off,n)))
+#else
+#define SMK37_SAMPLE_WRITE_OK(off,n) 0
+#endif
 #include "fm1_flash.h"
+#if SMK37_ENABLE_TRS
+#if !FELUCCA_UAC
+#error "SMK TRS service requires the existing 2 kHz USB timer"
+#endif
+#include "smk37_midi_output.c"
+#endif
 
 volatile smk37_bootguard_t smk37_boot_state __attribute__((section(".noinit")));
 
@@ -155,7 +172,7 @@ void smk37_scanner_irq(void)
             smk37_last_button = ((i+1u) << 8) | 1u;
             smk37_events_push(&smk37_button_events,i,1);
         }
-        if (controls.released & (1u << i)) smk37_last_button = (i+1u) << 8;
+        if (controls.released & (1u << i)) {smk37_last_button = (i+1u) << 8;smk37_events_push(&smk37_button_events,i,0);}
     }
     for (unsigned i = 0; i < SMK37_ENCODER_COUNT; ++i)
         if (controls.encoder[i]) {
@@ -175,13 +192,14 @@ static void smk37_consume_keys(void)
     smk37_performance_poll();
     if (smk37_button_events.overflow) {
         fm1_irq_off(); smk37_events_discard(&smk37_button_events); fm1_irq_on();
-        song.rec=0; transport_req=2;
+        song.rec=0; transport_req=2;smk37_button_down=smk37_button_held=0;
         smk37_notice="BUTTON QUEUE LOST / STOP"; smk37_notice_at=fm1_ms;
     }
     smk37_event_t button;
     unsigned button_budget=18;
     while (button_budget-- && smk37_events_pop(&smk37_button_events,&button))
-        smk37_button_event(button.key);
+        smk37_button_input(button.key,button.duration);
+    smk37_hold_poll();
     if (smk37_pad_events.overflow || smk37_analog_failed) {
         fm1_irq_off();
         smk37_events_discard(&smk37_pad_events);
@@ -260,6 +278,9 @@ static int smk37_flash_read_raw(uint32_t off,void *dst,uint32_t n)
 }
 static int smk37_storage_read(uint32_t off,void *dst,uint32_t n)
 {
+#if SMK37_ENABLE_SAMPLES
+    if(SMK37_SAMPLE_RANGE(off,n)||SMK37_SAMPLE_JOURNAL_RANGE(off,n))return smk37_flash_read_raw(off,dst,n);
+#endif
     return (smk37_store_range(off,n)||(SMK37_ENABLE_PRESETS && SMK37_PRESET_RANGE(off,n)))?smk37_flash_read_raw(off,dst,n):-1;
 }
 static int smk37_storage_erase(uint32_t off)
@@ -273,6 +294,31 @@ static int smk37_storage_program(uint32_t off,const void *src,uint32_t n)
     if(!SMK37_ENABLE_SAVES || !smk37_storage_writable || !FL_RANGE_OK(off,n))return -1;
     memset(smk37_dma,0,sizeof smk37_dma);return fl_write(off,src,n);
 }
+#if SMK37_ENABLE_SAMPLES
+static const uint32_t smk37_sample_stock_crc[3]=SMK37_UNIT_SAMPLE_CRCS;
+static const uint8_t *smk37_sample_xip(unsigned k){return smk37_samples_owned&&k<3?fm1_xip_ptr(smk37_sample_address(k)):smk37_empty_sample;}
+static void smk37_sample_invalidate(unsigned k){fm1_irq_off();fl_inval(smk37_sample_address(k),SMP_USER_SIZE);fm1_irq_on();}
+static void smk37_samples_probe(void){
+    int state=smk37_sample_owner_state(&smk37_storage_io,SMK37_UNIT_TRIM_CRC);
+    smk37_samples_state=state<0?3:state;smk37_samples_owned=0;
+    if(state!=2)return;
+    /* SMK's application ends at 0x9d000; never use the FM-1's 0x93000
+     * plain-window boundary, which overlaps the SMK application allocation. */
+    fm1_irq_off();SFCENC_CON&=(uint8_t)~2u;SFCENC_UNENC_L=FL_XIP(0x9d000u);SFCENC_UNENC_H=0x07ffffffu;SFCENC_CON|=2u;fm1_irq_on();
+    uint8_t raw[256];
+    for(unsigned k=0;k<3;++k){smk37_sample_invalidate(k);
+        if(smk37_storage_read(smk37_sample_address(k),raw,256)||memcmp(raw,fm1_xip_ptr(smk37_sample_address(k)),256)){smk37_samples_state=3;return;}}
+    smk37_samples_owned=1;slc_store_boot();for(unsigned k=0;k<3;++k)smp_user_scan(k);
+}
+static int smk37_sample_format(void){
+    if(!smk37_storage_writable||!smk37_up_idle())return -1;
+    smk37_samples_formatting=1;
+    int rc=smk37_sample_initialize(&smk37_storage_io,SMK37_UNIT_TRIM_CRC,smk37_sample_stock_crc);
+    smk37_samples_formatting=0;
+    if(!rc)smk37_samples_probe();
+    return rc||!smk37_samples_owned?-1:0;
+}
+#endif
 static int smk37_storage_probe(void)
 {
     static uint8_t trim[556];
@@ -283,10 +329,18 @@ static int smk37_storage_probe(void)
     if(!smk37_store_allocation_ok(&smk37_storage_io,sizeof smk37_session))return -1;
     smk37_storage_ready=1;smk37_storage_writable=SMK37_ENABLE_SAVES;
     if(SMK37_ENABLE_PRESETS)(void)smk37_up_boot();
+#if SMK37_ENABLE_SAMPLES
+    smk37_samples_probe();
+#endif
     return 0;
 }
 static void smk37_project_service(void)
 {
+#if SMK37_ENABLE_SAMPLES
+    if(smk37_samples_request){smk37_samples_request=0;int rc=smk37_sample_format();smk37_notice=rc?"SAMPLES: STOP / CHECK STORAGE":"SAMPLES READY / RECONNECT WEB";smk37_notice_at=fm1_ms;}
+#endif
+    if(smk37_prefs_request && smk37_up_idle()){smk37_prefs_request=0;int rc=smk37_preferences_save();smk37_notice=rc?"SETTINGS UNSAVED / STOP FIRST":"SETTINGS / FAVORITES SAVED";smk37_notice_at=fm1_ms;}
+    if(smk37_rename_request){smk37_rename_request=0;int rc=smk37_preset_rename();smk37_notice=rc?"RENAME FAILED / STOP FIRST":"PRESET RENAMED";smk37_notice_at=fm1_ms;}
     if(smk37_song_request){smk37_song_request=0;unsigned rc=smk37_chain_prepare();smk37_notice=rc?"SONG: STOP / CHECK SLOTS":"SONG PLAYING";smk37_notice_at=fm1_ms;}
     if(smk37_user_request){unsigned r=smk37_user_request;smk37_user_request=0;
         int rc=(r&3)==1?smk37_up_load(r>>2):smk37_up_store(r>>2,0);
@@ -302,7 +356,12 @@ static void smk37_project_service(void)
 done:smk37_notice_at=fm1_ms;
 }
 static uint32_t ota_now_ms(void){return fm1_ticks()/24000u;}
-static void ota_idle(void){usb_poll();fm1_wdt_feed();}
+static void ota_idle(void){
+#if !FELUCCA_UAC
+    usb_poll();
+#endif
+    fm1_wdt_feed();
+}
 #if SMK37_ENABLE_USB_UPDATE
 #include "smk37_loader_image.h"
 static int smk37_update_identity(const uint8_t *frame,uint32_t count){
@@ -329,7 +388,7 @@ static void smk37_editor_service(void)
             if(!rc && op==0)rc=smk37_session_load(slot);
             if(!rc){smk37_ed_begin(9);smk37_ed_byte(op);smk37_ed_byte(slot);smk37_ed_byte(smk37_session_used(slot));n=smk37_ed_finish();}
         }else if(count>=4 && frame[0]==0x7d && frame[1]==0x46 && frame[2]==0x4c &&
-            (frame[3]==33 || (frame[3]>=16&&frame[3]<=21) || ((frame[3]==68||frame[3]==69)&&count>=6&&frame[4]==3))){
+            (frame[3]==72 || frame[3]==73 || frame[3]==33 || (SMK37_ENABLE_SAMPLES&&frame[3]>=11&&frame[3]<=15) || (frame[3]>=34&&frame[3]<=38) || (frame[3]>=16&&frame[3]<=21) || ((frame[3]==68||frame[3]==69)&&count>=6&&frame[4]==3))){
             n=smk37_editor_main_command(frame,count);ota_frame_done();
         }else{
             fm1_irq_off();n=smk37_editor_handle(frame,count);fm1_irq_on();ota_frame_done();
@@ -359,15 +418,15 @@ static void smk37_light_service(void)
     fm1_irq_off();
     page=smk37_page;
     target = smk37_page == SMK37_LIGHT_PAGE ? smk37_light_target : 0;
-    color = smk37_light_color; level = smk37_light_level;
+    color = smk37_light_color; level = smk37_page==SMK37_LIGHT_PAGE?smk37_light_level:smk37_led_level;
     indicators=smk37_indicator_status();
     if(page==SMK37_STEP_PAGE) {
-        color=1;level=4;
+        color=1;level=smk37_led_level;
         unsigned bank=smk37_edit_step&~15u;
         for(unsigned i=0;i<16;++i)if(TSEL->step[bank+i].time!=ST_REST)
             pads|=(uint16_t)(1u<<i);
     } else if(page<SMK37_SOUND_PAGES) {
-        color=2; level=4;
+        color=2; level=smk37_led_level;
         for(unsigned i=0;i<16;++i)
             if(kb_chn[37+i] || ((smk37_pad_seen&(1u<<i)) && fm1_ms-smk37_pad_hit_at[i]<120u))
                 pads|=(uint16_t)(1u<<i);
@@ -377,7 +436,7 @@ static void smk37_light_service(void)
      * selection with newly selected performance indicators. */
     fm1_irq_off();
     smk37_scan_indicator = !smk37_light_failed && target > 16 ? target-16 : 0;
-    smk37_scan_indicator_bits = !smk37_light_failed ? indicators : 0;
+    smk37_scan_indicator_bits = !smk37_light_failed && (page>=SMK37_SOUND_PAGES || smk37_led_level) ? indicators : 0;
     fm1_irq_on();
     uint32_t state = pads | (color<<16) | (level<<24);
     if (state == previous || smk37_light_failed) return;
@@ -432,108 +491,26 @@ static void smk37_light_status(void)
     draw_text_line(0, 220, 240, &AF_S, smk37_light_failed ? "LED TIMEOUT - STOPPED" : "LOW BRIGHTNESS / SINGLE LED",
                    smk37_light_failed ? 0xf800 : 0x07ff, 0, 1);
 }
-static void smk37_sound_status(void)
-{
-    const param_desc_t *desc[4];
-    int16_t values[4];
-    const char *engine, *preset, *page;
-    char user_name[13]={0};
-    unsigned track;
-    /* Copy a coherent view while audio cannot change selection/parameters;
-     * formatting and slow LCD transfers happen after interrupts are restored. */
-    fm1_irq_off();
-    if (smk37_page >= SMK37_SOUND_PAGES) { fm1_irq_on(); return; }
-    track = song.sel;
-    const engine_t *e = ENGINES[TSEL->eng_req];
-    engine = e->name;
-    preset = e->npresets ? e->presets[TSEL->preset % e->npresets].name : "INIT";
-    unsigned user=TSEL->user;
-    if(smk37_page==SMK37_PRESET_PAGE)user=smk37_user_slot+1;
-    if(user && smk37_up_used(user-1)){memcpy(user_name,smk37_up.record[user-1].name,12);preset=user_name;}
-    else if(smk37_page==SMK37_PRESET_PAGE)preset="EMPTY USER SLOT";
-    const page_t *pg = &smk37_sound_pages[smk37_page];
-    page = smk37_patch_mode ? "PATCH: < > PRESET" : pg->title;
-    for (unsigned i = 0; i < 4; ++i) {
-        int16_t *v;
-        desc[i] = page_desc(pg, i, &v);
-        values[i] = v ? *v : 0;
-    }
-    unsigned custom=smk37_page;
-    if(custom==SMK37_PERFORM_PAGE)for(unsigned i=0;i<4;++i)values[i]=perf_k[i];
-    if(custom==SMK37_SONG_PAGE){chain_row_t *r=&chain_config.row[smk37_song_row];values[0]=chain_config.count?smk37_song_row+1:0;values[1]=smk37_song_track+1;values[2]=r->slot[smk37_song_track]+1;values[3]=r->repeat;}
-    if(custom==SMK37_TOOLS_PAGE){values[0]=smk37_tool;values[1]=smk37_lane+1;values[2]=smk37_undo.valid;values[3]=smk37_undo.track+1;}
-    if(custom==SMK37_PRESET_PAGE){values[0]=smk37_user_slot+1;values[1]=smk37_up_used(smk37_user_slot);values[2]=smk37_up_writable;values[3]=8;}
-    if(custom==SMK37_AUTOMATION_PAGE){values[0]=smk37_edit_step+1;values[1]=smk37_auto_param;values[2]=smk37_auto_value;values[3]=smk37_auto_lock;}
-    if(custom==SMK37_DETAIL_PAGE){step_t *s=&TSEL->step[smk37_edit_step];values[0]=step_chance(s);values[1]=step_ratchet(s);values[2]=step_nudge(s);values[3]=s->vel;}
-    if(custom==SMK37_LEARN_PAGE){values[0]=smk37_learn_on;values[1]=smk37_learn_track+1;values[2]=smk37_learn_param;values[3]=ml_arm;}
-    if(custom==SMK37_CLICK_PAGE){values[0]=click_mode;values[1]=click_lvl;values[2]=cin_bars;values[3]=seq_counting();}
-    if(custom==SMK37_DISPLAY_PAGE){values[0]=smk37_palette;values[1]=smk37_bold;values[2]=0;values[3]=0;}
-    if(custom==SMK37_STEP_PAGE){step_t *s=&TSEL->step[smk37_edit_step];values[0]=smk37_edit_step+1;values[1]=s->note[0];values[2]=s->vel;values[3]=s->time;}
-    if(custom==SMK37_SETTINGS_PAGE){values[0]=smk37_velocity_mode;values[1]=smk37_pad_bank+1;values[2]=smk37_last_velocity;values[3]=smk37_pedal_down;}
-    if(custom==SMK37_PROJECT_PAGE){values[0]=smk37_project_slot+1;values[1]=smk37_storage_ready;values[2]=smk37_storage_writable;values[3]=0;}
-    fm1_irq_on();
-    char text[32], value[24];
-    str_cpy(text, "TRACK ", sizeof text);
-    fmt_int(text+6, track+1);
-    draw_text_line(12, 44, 216, &AF_S, text, T_THEME, T_BG, 0);
-    draw_text_line(12, 62, 216, &AF_S, engine, T_TEXT, T_BG, 0);
-    draw_text_line(12, 80, 216, &AF_S, preset, T_TEXT, T_BG, 0);
-    draw_text_line(12, 102, 216, &AF_S, page, T_THEME, T_BG, 0);
-    for (unsigned i = 0; i < 4; ++i) {
-        const char *unit = "";
-        const char *label=desc[i] ? desc[i]->label : "";
-        static const char *const step_labels[]={"STEP","NOTE","VELOCITY","TYPE"};
-        static const char *const control_labels[]={"VELOCITY","PAD BANK","LAST VEL","SUSTAIN"};
-        static const char *const project_labels[]={"SLOT","READ OK","SAVE READY",""};
-        if(custom==SMK37_STEP_PAGE)label=step_labels[i];
-        if(custom==SMK37_PERFORM_PAGE)label=(const char *const[]){"FILTER","CRUSH","THROW","DEPTH"}[i];
-        if(custom==SMK37_SONG_PAGE)label=(const char *const[]){"SECTION","TRACK","PROJECT","REPEAT"}[i];
-        if(custom==SMK37_TOOLS_PAGE)label=(const char *const[]){"TOOL","DRUM LANE","UNDO READY","UNDO TRACK"}[i];
-        if(custom==SMK37_PRESET_PAGE)label=(const char *const[]){"USER SLOT","USED","SAVE ENABLED","CAPACITY"}[i];
-        if(custom==SMK37_AUTOMATION_PAGE)label=(const char *const[]){"STEP","PARAMETER","VALUE","LOCK"}[i];
-        if(custom==SMK37_DETAIL_PAGE)label=(const char *const[]){"CHANCE","RATCHET","NUDGE","VELOCITY"}[i];
-        if(custom==SMK37_LEARN_PAGE)label=(const char *const[]){"LEARN","TRACK","PARAMETER","WAITING CC"}[i];
-        if(custom==SMK37_CLICK_PAGE)label=(const char *const[]){"CLICK","LEVEL","COUNT-IN","COUNTING"}[i];
-        if(custom==SMK37_DISPLAY_PAGE)label=(const char *const[]){"PALETTE","BOLD","",""}[i];
-        if(custom==SMK37_SETTINGS_PAGE)label=control_labels[i];
-        if(custom==SMK37_PROJECT_PAGE)label=project_labels[i];
-        draw_text_line(12, 124+i*18, 90, &AF_S, label, T_TEXT, T_BG, 0);
-        value[0] = 0;
-        if (desc[i]) param_format(desc[i], values[i], value, &unit);
-        if((custom>=SMK37_STEP_PAGE && custom<=SMK37_PROJECT_PAGE) || custom==SMK37_DETAIL_PAGE || custom==SMK37_LEARN_PAGE || custom==SMK37_CLICK_PAGE || custom==SMK37_DISPLAY_PAGE || custom==SMK37_PERFORM_PAGE || custom==SMK37_AUTOMATION_PAGE || custom==SMK37_SONG_PAGE || custom==SMK37_TOOLS_PAGE || custom==SMK37_PRESET_PAGE)fmt_int(value,values[i]);
-        if(custom==SMK37_LEARN_PAGE && i==2)str_cpy(value,param_desc_of(trk[smk37_learn_track].eng_req,values[i])->label,sizeof value);
-        if(custom==SMK37_TOOLS_PAGE && i==0)str_cpy(value,(const char *const[]){"CLEAR","REVERSE","SHIFT LEFT","SHIFT RIGHT","RANDOM","COOK","BEAT","-","LANE CLEAR","LANE REVERSE","LANE FILL","LANE RANDOM"}[smk37_tool],sizeof value);
-        if(custom==SMK37_SONG_PAGE && i==2 && values[i]==5)str_cpy(value,"SILENT",sizeof value);
-        if(custom==SMK37_AUTOMATION_PAGE && i==1)str_cpy(value,track_desc(TSEL,values[i])->label,sizeof value);
-        if(custom==SMK37_DISPLAY_PAGE){if(!i)str_cpy(value,UI_PALETTES[values[i]%NPALETTES].name,sizeof value);else if(i>1)value[0]=0;}
-        if(custom==SMK37_CLICK_PAGE && !i)str_cpy(value,(const char *const[]){"OFF","REC","ON"}[values[i]%3],sizeof value);
-        if(custom==SMK37_SETTINGS_PAGE && !i){static const char *const curves[]={"LINEAR","SOFT","HARD","FIXED 100"};str_cpy(value,curves[values[i]],sizeof value);}
-        if(custom==SMK37_STEP_PAGE && i==3){static const char *const types[]={"NOTE","TIE","REST"};str_cpy(value,types[values[i]%3],sizeof value);}
-        if(custom==SMK37_PROJECT_PAGE && i==3)value[0]=0;
-        draw_text_line(104, 124+i*18, 124, &AF_S, value, T_TEXT, T_BG, 0);
-    }
-    draw_text_line(0, 202, 240, &AF_S, smk37_knob_bank ? "TRK / ENGINE / PRE / PAGE" : "VOL / BPM / PRE / TRACK", T_TEXT, T_BG, 1);
-    if(custom==SMK37_PERFORM_PAGE)draw_text_line(0,202,240,&AF_S,"HOLD PADS: FX / THROWS",T_THEME,T_BG,1);
-    if(custom==SMK37_SONG_PAGE)draw_text_line(0,202,240,&AF_S,"< DELETE / > ADD / PLAY",T_THEME,T_BG,1);
-    if(custom==SMK37_TOOLS_PAGE)draw_text_line(0,202,240,&AF_S,"< UNDO-REDO / > RUN",T_THEME,T_BG,1);
-    if(custom==SMK37_PRESET_PAGE)draw_text_line(0,202,240,&AF_S,"< LOAD / > SAVE",T_THEME,T_BG,1);
-    if(custom==SMK37_AUTOMATION_PAGE)draw_text_line(0,202,240,&AF_S,"< DELETE / > SET",T_THEME,T_BG,1);
-    if(custom==SMK37_PROJECT_PAGE)draw_text_line(0,202,240,&AF_S,"< LOAD / > SAVE",T_TEXT,T_BG,1);
-    if(custom==SMK37_DETAIL_PAGE){str_cpy(text,"STEP ",sizeof text);fmt_int(text+5,smk37_edit_step+1);draw_text_line(0,202,240,&AF_S,text,T_THEME,T_BG,1);}
-    if(custom==SMK37_LEARN_PAGE)draw_text_line(0,202,240,&AF_S,"TURN PARAM / SEND MIDI CC",T_THEME,T_BG,1);
-    if(custom==SMK37_STEP_PAGE)draw_text_line(0,202,240,&AF_S,"PADS: STEPS / < >: BANK",T_TEXT,T_BG,1);
-}
+#include "smk37_draw.c"
 static void smk37_status(void)
 {
     if (!smk37_display_ok) return;
     static unsigned shown_page = UINT32_MAX;
-    static unsigned shown_palette=UINT32_MAX,shown_bold=UINT32_MAX;
-    if(shown_palette!=smk37_palette || shown_bold!=smk37_bold){
+    static unsigned shown_palette=UINT32_MAX,shown_bold=UINT32_MAX,shown_style=UINT32_MAX,shown_large=UINT32_MAX;
+    if(shown_palette!=smk37_palette || shown_bold!=smk37_bold || shown_style!=smk37_style || shown_large!=smk37_large){
+        ux.style=smk37_style?ST_LINE:ST_FLAT;shown_style=smk37_style;shown_large=smk37_large;
         palette_set(smk37_palette);font_set(smk37_bold);shown_palette=smk37_palette;shown_bold=smk37_bold;shown_page=UINT32_MAX;
     }
+    static uint8_t sleeping;
+    static const uint32_t timeout[]={0,300000,900000,1800000,3600000};
+    if(smk37_screen_off && fm1_ms-smk37_input_at>=timeout[smk37_screen_off]){
+        if(!sleeping){cv_begin(240,120,0);cv_blit(0,0);cv_blit(0,120);sleeping=1;}return;
+    }
+    if(sleeping){sleeping=0;shown_page=UINT32_MAX;}
     unsigned page = smk37_page;
     if (shown_page != page) {
-        cv_begin(240, 100, page<SMK37_SOUND_PAGES ? T_BG : 0); cv_blit(0, 40); cv_blit(0, 140);
+        cv_begin(240, 120, page<SMK37_SOUND_PAGES ? T_BG : 0); cv_blit(0, 0); cv_blit(0, 120);
+        if(page>=SMK37_SOUND_PAGES)draw_text_line(0,16,240,&AF_M,"FELUCCA [Salt]",0xffff,0,1);
         shown_page = page;
     }
     if (page == SMK37_BUTTON_PAGE) { smk37_button_status(); return; }
@@ -559,19 +536,6 @@ static void smk37_status(void)
     }
     if (page < SMK37_SOUND_PAGES) {
         smk37_sound_status();
-        char footer[32];
-        str_cpy(footer,"OCT +0 / VOL / STOP",sizeof footer);
-        int octave=song.octave;
-        footer[4]=octave<0 ? '-' : '+'; footer[5]='0'+(octave<0 ? -octave : octave);
-        if(smk37_fader_bank) { footer[9]='E'; footer[10]='N'; footer[11]='V'; }
-        if(song.rec) str_cpy(footer+14,"REC RAM",sizeof footer-14);
-        else if(song.playing) str_cpy(footer+14,"PLAY",sizeof footer-14);
-        const char *message=footer;
-        if(smk37_notice && fm1_ms-smk37_notice_at<3000u) message=smk37_notice;
-        if(smk37_light_failed) message="LED TIMEOUT - STOPPED";
-        draw_text_line(0, 220, 240, &AF_S,
-                       smk37_analog_failed ? "TEST10 ADC TIMEOUT" : message,
-                       smk37_analog_failed || smk37_light_failed ? 0xf800 : 0x07ff, 0, 1);
         return;
     }
     uint16_t raw[SMK37_ANALOG_INPUTS], span;
@@ -622,8 +586,16 @@ void smk37_audio_irq(void)
         int32_t *out = smk37_dma + half * HALF_FRAMES * 2u;
         smk37_consume_keys();
         fm6_poll();
+#if FELUCCA_UAC
+        uac_render_start();
+#endif
         for (b = 0; b < HALF_FRAMES; b += CTL) {
             mix_block(out + b * 2u, CTL);
+#if FELUCCA_UAC
+            uac_tap(out + b * 2u, CTL);
+#endif
+            if(fx_usb_fixed)usb_fixed_dac(out + b * 2u,CTL);
+            if(!scope_mix)for(unsigned j=1;j<CTL;j+=2)scope_buf[scope_w++ & (SCOPE_N-1u)]=(int16_t)out[(b+j)*2u];
             click_render(out + b * 2u, CTL);
         }
         for (i = 0; i < HALF_FRAMES * 2u; ++i) out[i] *= 128;
@@ -632,12 +604,37 @@ void smk37_audio_irq(void)
         if (smk37_audio_free_half() != half) ++smk37_late;
     }
 }
+/* UAC needs one packet each millisecond even while the LCD transfers.
+ * A single 2 kHz TIMER5 consumer owns every SIE access. Priority 4 allows it
+ * to preempt rendering (3); SMK contact scanning keeps priority 5. The main
+ * loop never polls USB concurrently with this consumer. Retry stays in main:
+ * usb.up is false throughout its 25 ms reset, so usb_poll touches no SIE. */
+#if FELUCCA_UAC
+void smk37_usb_irq(void){fm1_timer5_ack();usb_poll();
+#if SMK37_ENABLE_TRS
+    smk37_trs_poll();
+#endif
+}
+extern void smk37_isr_usb(void);
+static void smk37_usb_timer_start(void){
+    fm1_timer5_start(smk37_isr_usb,4);
+    FM1_T5_PRD=3000u; /* OSC/4 = 6 MHz, 2 kHz */
+}
+static void smk37_usb_timer_stop(void){FM1_T5_CON=0x4000u;
+#if SMK37_ENABLE_TRS
+    if(smk37_trs_running)smk37_uart_tx_stop();
+#endif
+}
+#endif
 extern void smk37_isr_audio(void);
 extern void smk37_isr_scanner(void);
 
 static void fm1_fault(const fm1_crash_t *record)
 {
     (void)record;
+#if FELUCCA_UAC
+    smk37_usb_timer_stop();
+#endif
     smk37_audio_stop();
     smk37_scan_stop();
     smk37_adc_stop(&smk37_adc);
@@ -651,6 +648,9 @@ static void fm1_fault(const fm1_crash_t *record)
 static void smk37_enter_usb_update(void){
     smk37_bootguard_update(&smk37_boot_state);
     fm1_irq_off();
+#if FELUCCA_UAC
+    smk37_usb_timer_stop();
+#endif
     smk37_audio_stop();smk37_scan_stop();smk37_adc_stop(&smk37_adc);
     smk37_audio_pc_out(6,0);
     usb_detach();fm1_delay_ms(100);
@@ -705,7 +705,9 @@ void smk37_cstart(const uint32_t *boot_parameters)
     smk37_lcd_hw_init(4);
     /* Failure disables the display transport; USB/audio can still run. */
     smk37_display_ok = (uint8_t)smk37_panel_init(&smk37_panel_io);
-    draw_text_line(0, 16, 240, &AF_M, "FELUCCA [Salt]", 0xffff, 0, 1);
+    /* One-shot branding; retain normal startup timing and USB identity. */
+    draw_text_line(0, (240 - AF_M.h) / 2, 240, &AF_M, "Felucca SMK", 0xffff, 0, 1);
+    draw_text_line(0, 240 - AF_S.h - 10, 240, &AF_S, FELUCCA_VERSION, 0x9cf3, 0, 1);
     smk37_boot_state.stage = SMK37_BOOT_SCANNER;
     smk37_adc_init(&smk37_adc);
     /* Stock PC10 idle is low/output. Keep it defined between RGB frames. */
@@ -717,13 +719,17 @@ void smk37_cstart(const uint32_t *boot_parameters)
     (void)smk37_audio_init(smk37_dma, HALF_FRAMES * 2u,
                           smk37_isr_audio, 3, &smk37_audio_hooks);
     last = fm1_ticks();
+#if FELUCCA_UAC
+    smk37_usb_timer_start();
+#endif
     fm1_irq_enable_all();
     smk37_boot_state.stage = SMK37_BOOT_RUNNING;
 #if SMK37_ENABLE_SAVES
     /* IRQs and audio/scanner are initialized before the read helpers restore
      * interrupts. No auto-save: resume reads only and leaves transport stopped. */
     if(!smk37_storage_probe()){
-        smk37_notice=smk37_session_resume()?"PROJECT SLOTS EMPTY":"PROJECT RESTORED";
+        smk37_notice=smk37_restore_last?(smk37_session_resume()?"PROJECT SLOTS EMPTY":"PROJECT RESTORED"):"NEW SESSION";
+        if(smk37_up_ready)smk37_prefs_restore();
     }else smk37_notice="STORAGE NEEDS RECOVERY";
     smk37_notice_at=fm1_ms;
 #endif
@@ -733,13 +739,22 @@ void smk37_cstart(const uint32_t *boot_parameters)
         last = now;
         while (remainder >= 24000u) { ++fm1_ms; remainder -= 24000u; }
         fm1_wdt_feed();
+#if !FELUCCA_UAC
         usb_poll();
+#endif
         usb_retry(fm1_ms);
         smk37_editor_service();
 #if SMK37_ENABLE_USB_UPDATE
         if(usb.ota_req){usb.ota_req=0;smk37_enter_usb_update();}
 #endif
         smk37_project_service();
+#if SMK37_ENABLE_TRS
+        smk37_trs_configure();
+#endif
+        smk37_slice_service();
+#if SMK37_ENABLE_SAMPLES
+        if(smk37_samples_owned)slc_store_poll();
+#endif
         if (smk37_scan_frames != health_scan && smk37_rendered != health_audio) {
             health_scan = smk37_scan_frames;
             health_audio = smk37_rendered;
@@ -749,7 +764,7 @@ void smk37_cstart(const uint32_t *boot_parameters)
             health_scan >= 100u && health_audio >= 100u && fm1_ms - health_progress_at < 1000u)
             smk37_bootguard_healthy(&smk37_boot_state);
         if (fm1_ms - lights_at >= 25u) { lights_at=fm1_ms; smk37_light_service(); }
-        if (fm1_ms - status_at >= 250u) {
+        if (fm1_ms - status_at >= (smk37_animation && fm1_ms-smk37_input_at<400u ? 30u : 250u)) {
             status_at = fm1_ms;
             smk37_status();
         }
@@ -757,6 +772,9 @@ void smk37_cstart(const uint32_t *boot_parameters)
          * in Pro016. It is not a verified forced recovery route. */
         if (usb.uboot_req) {
             smk37_bootguard_update(&smk37_boot_state);
+#if FELUCCA_UAC
+            smk37_usb_timer_stop();
+#endif
             smk37_audio_stop();
             smk37_scan_stop();
             smk37_adc_stop(&smk37_adc);

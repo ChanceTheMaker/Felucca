@@ -3,6 +3,7 @@
 set -eu
 cd "$(dirname "$0")/.."
 mkdir -p build/smk37-tests
+python3 tests/test_smk37_storage_backup.py
 python3 -c 'import sys; sys.path.insert(0, "tools"); import build; build.generate()'
 cc -std=c99 -O1 -w -fsanitize=address -Ibuild/gen -Ifirmware/hal \
     tests/smk37_synth_test.c -o build/smk37-tests/synth
@@ -34,7 +35,7 @@ for component in chord midi_control midi_uart; do
 done
 
 # Real Test12 save migration and the SMK adapters for upstream 1.5.1.
-for component in smk37_upstream smk37_store smk37_completion; do
+for component in smk37_upstream smk37_store smk37_object_store smk37_samples smk37_sample_draw smk37_midi_tx smk37_midi_output smk37_completion smk37_draw smk37_workflow smk37_test19 smk37_test20 smk37_test21; do
     cc -std=c99 -O1 -w -fsanitize=address -Ibuild/gen -Ifirmware/hal \
         "tests/${component}_test.c" -o "build/smk37-tests/${component}"
     "build/smk37-tests/${component}"
@@ -45,4 +46,25 @@ if command -v node >/dev/null 2>&1; then
     node web/test_smk37_completion.mjs
 else
     node.exe web/test_smk37_completion.mjs
+fi
+
+build/smk37-tests/smk37_test19 --wire > build/smk37-tests/test19-wire.jsonl
+if command -v node >/dev/null 2>&1; then
+    node web/test_smk37_menu.mjs
+else
+    node.exe web/test_smk37_menu.mjs
+fi
+
+build/smk37-tests/smk37_workflow --wire > build/smk37-tests/workflow-wire.jsonl
+if command -v node >/dev/null 2>&1; then
+    node web/test_smk37_preferences.mjs
+else
+    node.exe web/test_smk37_preferences.mjs
+fi
+
+build/smk37-tests/smk37_samples --wire > build/smk37-tests/samples-wire.jsonl
+if command -v node >/dev/null 2>&1; then
+    node web/test_smk37_samples.mjs
+else
+    node.exe web/test_smk37_samples.mjs
 fi

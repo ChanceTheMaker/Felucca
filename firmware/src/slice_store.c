@@ -20,6 +20,9 @@
  * Flash access through storage.c's hooks (st_erase / st_prog); the host tests give their own. */
 #define SLC_REC_OFF (SMP_USER_SIZE - 0x1000u)        /* the slot's last sector */
 #define SLC_REC_MAGIC 0x314D4C53u                    /* "SLM1" */
+#ifndef SLC_STORE_SLOT
+#define SLC_STORE_SLOT(k) (SMP_USER_BASE + (k) * SMP_USER_SIZE)
+#endif
 typedef struct {
     uint32_t magic;
     uint32_t len, crc;                               /* the material: samples, the slot header's data CRC */
@@ -72,7 +75,7 @@ static void slc_store_load(uint32_t k)
 static int slc_store_write(uint32_t k)
 {
     slc_rec_t r;
-    uint32_t off = SMP_USER_BASE + k * SMP_USER_SIZE + SLC_REC_OFF;
+    uint32_t off = SLC_STORE_SLOT(k) + SLC_REC_OFF;
     if (!usr_nz[k])                                  /* emptied or being uploaded meanwhile: nothing to keep */
         return 0;
     if (!slc_rec_room(k))

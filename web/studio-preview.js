@@ -64,7 +64,9 @@
     const skin = Object.hasOwn(names, requestedSkin) ? requestedSkin : 'stage';
     const mode = (params.get('mode') || root.dataset.mode) === 'light' ? 'light' : 'dark';
     bubble.href = anchor.href;
-    picture.src = `screenshots/previews/${skin}-${mode}.jpg`;
+    picture.src = document.body.dataset.studioPreviewPath
+      ? document.body.dataset.studioPreviewPath.replace("{skin}", skin).replace("{mode}", mode)
+      : `screenshots/previews/${skin}-${mode}.jpg`;
     picture.alt = I18N.t('ui.previewAlt',{theme:names[skin],mode:I18N.t('ui.'+mode)});
     caption.textContent = I18N.t('ui.previewAlt',{theme:names[skin],mode:I18N.t('ui.'+mode)});
     action.textContent = I18N.t('ui.clickToPlay');
@@ -89,7 +91,7 @@
     bubble.hidden = false; refresh();
   }
   const later = () => { clearTimeout(timer); timer = setTimeout(hide, 160); };
-  for (const link of document.querySelectorAll('a[href="../editor/"]')) {
+  for (const link of document.querySelectorAll('a[href="../editor/"], a[data-studio-preview]')) {
     if (link.closest('.site-nav')) continue;
     link.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') show(link); });
     link.addEventListener('pointerleave', later);

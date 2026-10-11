@@ -196,6 +196,9 @@ static int midi_enqueue(uint32_t pkt, uint32_t source)
 
 static void midi_out_event(uint32_t pkt)            /* from the audio ISR */
 {
+#ifdef FELUCCA_MIDI_OUTPUT_TAP
+    FELUCCA_MIDI_OUTPUT_TAP(pkt);
+#endif
     if (usb.config && mo_w - mo_r < MQ) {
         midi_out_q[mo_w % MQ] = pkt;
         RING_PUBLISH();

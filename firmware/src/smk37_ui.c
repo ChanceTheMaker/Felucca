@@ -48,7 +48,30 @@ static const page_t smk37_sound_pages[] = {
     {"SONG CHAIN",0,SC_TRACK,GR_NONE,{255,255,255,255}},
     {"SEQ TOOLS",0,SC_TRACK,GR_NONE,{255,255,255,255}},
     {"USER PRESETS",0,SC_TRACK,GR_NONE,{255,255,255,255}},
+    {"NAVIGATE",0,SC_TRACK,GR_NONE,{255,255,255,255}},
+    {"PRESET BROWSER",0,SC_TRACK,GR_NONE,{255,255,255,255}},
+    {"OPERATOR",0,SC_TRACK,GR_NONE,{255,255,255,255}},
+    {"OP ENV",0,SC_TRACK,GR_NONE,{255,255,255,255}},
+    {"OPERATOR 2",0,SC_TRACK,GR_NONE,{255,255,255,255}},
+    {"SLICES",0,SC_TRACK,GR_NONE,{255,255,255,255}},
+    {"UNDO / REDO",0,SC_TRACK,GR_NONE,{255,255,255,255}},
+    {"PRESET NAME",0,SC_TRACK,GR_NONE,{255,255,255,255}},
+    {"SETTINGS",0,SC_TRACK,GR_NONE,{255,255,255,255}},
+    {"PHRASES",0,SC_TRACK,GR_NONE,{255,255,255,255}},
+    {"SAMPLE STORAGE",0,SC_TRACK,GR_NONE,{255,255,255,255}},
+
 };
+#define SMK37_PHRASE_PAGE 52u
+#define SMK37_STORAGE_PAGE 53u
+#define SMK37_NAV_PAGE 43u
+#define SMK37_BROWSER_PAGE 44u
+#define SMK37_OP_PAGE 45u
+#define SMK37_OPENV_PAGE 46u
+#define SMK37_OP2_PAGE 47u
+#define SMK37_SLICE_PAGE 48u
+#define SMK37_UNDO_PAGE 49u
+#define SMK37_NAME_PAGE 50u
+#define SMK37_PREF_PAGE 51u
 #define SMK37_SONG_PAGE 40u
 #define SMK37_TOOLS_PAGE 41u
 #define SMK37_PRESET_PAGE 42u
@@ -72,6 +95,7 @@ static uint8_t smk37_song_row,smk37_song_track,smk37_tool,smk37_lane,smk37_user_
 static volatile uint8_t smk37_song_request,smk37_user_request,smk37_song_loading;
 static void smk37_tool_action(void);
 static void smk37_pattern_undo(void);
+static void smk37_pattern_gesture(track_t *,unsigned);
 static uint8_t smk37_learn_on,smk37_learn_track,smk37_learn_param;
 static uint8_t smk37_palette,smk37_bold;
 static uint8_t smk37_auto_param,smk37_auto_lock;
@@ -83,6 +107,7 @@ static volatile uint8_t smk37_project_request;
 static uint8_t smk37_pedal_down;
 static uint8_t smk37_saved_arp[NTRK], smk37_saved_chord[NTRK], smk37_saved_quant[NTRK];
 static const char *smk37_notice;
+static char smk37_master_notice[24];
 static uint32_t smk37_notice_at;
 /* Light diagnostics only: OFF, PAD1..16, INDICATOR1..19. */
 static uint8_t smk37_light_target, smk37_light_color, smk37_light_level = 4;
@@ -93,11 +118,26 @@ static unsigned smk37_wrap(unsigned value, int direction, unsigned count)
     return direction > 0 ? (value+1u)%count : (value+count-1u)%count;
 }
 
+static uint8_t smk37_undo_loading;
+static void smk37_sound_take(track_t *,unsigned);
+static int smk37_workflow_turn(unsigned,int);
+static int smk37_workflow_button(unsigned);
+static unsigned smk37_next_page(unsigned,int);
+static unsigned smk37_edit_next(unsigned);
+static uint8_t smk37_accel,smk37_bpm_lock,smk37_hold=1,smk37_home,smk37_screen_off,smk37_help=1,smk37_led_level=4;
+static uint32_t smk37_input_at;
+static uint8_t smk37_step_preview;
+static void smk37_preview_step(void){
+    if(smk37_step_preview && !song.playing && !song.rec && !seq_counting() && transport_req!=1 && !chain.running && !chain.armed &&
+       (smk37_page==SMK37_STEP_PAGE || smk37_page==SMK37_DETAIL_PAGE))
+        aud_req=(uint16_t)((unsigned)smk37_edit_step<<8 | (song.sel+1u));
+}
 /* Same sound/preserved-track semantics as ui.c apply_preset_to. */
 static void smk37_load_preset(track_t *t, unsigned index)
 {
     const engine_t *e = ENGINES[t->eng_req];
     if (!e->npresets) return;
+    smk37_sound_take(t,0xffff);
     index %= e->npresets;
     if (e->presets == SMP_PRESET_TABLE && index < SMP_NSETS)
         index = SMP_SET_ORIG[index];
@@ -124,6 +164,8 @@ static void smk37_turn(unsigned encoder, int direction)
 {
     if (encoder >= 8 || !direction || smk37_song_loading) return;
     direction = direction > 0 ? 1 : -1;
+    smk37_input_at=fm1_ms;
+    if(smk37_workflow_turn(encoder,direction))return;
     if (smk37_page == SMK37_LIGHT_PAGE && encoder != 3) {
         if (encoder == 0) smk37_light_target = smk37_wrap(smk37_light_target, direction, 36);
         if (encoder == 1) smk37_light_color = smk37_wrap(smk37_light_color, direction, 3);
@@ -135,11 +177,11 @@ static void smk37_turn(unsigned encoder, int direction)
      * navigation; page controls remain physically K5..K8 in both banks. */
     if(smk37_page<SMK37_SOUND_PAGES && !smk37_knob_bank){
         if(encoder==0){
-            static char notice[24];song.master_q12=clamp((int)song.master_q12+direction*32,0,4096);
-            str_cpy(notice,"MASTER ",sizeof notice);fmt_int(notice+7,(song.master_q12*100u+2048u)/4096u);
-            str_cpy(notice+str_len(notice),"%",sizeof notice-str_len(notice));smk37_notice=notice;smk37_notice_at=fm1_ms;return;
+            char *notice=smk37_master_notice;song.master_q12=clamp((int)song.master_q12+direction*32,0,4096);
+            str_cpy(notice,"MASTER ",sizeof smk37_master_notice);fmt_int(notice+7,(song.master_q12*100u+2048u)/4096u);
+            str_cpy(notice+str_len(notice),"%",sizeof smk37_master_notice-str_len(notice));smk37_notice=notice;smk37_notice_at=fm1_ms;return;
         }
-        if(encoder==1){song.g[G_BPM]=clamp(song.g[G_BPM]+direction,GP[G_BPM].min,GP[G_BPM].max);smk37_notice="SELECT: TEMPO";smk37_notice_at=fm1_ms;return;}
+        if(encoder==1){if(smk37_bpm_lock){smk37_notice="BPM LOCK / USE TEMPO PAGE";smk37_notice_at=fm1_ms;return;}song.g[G_BPM]=clamp(song.g[G_BPM]+direction,GP[G_BPM].min,GP[G_BPM].max);smk37_notice="SELECT: TEMPO";smk37_notice_at=fm1_ms;return;}
         if(encoder==3){song.sel=clamp((int)song.sel+direction,0,NTRK-1);return;}
     }
     track_t *t = TSEL;
@@ -148,9 +190,12 @@ static void smk37_turn(unsigned encoder, int direction)
         unsigned engine = t->eng_req;
         do { engine = smk37_wrap(engine, direction, NENGINES); }
         while (!FELUCCA_FM4 && engine == ENGI_DIGITAL);
+        smk37_sound_take(t,0xffff);
+        smk37_undo_loading=1;
         t->eng_req = (uint8_t)engine;
         for (unsigned i = 0; i < 8; ++i) t->p[P_E0+i] = ENGINES[engine]->edit[i].def;
         smk37_load_preset(t, 0);
+        smk37_undo_loading=0;
     } else if (encoder == 2) {
         const engine_t *e = ENGINES[t->eng_req];
         if (!e->npresets) return;
@@ -159,7 +204,7 @@ static void smk37_turn(unsigned encoder, int direction)
         while (e->presets == SMP_PRESET_TABLE && p < SMP_NSETS && SMP_SET_ORIG[p] != p);
         smk37_load_preset(t, p);
     } else if (encoder == 3) {
-        smk37_page = smk37_wrap(smk37_page, direction, SMK37_PAGE_COUNT);
+        smk37_page = smk37_next_page(smk37_page,direction);
         smk37_patch_mode = 0;
     }
     else if (smk37_page < SMK37_SOUND_PAGES) {
@@ -186,6 +231,7 @@ static void smk37_turn(unsigned encoder, int direction)
             return;
         }
         if (smk37_page==SMK37_DETAIL_PAGE) {
+            smk37_pattern_gesture(t,smk37_page*512+smk37_edit_step*4+encoder);
             step_t *s=&t->step[smk37_edit_step];
             if(encoder==4)step_set_chance(s,clamp((int)step_chance(s)+direction,0,100));
             if(encoder==5)step_set_ratchet(s,clamp((int)step_ratchet(s)+direction,1,4));
@@ -220,8 +266,9 @@ static void smk37_turn(unsigned encoder, int direction)
             return;
         }
         if (smk37_page==SMK37_STEP_PAGE) {
+            if(encoder>4)smk37_pattern_gesture(t,smk37_page*512+smk37_edit_step*4+encoder);
             step_t *s=&TSEL->step[smk37_edit_step];
-            if(encoder==4) smk37_edit_step=smk37_wrap(smk37_edit_step,direction,NSTEP);
+            if(encoder==4){smk37_edit_step=smk37_wrap(smk37_edit_step,direction,NSTEP);smk37_preview_step();}
             if(encoder==5) { s->note[0]=clamp(s->note[0]+direction,0,127); s->n=1; }
             if(encoder==6) s->vel=clamp(s->vel+direction,1,127);
             if(encoder==7) s->time=smk37_wrap(s->time,direction,3);
@@ -231,6 +278,7 @@ static void smk37_turn(unsigned encoder, int direction)
         const param_desc_t *d = page_desc(&smk37_sound_pages[smk37_page], encoder-4, &value);
         if (d && value) {
             if(chain.running && smk37_sound_pages[smk37_page].scope!=SC_GLOBAL && chain_owns(smk37_sound_pages[smk37_page].id[encoder-4]))return;
+            if(*value!=clamp(*value+direction,d->min,d->max))smk37_sound_take(t,smk37_page*4+encoder);
             *value = (int16_t)enum_step(d, *value, clamp(*value+direction, d->min, d->max));
             const page_t *pg=&smk37_sound_pages[smk37_page];
             if(smk37_learn_on && pg->scope!=SC_GLOBAL){smk37_learn_track=song.sel;smk37_learn_param=pg->id[encoder-4];ml_heard=0;ml_arm=1;}
@@ -243,6 +291,8 @@ static void smk37_turn(unsigned encoder, int direction)
 static void smk37_button_event(unsigned button)
 {
     if (button >= 18 || smk37_page >= SMK37_SOUND_PAGES || smk37_song_loading) return;
+    smk37_input_at=fm1_ms;
+    if(smk37_workflow_button(button))return;
     track_t *t=TSEL;
     unsigned part=song.sel%NTRK;
     int direction=button==2 ? -1 : 1;
@@ -257,6 +307,7 @@ static void smk37_button_event(unsigned button)
         if(!smk37_user_request)smk37_user_request=(smk37_user_slot<<2)|(button==2?1:2);return;
     }
     if(smk37_page==SMK37_AUTOMATION_PAGE && (button==2 || button==3)){
+        smk37_pattern_gesture(t,0xffff);
         if(button==2){motion_delete_event(t,smk37_edit_step,smk37_auto_param);smk37_notice="EVENT REMOVED";}
         else{unsigned rc=smk37_auto_lock?motion_set_lock(t,smk37_edit_step,smk37_auto_param,smk37_auto_value):motion_set_event(t,smk37_edit_step,smk37_auto_param,smk37_auto_value);
             motion_set_enabled(t,1);smk37_notice=rc?"INVALID / AUTOMATION FULL":"EVENT SET / SAVE PROJECT";}
@@ -267,9 +318,10 @@ static void smk37_button_event(unsigned button)
         return; /* < load, > save; explicit presses, no autosave */
     }
     if((smk37_page==SMK37_STEP_PAGE || smk37_page==SMK37_DETAIL_PAGE) && (button==2 || button==3)) {
-        smk37_edit_step=(smk37_edit_step+NSTEP+direction*16)%NSTEP;
+        smk37_edit_step=(smk37_edit_step+NSTEP+direction*16)%NSTEP;smk37_preview_step();
         return;
     }
+    if(button>=6 && button<=9)smk37_sound_take(t,0xffff);
     switch (button) {
     case 0:
         smk37_knob_bank ^= 1;
@@ -282,7 +334,7 @@ static void smk37_button_event(unsigned button)
             /* Preset navigation independent of the physical encoder bank. */
             uint8_t bank=smk37_knob_bank; smk37_knob_bank=0;
             smk37_turn(2,direction); smk37_knob_bank=bank;
-        } else smk37_page=smk37_wrap(smk37_page,direction,SMK37_SOUND_PAGES);
+        } else smk37_page=smk37_next_page(smk37_page,direction);
         break;
     case 4: song.octave=clamp(song.octave-1,-3,3); break;
     case 5: song.octave=clamp(song.octave+1,-3,3); break;
@@ -310,9 +362,9 @@ static void smk37_button_event(unsigned button)
         else t->p[P_CHRD]=smk37_saved_chord[part] ? smk37_saved_chord[part] : 3; /* major */
         smk37_page=14; smk37_patch_mode=0; break;
     case 10: smk37_page=smk37_page==18 ? SMK37_SETTINGS_PAGE : smk37_page==SMK37_SETTINGS_PAGE ? SMK37_PROJECT_PAGE : 18; smk37_patch_mode=0; break;
-    case 11: smk37_notice="BLUETOOTH NOT AVAILABLE"; smk37_notice_at=fm1_ms; break;
+    case 11: smk37_page=smk37_edit_next(smk37_page); smk37_patch_mode=0; break; /* BT: edit; radio remains disabled */
     case 12: smk37_page=0; smk37_patch_mode=1; break;
-    case 13: smk37_page=1; smk37_patch_mode=0; break;
+    case 13: smk37_page=SMK37_PROJECT_PAGE; smk37_patch_mode=0; break; /* PARA: save menu, no write */
     case 14: smk37_page=smk37_page==7?27:smk37_page==27?SMK37_PERFORM_PAGE:7; smk37_patch_mode=0; break;
     case 15: smk37_page=smk37_page==23 ? SMK37_STEP_PAGE : smk37_page==SMK37_STEP_PAGE ? SMK37_DETAIL_PAGE : smk37_page==SMK37_DETAIL_PAGE ? SMK37_AUTOMATION_PAGE : 23; smk37_patch_mode=0; break;
     case 16:
@@ -342,9 +394,10 @@ static uint32_t smk37_indicator_status(void)
     if (t->p[P_AMODE]==6) bits|=1u<<7;
     if (t->p[P_QUANT]) bits|=1u<<8;
     if (t->p[P_CHRD]) bits|=1u<<9;
-    if (smk37_page==18 || smk37_page==SMK37_SETTINGS_PAGE || smk37_page==SMK37_PROJECT_PAGE) bits|=1u<<10;
-    if (smk37_patch_mode) bits|=1u<<12;
-    if ((smk37_page>=1 && smk37_page<=6) || (smk37_page>=19 && smk37_page<=22)) bits|=1u<<13;
+    if (smk37_page==18 || smk37_page==SMK37_SETTINGS_PAGE || smk37_page==SMK37_PROJECT_PAGE || smk37_page==SMK37_NAV_PAGE || smk37_page==SMK37_PREF_PAGE) bits|=1u<<10;
+    if (smk37_patch_mode || smk37_page==SMK37_BROWSER_PAGE) bits|=1u<<12;
+    if ((smk37_page>=1 && smk37_page<=6) || (smk37_page>=19 && smk37_page<=22) || (smk37_page>=SMK37_OP_PAGE && smk37_page<=SMK37_SLICE_PAGE)) bits|=1u<<11;
+    if (smk37_page==SMK37_PROJECT_PAGE) bits|=1u<<13;
     if ((smk37_page>=7 && smk37_page<=10) || smk37_page==27 || smk37_page==28 || smk37_page==SMK37_PERFORM_PAGE) bits|=1u<<14;
     if (smk37_page==23 || smk37_page==SMK37_STEP_PAGE || smk37_page==SMK37_DETAIL_PAGE || smk37_page==SMK37_AUTOMATION_PAGE) bits|=1u<<15;
     if (song.playing) bits|=1u<<(song.rec ? 17 : 16);
@@ -358,7 +411,10 @@ static void smk37_encoder_event(unsigned encoder, int direction)
     if (encoder >= 8 || (direction != 1 && direction != -1)) return;
     int phase = smk37_encoder_phase[encoder] + direction;
     if (phase == 4 || phase == -4) {
-        smk37_turn(encoder, direction);
+        static uint32_t last[8];
+        unsigned steps=smk37_accel && fm1_ms-last[encoder]<60u && encoder>=4 && smk37_page<SMK37_NAV_PAGE ? 3:1;
+        last[encoder]=fm1_ms;
+        while(steps--)smk37_turn(encoder, direction);
         phase = 0;
     }
     smk37_encoder_phase[encoder] = (int8_t)phase;

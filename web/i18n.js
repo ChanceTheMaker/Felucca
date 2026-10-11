@@ -77,7 +77,7 @@
     for (const attr of ['aria-label','title','placeholder','alt']) {
       for (const node of root.querySelectorAll(`[data-i18n-${attr}]`)) node.setAttribute(attr, t(node.getAttribute(`data-i18n-${attr}`), JSON.parse(node.dataset.i18nValues || '{}')));
     }
-    document.title = t(document.body?.classList.contains('installer-page') ? 'ui.installerTitle' : 'ui.editorTitle');
+    document.title = t(document.querySelectorAll('title[data-i18n]')[0]?.dataset.i18n || (document.body?.classList.contains('installer-page') ? 'ui.installerTitle' : 'ui.editorTitle'));
   }
   function setLanguage(value, persist = true) {
     const next = resolve(value) || 'en';

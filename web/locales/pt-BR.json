@@ -497,6 +497,11 @@
   "editor.smkLearnAssign": "Assign CC",
   "editor.smkLearnClear": "Clear this CC",
   "editor.smkNudge": "Nudge",
-  "site.smk37_sound_laboratory": "SMK-37 Pro & Elite / Sound laboratory",
-  "ui.smkModeTipConnect": "Conecte seu SMK-37"
+  "site.smk37_sound_laboratory": "Laboratório de som",
+  "ui.smkModeTipConnect": "Conecte seu SMK-37",
+  "site.smk_supported_models": "Para SMK-37 Pro & Elite",
+  "ui.smkInstallerTitle": "Felucca SMK — Instalador",
+  "ui.smkStudioTitle": "Felucca SMK Studio",
+  "ui.audioVersionMismatch": "O mecanismo de áudio do navegador e o Studio têm versões diferentes. Recarregue esta página para carregar os arquivos de áudio correspondentes.",
+  "editor.smkSampleSetup": "Nenhum slot de amostra está ativo. Nas versões com armazenamento de amostras, abra NAVIGATE → SYSTEM → SAMPLE STORAGE no SMK e reconecte. A inicialização substitui os dados de amostras originais; guarde seu backup original."
 }

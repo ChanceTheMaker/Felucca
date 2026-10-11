@@ -3,6 +3,77 @@
 Last reviewed: **2026-10-10**. Update this record when importing or offering a
 feature; follow [UPSTREAM_WORKFLOW.md](UPSTREAM_WORKFLOW.md).
 
+## October 10 SMK Test20 continuation
+
+Master-volume odometer, saved-preset phrases, step audition and Studio tuning
+are built and host-tested. Larger preset storage has an atomic backend and
+conversion tests; the runtime flash gate still permits only existing storage.
+Stock export/restore roundtrips privately. MIDI TX queue tests pass and the
+stock UART1 TX DMA path has been located; pin/mux verification remains.
+Test19 successfully produced two short stereo Windows recordings. See
+[Test20 progress and limits](smk37/TEST20.md). Test20 is packaged privately,
+not flashed or published; localhost remains on Test19.
+
+## October 10 SMK Test19 continuation
+
+Documented the hardware comparison with configured clocks distinguished from
+runtime measurements. Added factory phrase selection/confirmation, sequence
+timing undo, further panel settings and upstream MENU_DESC/SET descriptors in
+Studio, plus the main-loop manual-slice adapter. Optional USB recording now
+builds with the shared UAC implementation. Target, application host, renderer,
+C-to-JS menu and UAC tests pass. See [Test19](smk37/TEST19.md).
+
+Expanded storage is an allocation/migration plan, not enabled storage. Physical
+MIDI routing remains under investigation; the documented SMK jack is OUT.
+Private Test19 package prepared, with no device flash or publication. The
+local installer was subsequently staged to Test19 at the owner's request;
+the served package hash was verified. No Test19 flash yet. The owner reported
+Test18 worked well. Upstream revision remains 1.5.1 `a4d7ca2`.
+
+## October 10 SMK Test18 workflow and FM-1 fidelity
+
+Owner reviewed Test17's display on hardware and reported it looks good. Test18
+retains upstream 1.5.1 (`a4d7ca2`) and adds SMK hold shortcuts/grouped navigation,
+settings/favorites in existing preset sectors, device naming, FM6 operator pages,
+sound undo, note/event monitor and upstream rolling digits. Commands 34-38 match
+the existing Salt editor protocol; no new command IDs or sample allocations.
+The slice page shows the real waveform/markers; manual edits require user-sample
+storage, which remains separate. Full FM-1 menu/layer parity is not claimed.
+See [Test18](smk37/TEST18.md) for the migration, limits, tests and artifact hashes.
+No flashing, commit, push, public publication or upstream submission this round.
+
+## October 10 SMK Test17 missing page content
+
+Shared FM-1 sound/instrument graphs now populate the SMK Scale, Chord, FX,
+Slicer, modulation and engine centers. SMK sequence/storage/performance views
+show their actual state. PATCH/Home, PARA/Save and BT/Edit shortcuts are included.
+The local hero cycles red, white, Elite, black, pink, charcoal with crossfades.
+Host, renderer, target and updater checks pass. See [Test17](smk37/TEST17.md)
+for scope, remaining UI differences, hashes and physical checks. The local
+installer staged the private Test17 candidate; no flash, upstream submission,
+commit, push or public deployment.
+
+## October 10 SMK Test16 branding and installer
+
+The local SMK installer reuses the live fork site's button, gallery and hover-preview
+styles (gh-pages deployment 79019a6). Original SVG art shows the Pro and Elite
+finishes with the correct control count. All 24 Studio theme/mode thumbnails are
+fresh SMK Browser-mode captures. The firmware boot line is now centered Felucca
+SMK with the real version in smaller type at the bottom. No added startup delay.
+Test16 passes the target build, combined host suite and updater regression tests.
+The local server stages the private Test16 package; no device flash or publication.
+See [Test16 details and artifact identity](smk37/TEST16.md).
+
+## October 10 SMK Test15 device display
+
+Test15 replaces the simplified sound-page list with FM-1-style cards, a compact
+header, track overview and graphical panels. The ADSR/LFO/scope drawing is shared
+with upstream; the SMK navigation remains board-specific. Host renderer and
+combined SMK regressions pass, as does the original FM-1 UI suite. The target
+build passes its bounds. See [Test15 scope, evidence and hashes](smk37/TEST15.md).
+Staged at localhost:8770 with served package hash verified; no automatic flash,
+push or publication.
+
 ## October 10 SMK Test14 completion
 
 On the same 1.5.1 integration branch, Test14 adds per-track song chains,
@@ -11,8 +82,8 @@ slots with FM6 patches, and the owner's confirmed FM-1-style first knob bank.
 The two preset sectors are separate from the four existing project slots and
 are enabled only with private stock evidence and runtime allocation checks.
 See [Test14 controls, storage, tests and artifact hashes](smk37/TEST14.md).
-The candidate is built locally; no flash, push or public release. The local
-installer remains Test12. Browser and firmware support are tested with host
+The candidate is built locally; no flash, push or public release. At the owner's
+request the local installer was staged with Test14 (superseded by Test15 above), with its served package hash checked. Browser and firmware support are tested with host
 fixtures; the Pro device checks come next.
 
 ## October 10 SMK upstream 1.5.1 integration (Test13)
@@ -411,6 +482,19 @@ reference checks and actual vendor V15 restoration were not run. Detailed build
 evidence accompanies the candidate PRs and release artifacts.
 
 ## Contribution ledger
+
+Private SMK follow-up: [Test21](smk37/TEST21.md) continues the pinned Felucca
+1.5.1 adapter with initialized sample storage, upstream sample/slice formats,
+stock-derived TRS output and three additional MENU settings. Host/build/Studio
+checks pass. Owner testing confirmed TRS notes/chords, sustain and pitch into an
+FM-1, plus sample slot initialization, upload and reported playback. TRS shutdown
+with a held note failed; mod and sample restart persistence remain inconclusive.
+Deferred follow-ups are in WORK_QUEUE.md. Test19 completed two 90-second stereo
+USB captures. The owner authorized committing and pushing the accumulated
+Test15-21 work to the fork integration branch; no upstream PR or public release
+is included. Private stock backups and unit-specific firmware packages stay local.
+The only new shared-core hooks are an optional MIDI-output tap and a configurable
+slice-slot address; both retain the default FM-1 behavior.
 
 No new upstream PR has been authorized or submitted during this round. Preparing
 and documenting candidates does not imply upstream acceptance. For each future

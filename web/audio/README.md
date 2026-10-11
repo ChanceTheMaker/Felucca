@@ -45,3 +45,12 @@ The test rejects any Web MIDI access and checks actual audio samples from the ke
 Original engine code: Leo Kuroshita (@kurogedelic), Hügelton Instruments, GPL-3.0-only.
 Included sample sources and notices: `assets/samples-cc0` and the repository sample
 documentation. The browser adapter and JavaScript are GPL-3.0-only as well.
+
+## Runtime cache compatibility
+
+The editor imports the audio loader with the first 16 hexadecimal characters of
+the engine WASM SHA-256. The loader carries that revision into the WASM and
+worklet URLs and fetches the WASM with `cache: no-store`. The build script refreshes
+the editor import when rebuilding audio. Preset vectors are checked against the
+editor parameter count before constructing the mock MIDI device; incompatible
+assets produce a localized reload message instead of a truncated DUMP reply.

@@ -8,8 +8,9 @@ adapters supply physical controls, storage and main-loop protocol dispatch.
 
 The owner requested device preset storage and confirmed FM-1-style bank 1:
 SELECT is tempo and ALGORITHM selects the track. No device was opened, written
-or flashed during this work. No push/public deployment occurred. The private
-localhost:8770 installer still stages the owner-tested Test12 package.
+or flashed during this work. No push/public deployment occurred. At the owner's request, localhost:8770 now stages Test14 for the next device test.
+The served package and metadata were checked against the hashes below.
+This staging action does not flash the device or publish a public release.
 
 ## Physical controls
 

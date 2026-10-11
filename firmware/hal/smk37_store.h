@@ -13,6 +13,8 @@
     (((uint32_t)(a)>=SMK37_PRESET_A && (uint32_t)(a)<SMK37_PRESET_A+4096u && (uint32_t)(n)<=SMK37_PRESET_A+4096u-(uint32_t)(a)) || \
      ((uint32_t)(a)>=SMK37_PRESET_B && (uint32_t)(a)<SMK37_PRESET_B+4096u && (uint32_t)(n)<=SMK37_PRESET_B+4096u-(uint32_t)(a))))
 #define SMK37_STORE_PAYLOAD 3968u
+#define SMK37_PRESET_V1_SIZE 2564u
+#define SMK37_PRESET_V2_SIZE 3116u
 #define SMK37_SESSION_V1_SIZE 3648u
 #define SMK37_SESSION_V2_SIZE 3904u
 typedef struct {
@@ -34,10 +36,11 @@ static int smk37_store_read_copy(const smk37_store_io_t *io,unsigned slot,unsign
     if(slot>=4 || copy>1 || !length || length>SMK37_STORE_PAYLOAD)return -1;
     uint32_t a=SMK37_STORE_LO+(slot*2+copy)*4096u;
     if(io->read(a,h,sizeof *h) || h->magic!=0x534d4b39u || (h->version!=1 && h->version!=2) ||
-       h->slot!=slot || (h->length!=length && !(length==SMK37_SESSION_V2_SIZE && h->length==SMK37_SESSION_V1_SIZE)) || h->reserved ||
+       h->slot!=slot || (h->length!=length && !(length==SMK37_SESSION_V2_SIZE && h->length==SMK37_SESSION_V1_SIZE) && !(length==SMK37_PRESET_V2_SIZE && h->length==SMK37_PRESET_V1_SIZE)) || h->reserved ||
        h->header_crc!=smk37_store_crc(h,28))return -1;
     uint32_t offset=h->version==1 ? 256u : 128u;
     if(h->length>4096u-offset || io->read(a+offset,payload,h->length) || h->crc!=smk37_store_crc(payload,h->length))return -1;
+    if(h->length==SMK37_PRESET_V1_SIZE && length==SMK37_PRESET_V2_SIZE)memset((uint8_t *)payload+SMK37_PRESET_V1_SIZE,0,length-SMK37_PRESET_V1_SIZE);
     if(h->length==SMK37_SESSION_V1_SIZE && length==SMK37_SESSION_V2_SIZE) {
         /* Preserve Test10-12 metadata while the upstream FUN8 importer reads
          * the first 3584 bytes. No flash writes during migration. */

@@ -8,7 +8,9 @@ export class BrowserSynth {
     this.context = context;
     try {
       await context.resume();
-      const response = await fetch(new URL('engine.wasm', import.meta.url));
+      // Carry the editor's build fingerprint through to both runtime assets.
+      const revision = new URL(import.meta.url).search;
+      const response = await fetch(new URL('engine.wasm' + revision, import.meta.url), {cache: 'no-store'});
       if (!response.ok) throw new Error(window.FeluccaI18n.t('ui.engineUnavailable'));
       const module = await WebAssembly.compile(await response.arrayBuffer());
       const meta = new WebAssembly.Instance(module).exports;
@@ -17,7 +19,7 @@ export class BrowserSynth {
       this.presets = Array.from({length: meta.engine_count()}, (_, e) => Array.from({length: meta.preset_count(e)}, (_, p) => ({
         name: text(meta.preset_name(e, p)), values: Array.from({length: meta.param_count()}, (_, i) => meta.preset_value(e, p, i)),
       })));
-      await context.audioWorklet.addModule(new URL('worklet.js', import.meta.url));
+      await context.audioWorklet.addModule(new URL('worklet.js' + revision, import.meta.url));
       this.node = new AudioWorkletNode(context, 'felucca-dsp', {numberOfInputs: 0, numberOfOutputs: 1,
         outputChannelCount: [2], processorOptions: {module}});
       this.gain = context.createGain();

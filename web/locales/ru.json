@@ -497,6 +497,11 @@
   "editor.smkLearnAssign": "Assign CC",
   "editor.smkLearnClear": "Clear this CC",
   "editor.smkNudge": "Nudge",
-  "site.smk37_sound_laboratory": "SMK-37 Pro & Elite / Sound laboratory",
-  "ui.smkModeTipConnect": "Подключите SMK-37"
+  "site.smk37_sound_laboratory": "Звуковая лаборатория",
+  "ui.smkModeTipConnect": "Подключите SMK-37",
+  "site.smk_supported_models": "Для SMK-37 Pro & Elite",
+  "ui.smkInstallerTitle": "Felucca SMK — Установщик",
+  "ui.smkStudioTitle": "Felucca SMK Studio",
+  "ui.audioVersionMismatch": "Версии звукового движка браузера и Studio различаются. Перезагрузите страницу, чтобы загрузить соответствующие аудиофайлы.",
+  "editor.smkSampleSetup": "Активных слотов сэмплов нет. В сборках с поддержкой хранения сэмплов откройте NAVIGATE → SYSTEM → SAMPLE STORAGE на SMK, затем подключитесь заново. Инициализация заменяет заводские данные сэмплов; сохраните исходную резервную копию."
 }

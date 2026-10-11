@@ -20,9 +20,9 @@ static void up_values(const up_rec_t *r, int16_t *v)   /* mapped and clamped for
 
 #define SMK37_UP_SLOTS 8u
 #define SMK37_UP_MAGIC 0x31505553u
-static struct {uint32_t magic;up_rec_t record[SMK37_UP_SLOTS];uint8_t fm6[SMK37_UP_SLOTS][FM6_PACKED];}
+static struct {uint32_t magic;up_rec_t record[SMK37_UP_SLOTS];uint8_t fm6[SMK37_UP_SLOTS][FM6_PACKED];favorites_t favorites;uint8_t prefs[32];}
     smk37_up __attribute__((section(".pool"))),smk37_up_work __attribute__((section(".pool"))),smk37_up_previous __attribute__((section(".pool")));
-_Static_assert(sizeof smk37_up==2564,"SMK eight-preset bank size");
+_Static_assert(sizeof smk37_up==SMK37_PRESET_V2_SIZE,"SMK bank plus preferences in existing sectors");
 static uint8_t smk37_up_ready,smk37_up_writable;
 /* Reuse tested A/B commit machinery with a private virtual slot0 mapping.
  * Neither mapping can reach project sectors or cross either 4KB boundary. */
@@ -35,6 +35,34 @@ static int smk37_up_read(uint32_t a,void *p,uint32_t n){a=smk37_up_address(a,n);
 static int smk37_up_erase(uint32_t a){a=smk37_up_address(a,4096);return a&&smk37_up_writable?smk37_storage_erase(a):-1;}
 static int smk37_up_program(uint32_t a,const void *p,uint32_t n){a=smk37_up_address(a,n);return a&&smk37_up_writable?smk37_storage_program(a,p,n):-1;}
 static const smk37_store_io_t smk37_up_io={smk37_up_read,smk37_up_erase,smk37_up_program};
+static void smk37_up_phrase_mirror(void){
+    smk37_phrase_confirm=0; /* saving/renaming cannot leave a stale replacement confirmation */
+    for(unsigned k=0;k<8;++k){
+        const up_rec_t *r=&smk37_up.record[k];
+        memset(&smk37_user_phrase[k],0,sizeof smk37_user_phrase[k]);
+        if(!up_valid(r) || up_pat_empty(r))continue;
+        int16_t values[P_COUNT];up_values(r,values);
+        smk37_user_phrase[k].used=1;smk37_user_phrase[k].grid=up_grid(r);
+        memcpy(smk37_user_phrase[k].note,r->note,16);memcpy(smk37_user_phrase[k].flags,r->flags,16);
+        smk37_user_phrase[k].name[0]='U';smk37_user_phrase[k].name[1]='0';smk37_user_phrase[k].name[2]='1'+k;smk37_user_phrase[k].name[3]=' ';
+        memcpy(smk37_user_phrase[k].name+4,r->name,8);
+        for(unsigned i=0;i<4;++i)smk37_user_phrase[k].timing[i]=values[P_SLEN+i];
+        smk37_user_phrase[k].timing[0]=clamp(values[P_SLEN],1,16);
+    }
+    if(smk37_phrase>=smk37_phrase_count())smk37_phrase=0;
+}
+static void smk37_up_names(void){smk37_up_phrase_mirror();smk37_user_used=0;for(unsigned k=0;k<8;++k){
+    memset(smk37_user_names[k],0,13);if(up_valid(&smk37_up.record[k])){smk37_user_used|=1u<<k;memcpy(smk37_user_names[k],smk37_up.record[k].name,12);}}}
+static void smk37_prefs_restore(void){
+    favorites=smk37_up.favorites;favorites.filter=!!favorites.filter;favorites.user&=255u;
+    smk37_global_prefs=smk37_up.prefs[31]==0x18;
+    if(smk37_global_prefs)for(unsigned i=0;i<(smk37_up.prefs[30]==0x21?SMK37_PREF_COUNT:smk37_up.prefs[30]==0x20?21u:smk37_up.prefs[30]==0x19?20u:11u);++i)smk37_pref_set(i,smk37_up.prefs[i]);
+}
+static void smk37_prefs_capture(void){
+    smk37_up_work.favorites=favorites;
+    for(unsigned i=0;i<SMK37_PREF_COUNT;++i)smk37_up_work.prefs[i]=smk37_pref_get(i);
+    smk37_up_work.prefs[30]=0x21;smk37_up_work.prefs[31]=0x18;
+}
 static int smk37_up_boot(void){
     smk37_up_ready=smk37_up_writable=0;
     int copy=smk37_store_load(&smk37_up_io,0,&smk37_up,sizeof smk37_up,0);
@@ -47,7 +75,7 @@ static int smk37_up_boot(void){
         memset(&smk37_up,0,sizeof smk37_up);smk37_up.magic=SMK37_UP_MAGIC;
     }
     for(unsigned i=0;i<SMK37_UP_SLOTS;++i)up_migrate(&smk37_up.record[i]);
-    smk37_up_ready=1;smk37_up_writable=smk37_storage_writable;return 0;
+    smk37_up_names();smk37_prefs_restore();smk37_up_ready=1;smk37_up_writable=smk37_storage_writable;return 0;
 }
 static int smk37_up_used(unsigned k){return smk37_up_ready && k<SMK37_UP_SLOTS && up_valid(&smk37_up.record[k]);}
 static int smk37_up_idle(void){
@@ -59,8 +87,9 @@ static int smk37_up_idle(void){
 /* RAM mirror changes only after a fully verified commit. Main loop only. */
 static int smk37_up_commit(void){
     if(!smk37_up_writable || !smk37_up_idle())return 2;
+    fm1_irq_off();smk37_prefs_capture();fm1_irq_on();
     if(smk37_store_save(&smk37_up_io,0,&smk37_up_work,sizeof smk37_up_work,&smk37_up_previous))return 2;
-    smk37_up=smk37_up_work;return 0;
+    fm1_irq_off();smk37_up=smk37_up_work;smk37_global_prefs=1;smk37_up_names();fm1_irq_on();return 0;
 }
 static int smk37_up_put(unsigned k,const up_rec_t *r){
     if(k>=SMK37_UP_SLOTS || (r&&!up_valid(r)))return 1;
@@ -89,9 +118,15 @@ static int smk37_up_load(unsigned k){
     if(!smk37_up_used(k))return 1;
     int16_t v[P_COUNT];up_values(&smk37_up.record[k],v);unsigned e=smk37_up.record[k].engine;uint8_t fp[FP_SIZE+1];
     if(e==ENGI_DIGITAL){fm4_convert(v,fp);e=ENGI_FM6;}else fm6_unpack(smk37_up.fm6[k],fp);
-    fm1_irq_off();track_t *t=TSEL;unsigned tr=song.sel;panic_req|=1u<<tr;
+    fm1_irq_off();track_t *t=TSEL;smk37_sound_take(t,0xffff);unsigned tr=song.sel;panic_req|=1u<<tr;
     motion_restore(t);
     for(unsigned i=0;i<P_COUNT;++i)if(!(i==P_LEVEL || i==P_PAN || i==P_MUTE || (i>=P_AMODE&&i<=P_SGATE) || (i>=P_SLCR&&i<=P_SLDEPTH) || i==P_CHRD || i==P_VOIC || i==P_SQNT))t->p[i]=v[i];
     t->eng_req=e;t->preset=0;t->user=k+1;
     if(e==ENGI_FM6){fm6_set_patch(tr,fp);fm6_adopt(tr);}fm1_irq_on();return 0;
+}
+
+static int smk37_preferences_save(void){smk37_up_work=smk37_up;fm1_irq_off();smk37_prefs_capture();fm1_irq_on();if(!memcmp(&smk37_up_work,&smk37_up,sizeof smk37_up))return 0;return smk37_up_commit();}
+static int smk37_preset_rename(void){
+    unsigned k=smk37_name_slot;if(!smk37_up_used(k))return 1;
+    up_rec_t r=smk37_up.record[k];memcpy(r.name,smk37_name,12);return smk37_up_put(k,&r);
 }

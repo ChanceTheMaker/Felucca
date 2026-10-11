@@ -32,3 +32,16 @@ smk37_isr_scanner:
     {psr, rets, reti} = [sp++]
     csync
     rti
+
+#if SMK37_ENABLE_USB_AUDIO
+    .section .text.smk37_isr_usb,"ax",@progbits
+    .globl smk37_isr_usb
+smk37_isr_usb:
+    [--sp] = {psr, rets, reti}
+    [--sp] = {r3-r0}
+    call smk37_usb_irq
+    {r3-r0} = [sp++]
+    {psr, rets, reti} = [sp++]
+    csync
+    rti
+#endif

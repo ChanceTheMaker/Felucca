@@ -1,13 +1,19 @@
 /* SPDX-License-Identifier: GPL-3.0-only
  * Grid helpers and tools from ui.c/ui_tools.c, Copyright (C) 2026
  * Leo Kuroshita (@kurogedelic), Hugelton Instruments. */
-static struct { step_t step[NSTEP]; motion_store_t mo; uint8_t track,valid; }
+static struct { step_t step[NSTEP]; int16_t timing[4]; motion_store_t mo; uint8_t track,valid; }
     smk37_undo __attribute__((section(".pool")));
 static motion_store_t smk37_undo_swap_motion __attribute__((section(".pool")));
 static void smk37_pattern_take(track_t *t) {
     smk37_undo.track=trk_index(t);smk37_undo.valid=1;
     memcpy(smk37_undo.step,t->step,sizeof t->step);
+    for(unsigned i=0;i<4;++i)smk37_undo.timing[i]=t->p[P_SLEN+i];
     motion_snapshot_track(t,&smk37_undo.mo);
+}
+static void smk37_pattern_gesture(track_t *t,unsigned gesture){
+    static uint32_t last,at;static uint8_t track;
+    if(!smk37_undo.valid || gesture==0xffff || last!=gesture || track!=trk_index(t) || fm1_ms-at>=800u)smk37_pattern_take(t);
+    last=gesture;at=fm1_ms;track=trk_index(t);
 }
 static void smk37_pattern_undo(void) {
     if(!smk37_undo.valid || chain.running || chain.armed)return;
@@ -16,6 +22,7 @@ static void smk37_pattern_undo(void) {
     if(motion_replace_track(t,&smk37_undo.mo)){smk37_notice="UNDO: AUTOMATION FULL";smk37_notice_at=fm1_ms;return;}
     for(unsigned i=0;i<NSTEP;++i){step_t s=t->step[i];t->step[i]=smk37_undo.step[i];smk37_undo.step[i]=s;}
     smk37_undo.mo=smk37_undo_swap_motion;
+    for(unsigned i=0;i<4;++i){int16_t v=t->p[P_SLEN+i];t->p[P_SLEN+i]=smk37_undo.timing[i];smk37_undo.timing[i]=v;}
     smk37_notice="UNDO / REDO";smk37_notice_at=fm1_ms;
 }
 static void ui_message(const char *s){smk37_notice=s;smk37_notice_at=fm1_ms;}

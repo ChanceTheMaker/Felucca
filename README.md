@@ -4,7 +4,24 @@ Felucca [Salt] by Chance Roth (@ChanceTheMaker), based on Felucca by Leo Kuroshi
 and Hügelton Instruments. This branch integrates **Felucca 1.5.1 into the SMK-37
 Pro & Elite project**, based on upstream `a4d7ca2`.
 
-**Test14 is a local hardware-test candidate.** The owner's Pro passed Test12's
+**Test19 is the current local candidate.** The owner reported Test18 worked
+well on the SMK. Test18 added grouped navigation, independent
+display/control settings, presets/favorites and naming, FM6 operator editing,
+sound undo, sustained-note monitoring, and upstream rolling-digit animation.
+See [Test18 controls, compatibility and test notes](docs/smk37/TEST18.md).
+**Test19 is staged privately** with additional panel/Studio settings, factory
+phrases and optional USB recording. The local installer now serves Test19;
+Test19's USB recording path has been exercised on the device. See [Test19 implementation and remaining work](docs/smk37/TEST19.md)
+and the [FM-1/SMK CPU, RAM and flash comparison](docs/smk37/HARDWARE_COMPARISON.md).
+The next private [Test20 build](docs/smk37/TEST20.md) adds the master-volume
+odometer, saved-preset phrases, step preview and Studio tuning. It is prepared
+separately; the installer still serves Test19. Test19 has recorded sound through
+Windows at requested 44.1/48 kHz, including 90 seconds at each rate; native-rate checks remain.
+The separate [Test21 candidate](docs/smk37/TEST21.md) includes those Test20 changes,
+three explicitly initialized sample slots, persistent manual slice markers,
+opt-in physical MIDI output and additional Studio settings. It is a private
+hardware-test candidate, not a public release; Test19 stays on port 8770.
+It retains the Test14 features below. The owner's Pro passed Test12's
 normal-USB update, controls, sound, sustain and project-save checks. Test14 adds
 upstream 1.5.1 synthesis/effects, sequencing details, automation and MIDI control,
 plus song sections, sequence tools/undo, eight device presets and FM-1-style

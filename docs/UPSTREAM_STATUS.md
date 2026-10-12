@@ -1,3 +1,9 @@
+## Original firmware restore - 2026-10-12
+
+Website-only stock-return flow added; current custom firmware release and pinned
+upstream revision are unchanged. [Restore behavior and evidence](STOCK_RESTORE.md).
+This is a fork website change, not an upstream contribution.
+
 # Upstream integration status
 
 README presentation (2026-10-05): removed integration plans, protocol history,

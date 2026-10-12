@@ -406,6 +406,7 @@
   <div class="cabinet-grille" aria-hidden="true"></div>
 </main>
 <script type="module">
+import {createProgress,createTransferCounter,reportProgress} from './update-progress.js?v=progress1';
 /*LIB*/
 const $ = (id) => document.getElementById(id);
 const I18N = window.FeluccaI18n;
@@ -428,12 +429,14 @@ const log = (t) => {
   output.textContent += t + "\n";
   if (follow) output.scrollTop = output.scrollHeight;
 };
+const progress=createProgress($("bar"));
+$("bar").remove();
 $("retry").addEventListener("click", () => $("go").click());
 function beginInstallProgress() {
   $("install-retry").hidden = true;
   $("install-progress").open = true;
   $("studio-handoff").hidden = true;
-  $("bar").value = 0;
+  progress.start();
   $("log").textContent = "";
   $("install-progress").focus({preventScroll:true});
   $("install-progress").scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block:"start"});
@@ -466,36 +469,37 @@ $("go").addEventListener("click", async () => {
   beginInstallProgress();
   let midi;
   try { midi = await navigator.requestMIDIAccess({ sysex: true }); }
-  catch (e) { track('install_failed', {stage, error_code: 'denied'}); sayK("denied"); $("go").disabled = false; $("install-retry").hidden = false; return; }
+  catch (e) { progress.fail();track('install_failed', {stage, error_code: 'denied'}); sayK("denied"); $("go").disabled = false; $("install-retry").hidden = false; return; }
   writing = true;
   let completed = false;
   try {
     const up = new Updater(midi, log);
     stage = 'discovery';
-    const total = 74 + 1167;
     const step = (k, a) => {
       stage = k;
       if (k === 'write' && !writeTracked) { writeTracked = true; track('install_write_started'); }
       if (k === 'done') track('install_success');
       log(`${k} ${a ?? ""}`);
       if (k === "start") sayK("start");
-      if (k === "verify") { sayK("verify"); $("bar").value = (a / total) * 100; }
+      if (k === "verify") { sayK("verify");  }
       if (k === "loader") sayK("loader");
-      if (k === "write") { sayK("write"); $("bar").value = ((74 + a) / total) * 100; }
+      if (k === "write") { sayK("write");  }
       if (k === "reboot") sayK("reboot");
-      if (k === "done") { $("bar").value = 100; sayK("done"); }
+      if (k === "done") { progress.done(); sayK("done"); }
     };
     const ota = await up.find((id) => /^ota-/i.test(id.model));
     if (ota) {
       ota.link.close();
       completed = await up.resume(image, step);
       track(completed ? 'install_resume_complete' : 'install_failed', completed ? {} : {stage, error_code: 'stopped'});
-      sayK(completed ? "done" : "stopped");
+      if(completed){progress.unconfirmed();say('Transfer finished. Check the device; restart has not been confirmed.');}
+      else{progress.fail();sayK('stopped');}
     } else {
       await up.install(image, meta.product, step);
       completed = true;
     }
   } catch (e) {
+    progress.fail();
     const codes = ['notfound', 'model', 'lost', 'stopped', 'noloader', 'noreturn', 'mismatch', 'badreq'];
     track('install_failed', {stage, error_code: codes.includes(e?.code) ? e.code : 'unknown'});
     if (e && e.code && TEXT[lang][e.code]) sayK(e.code, e.detail || "");

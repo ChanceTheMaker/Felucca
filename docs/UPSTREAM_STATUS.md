@@ -84,3 +84,7 @@ contribution, append the following information:
 
 After upstream merges a contribution, record the merge SHA and the Salt PR that
 removes or reconciles the duplicate implementation.
+
+## Installer progress bars (2026-10-12)
+
+Website-only fork change. Adds preparation, unique-byte transfer, restart-confirmation and stopped states to installation and factory restore. Repeated/overlapping requests do not inflate progress; 100% requires the existing verified-success path. Published firmware, model checks, flash ranges, loader commands and upstream baseline are unchanged. Offline progress/transport and existing installer/restore tests passed; no device was flashed for this UI change.

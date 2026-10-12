@@ -65,6 +65,7 @@ def main(pkg, version, out):
     shutil.copytree(HERE / "screenshots", inst / "screenshots", dirs_exist_ok=True)
     shutil.copy(HERE / "studio-preview.js", inst / "studio-preview.js")
     shutil.copy(HERE / "panel-guide.js", inst / "panel-guide.js")
+    shutil.copy(HERE / "update-progress.js", inst / "update-progress.js")
     shutil.copytree(HERE / "restore-stock", inst / "restore-stock", dirs_exist_ok=True)
     for target in (inst, ed):
         for asset in ("skin.css", "interface.css", "skin.js", "fonts.css", "analytics.js", "i18n.js", "locales.js", "site-nav.js"):
